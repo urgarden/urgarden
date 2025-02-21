@@ -1,7 +1,6 @@
 import React from "react";
 import {
   TouchableOpacity,
-  Text,
   StyleSheet,
   TouchableOpacityProps,
 } from "react-native";
