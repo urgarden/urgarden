@@ -1,100 +1,80 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/lib/definitions/type";
 import { useNavigation } from "expo-router";
+import { validateSignupFormData } from "@/utils/validation";
+import { signupFormFields } from "@/utils/formFields";
+import InputField from "@/components/InputField";
+import BackButton from "@/components/buttons/BackButton";
+import ThemedText from "@/components/ThemedText";
+import ProceedButton from "@/components/buttons/ProceedButton";
 
 type SignupPageProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
 };
 
 const SignupPage: React.FC<SignupPageProps> = ({ navigation }) => {
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [errorMessage, setErrorMessage] = useState<{ [key: string]: string }>(
+    {}
+  );
 
   const nav = useNavigation();
 
-  const handleSignup = () => {
-    // Here you would typically validate the input and create a new user account
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      return;
-    }
+  type FormField = "username" | "email" | "password" | "confirmPassword";
 
-    // Simulate successful signup
-    console.log("Signup successful");
-    navigation.navigate("Main");
+  const handleInputChange = (name: FormField, value: string) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSignup = () => {
+    const error = validateSignupFormData(formData);
+    if (error) {
+      setErrorMessage(error);
+    } else {
+      // Simulate successful signup
+      console.log("Signup successful");
+      navigation.navigate("Main");
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.topButtonsContainer}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => nav.goBack()}
-        >
-          <Text style={styles.backButtonText}>Back</Text>
-        </TouchableOpacity>
+        <BackButton />
       </View>
 
-      <Text style={styles.title}> URGARDEN SIGNUP</Text>
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Username:</Text>
-        <TextInput
-          style={styles.input}
-          value={username}
-          onChangeText={(text) => setUsername(text)}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="default"
-          textContentType="username"
-        />
-      </View>
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="email-address"
-          textContentType="emailAddress"
-        />
-      </View>
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Password:</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-          textContentType="password"
-        />
-      </View>
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Confirm Password:</Text>
-        <TextInput
-          style={styles.input}
-          value={confirmPassword}
-          onChangeText={(text) => setConfirmPassword(text)}
-          secureTextEntry
-          textContentType="password"
-        />
-      </View>
-      {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
-      <TouchableOpacity style={styles.button} onPress={handleSignup}>
-        <Text style={styles.buttonText}>Signup</Text>
-      </TouchableOpacity>
+      <ThemedText type="title">URGARDEN SIGNUP</ThemedText>
+      {signupFormFields.map((field) => (
+        <View key={field.name} style={styles.formGroup}>
+          <InputField
+            label={field.label}
+            value={formData[field.name as FormField]}
+            onChangeText={(text: string) =>
+              handleInputChange(field.name as FormField, text)
+            }
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType={field.keyboardType as any}
+            textContentType={field.textContentType as any}
+            secureTextEntry={field.secureTextEntry}
+          />
+          {errorMessage[field.name] && (
+            <View style={styles.errorMessageContainer}>
+              <ThemedText type="errorMessage">
+                {errorMessage[field.name]}
+              </ThemedText>
+            </View>
+          )}
+        </View>
+      ))}
+      <ProceedButton title="Signup" onPress={handleSignup} />
     </View>
   );
 };
@@ -115,54 +95,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  backButton: {
-    position: "absolute",
-    top: 40,
-    left: 20,
-  },
-  backButtonText: {
-    fontSize: 18,
-    color: "#4CAF50",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 40,
-    color: "#333",
-  },
   formGroup: {
+    width: "100%",
+    alignItems: "center",
+  },
+  errorMessageContainer: {
+    marginTop: -15,
+    textAlign: "left",
     width: "80%",
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 8,
-    color: "#333",
-  },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-  },
-  errorMessage: {
-    color: "red",
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: "#4CAF50",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    justifyContent: "flex-start",
   },
 });
 
