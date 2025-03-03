@@ -34,7 +34,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "light" ? DarkTheme : DefaultTheme}>
-      <FlashMessage position="center" />
+      <FlashMessage position="bottom" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />

@@ -13,7 +13,7 @@ import ProceedButton from "@/components/buttons/ProceedButton";
 import { showMessage } from "react-native-flash-message";
 
 type SignupPageProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
+  navigation: NativeStackNavigationProp<RootStackParamList, "signup">;
 };
 
 const SignupPage: React.FC<SignupPageProps> = ({ navigation }) => {
@@ -27,7 +27,7 @@ const SignupPage: React.FC<SignupPageProps> = ({ navigation }) => {
     {}
   );
 
-  const nav = useNavigation();
+  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   type FormField = "username" | "email" | "password" | "confirmPassword";
 
@@ -46,18 +46,17 @@ const SignupPage: React.FC<SignupPageProps> = ({ navigation }) => {
 
     if (result.error) {
       showMessage({
-        message: "Signup Failed",
+        message: "Signup Failed!",
         description: result.message,
         type: "danger",
       });
       return;
     } else {
       showMessage({
-        message: "Signup Successful",
-        description: "You have successfully signed up!",
+        message: "Signup Successful!",
         type: "success",
       });
-      navigation.navigate("Login");
+      nav.navigate("login");
     }
   };
 
