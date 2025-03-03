@@ -35,6 +35,45 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="planner/index"
+        options={{
+          title: "Planner",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol
+              size={28}
+              name="camera.badge.clock.fill"
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="my-garden/index"
+        options={{
+          title: "My Garden",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol
+              size={28}
+              name="camera.badge.clock.fill"
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="plant-care/index"
+        options={{
+          title: "Plant Care",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol
+              size={28}
+              name="camera.badge.clock.fill"
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

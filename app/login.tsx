@@ -1,5 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/lib/navigationTypes";
 import { Link, useNavigation } from "expo-router";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
@@ -8,12 +10,16 @@ import ProceedButton from "@/components/buttons/ProceedButton";
 import { login } from "@/services/FirebaseService";
 import { showMessage } from "react-native-flash-message";
 
-const LoginPage = () => {
+type LoginPageProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, "login">;
+};
+
+const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const nav = useNavigation();
+  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogin = async () => {
     try {
@@ -31,7 +37,7 @@ const LoginPage = () => {
           type: "success",
         });
         console.log("Login successful");
-        // nav.navigate("(tabs)/home");
+        nav.navigate("(tabs)", { screen: "Home" });
       }
     } catch (error) {
       showMessage({
@@ -43,8 +49,7 @@ const LoginPage = () => {
   };
 
   const handleGuestLogin = () => {
-    console.log("Guest login successful");
-    nav.navigate("(tabs)/Home" as never);
+    nav.navigate("(tabs)", { screen: "Home" });
   };
 
   const buttons = [
