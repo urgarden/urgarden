@@ -10,7 +10,7 @@ import ThemedText from "@/components/ThemedText";
 import { RootStackParamList } from "@/lib/definitions";
 import { signup } from "@/services/FirebaseService";
 import ProceedButton from "@/components/buttons/ProceedButton";
-import Swal from "sweetalert2";
+import { showMessage } from "react-native-flash-message";
 
 type SignupPageProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
@@ -39,23 +39,25 @@ const SignupPage: React.FC<SignupPageProps> = ({ navigation }) => {
     const error = validateSignupFormData(formData);
     if (error) {
       setErrorMessage(error);
+      return;
+    }
+
+    const result = await signup(formData);
+
+    if (result.error) {
+      showMessage({
+        message: "Signup Failed",
+        description: result.message,
+        type: "danger",
+      });
+      return;
     } else {
-      const result = await signup(formData);
-      if (result.error) {
-        Swal.fire({
-          icon: "error",
-          title: "Signup Failed",
-          text: result.message,
-        });
-      } else {
-        Swal.fire({
-          icon: "success",
-          title: "Signup Successful",
-          text: "You have successfully signed up!",
-        });
-        console.log("Signup successful");
-        navigation.navigate("Main");
-      }
+      showMessage({
+        message: "Signup Successful",
+        description: "You have successfully signed up!",
+        type: "success",
+      });
+      navigation.navigate("Login");
     }
   };
 
