@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/lib/definitions/type";
 import { Link, useNavigation } from "expo-router";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
+import { RootStackParamList } from "@/lib/definitions";
 
 type LoginPageProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Login">;

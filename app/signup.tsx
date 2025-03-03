@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/lib/definitions/type";
 import { useNavigation } from "expo-router";
 import { validateSignupFormData } from "@/utils/validation";
 import { signupFormFields } from "@/utils/formFields";
 import InputField from "@/components/InputField";
 import BackButton from "@/components/buttons/BackButton";
 import ThemedText from "@/components/ThemedText";
+import { RootStackParamList } from "@/lib/definitions";
+import { signup } from "@/services/FirebaseService";
 import ProceedButton from "@/components/buttons/ProceedButton";
+import Swal from "sweetalert2";
 
 type SignupPageProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "Signup">;
@@ -33,14 +35,27 @@ const SignupPage: React.FC<SignupPageProps> = ({ navigation }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     const error = validateSignupFormData(formData);
     if (error) {
       setErrorMessage(error);
     } else {
-      // Simulate successful signup
-      console.log("Signup successful");
-      navigation.navigate("Main");
+      const result = await signup(formData);
+      if (result.error) {
+        Swal.fire({
+          icon: "error",
+          title: "Signup Failed",
+          text: result.message,
+        });
+      } else {
+        Swal.fire({
+          icon: "success",
+          title: "Signup Successful",
+          text: "You have successfully signed up!",
+        });
+        console.log("Signup successful");
+        navigation.navigate("Main");
+      }
     }
   };
 
