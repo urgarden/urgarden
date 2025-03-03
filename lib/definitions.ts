@@ -1,9 +1,3 @@
-export type RootStackParamList = {
-  login: undefined;
-  signup: undefined;
-  main: undefined;
-};
-
 export interface SignUpData {
   username: string;
   email: string;

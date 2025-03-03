@@ -1,7 +1,10 @@
 import { db, auth } from "./FirebaseConfig";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { SignUpData, SignUpResponse } from "@/lib/definitions";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 export const signup = async (data: SignUpData): Promise<SignUpResponse> => {
   let dateCreated = Timestamp.fromDate(new Date());
@@ -34,6 +37,24 @@ export const signup = async (data: SignUpData): Promise<SignUpResponse> => {
       message: "Account successfully created!",
       error: false,
       status: 201,
+    };
+  } catch (error: any) {
+    return { error: true, message: error.message, status: error.code };
+  }
+};
+
+export const login = async (
+  email: string,
+  password: string
+): Promise<SignUpResponse> => {
+  try {
+    // Login using signInWithEmailAndPassword function of Firebase
+    await signInWithEmailAndPassword(auth, email, password);
+
+    return {
+      message: "Login successful!",
+      error: false,
+      status: 200,
     };
   } catch (error: any) {
     return { error: true, message: error.message, status: error.code };

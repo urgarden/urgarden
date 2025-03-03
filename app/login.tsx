@@ -1,38 +1,50 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Link, useNavigation } from "expo-router";
 import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
-import { RootStackParamList } from "@/lib/definitions";
+import { login } from "@/services/FirebaseService";
+import { showMessage } from "react-native-flash-message";
 
-type LoginPageProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "Login">;
-};
-
-const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
-  const [username, setUsername] = useState<string>("");
+const LoginPage = () => {
+  const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const nav = useNavigation();
 
-  const handleLogin = () => {
-    // Here you would typically validate the username and password against a backend service or database
-    if (username === "user" && password === "password") {
-      console.log("Login successful");
-      // Redirect to the main app page or dashboard
-      navigation.navigate("Main");
-    } else {
-      setErrorMessage("Invalid username or password");
+  const handleLogin = async () => {
+    try {
+      const result = await login(email, password);
+      if (result.error) {
+        showMessage({
+          message: "Login Failed",
+          description: result.message,
+          type: "danger",
+        });
+      } else {
+        showMessage({
+          message: "Login Successful",
+          description: "You have successfully logged in!",
+          type: "success",
+        });
+        console.log("Login successful");
+        // nav.navigate("(tabs)/home");
+      }
+    } catch (error) {
+      showMessage({
+        message: "Login Failed",
+        description: "An error occurred during login. Please try again.",
+        type: "danger",
+      });
     }
   };
 
   const handleGuestLogin = () => {
     console.log("Guest login successful");
-    navigation.navigate("Main");
+    nav.navigate("(tabs)/Home" as never);
   };
 
   const buttons = [
@@ -64,8 +76,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       <ThemedText type="title">URGARDEN LOGIN</ThemedText>
       <InputField
         label="Username or Email"
-        value={username}
-        onChangeText={setUsername}
+        value={email}
+        onChangeText={setEmail}
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="email-address"
