@@ -1,28 +1,100 @@
-import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  Animated,
+  TouchableWithoutFeedback,
+} from "react-native";
 import BackButton from "@/components/buttons/BackButton";
 import ImagePreviewer from "@/components/ImagePrev";
+import { useSearch } from "@/hooks/useSearch";
+import { Link, useNavigation } from "expo-router";
+
+// Import local images using require
+const tomato = require("@/assets/images/tomato.jpg");
+const carrot = require("@/assets/images/carrot.jpg");
+const cabage = require("@/assets/images/cabage.jpg");
+const cucumber = require("@/assets/images/cucumber.jpg");
+const pepper = require("@/assets/images/pepper.jpg");
 
 const trendingVeggies = [
-  { id: "1", name: "Tomato", image: "https://example.com/tomato.jpg" },
-  { id: "2", name: "Carrot", image: "https://example.com/carrot.jpg" },
-  { id: "3", name: "Lettuce", image: "https://example.com/lettuce.jpg" },
+  { id: "1", name: "Tomato", image: tomato },
+  { id: "2", name: "Carrot", image: carrot },
+  { id: "3", name: "cabage", image: cabage },
+  { id: "4", name: "Pepper", image: pepper },
+  { id: "5", name: "Cucumber", image: cucumber },
 ];
 
 const allVeggies = [
   { id: "1", name: "Tomato" },
   { id: "2", name: "Carrot" },
-  { id: "3", name: "Lettuce" },
+  { id: "3", name: "Cabage" },
   { id: "4", name: "Cucumber" },
   { id: "5", name: "Pepper" },
 ];
 
-export default function HomeScreen() {
-  const [searchQuery, setSearchQuery] = useState("");
+interface Veggie {
+  id: string;
+  name: string;
+  image?: any;
+}
 
-  const filteredVeggies = allVeggies.filter((veggie) =>
-    veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
+const VeggieItem = ({
+  item,
+  onPress,
+}: {
+  item: Veggie;
+  onPress: () => void;
+}) => {
+  const scale = new Animated.Value(1);
+
+  const handlePressIn = () => {
+    Animated.spring(scale, {
+      toValue: 0.95,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <TouchableWithoutFeedback
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={onPress}
+    >
+      <Animated.View style={[styles.veggieItem, { transform: [{ scale }] }]}>
+        <Text style={styles.veggieText}>{item.name}</Text>
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
+};
+
+export default function HomeScreen() {
+  const {
+    searchQuery,
+    setSearchQuery,
+    filteredItems: filteredVeggies,
+  } = useSearch(allVeggies);
+
+  interface Veggie {
+    id: string;
+    name: string;
+    image?: any;
+  }
+
+  const nav = useNavigation();
+
+  const handleVeggiePress = (veggie: Veggie) => {
+    // nav.navigate(`/veggie/${veggie.id}` as never);
+  };
 
   const trendingVeggieImages = trendingVeggies.map((veggie) => veggie.image);
 
@@ -40,7 +112,6 @@ export default function HomeScreen() {
 
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
-        <Text style={styles.sectionTitle}>Trending Vegetables</Text>
         <ImagePreviewer imageUrls={trendingVeggieImages} />
 
         {/* List of All Vegetables */}
@@ -49,9 +120,7 @@ export default function HomeScreen() {
           data={filteredVeggies}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.veggieItem}>
-              <Text style={styles.veggieText}>{item.name}</Text>
-            </View>
+            <VeggieItem item={item} onPress={() => handleVeggiePress(item)} />
           )}
         />
       </View>
@@ -89,8 +158,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 20,
-    width: "80%",
+    width: "90%",
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 22,

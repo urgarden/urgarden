@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image } from "react-native";
 import Swiper from "react-native-swiper";
 
 interface ImagePreviewerProps {
-  imageUrls: string[];
+  imageUrls: (string | number)[];
 }
 
 const ImagePreviewer = ({ imageUrls }: ImagePreviewerProps) => {
@@ -14,10 +14,17 @@ const ImagePreviewer = ({ imageUrls }: ImagePreviewerProps) => {
         activeDotColor="#fff"
         style={styles.wrapper}
         showsButtons={true}
+        autoplay={true} // Enable autoplay
+        autoplayTimeout={3} // Set autoplay timeout to 3 seconds
       >
         {imageUrls.map((imageUrl, index) => (
           <View key={index} style={styles.slide}>
-            <Image style={styles.image} source={{ uri: imageUrl }} />
+            <Image
+              style={styles.image}
+              source={
+                typeof imageUrl === "string" ? { uri: imageUrl } : imageUrl
+              }
+            />
           </View>
         ))}
       </Swiper>
@@ -27,8 +34,8 @@ const ImagePreviewer = ({ imageUrls }: ImagePreviewerProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 200,
-    width: "100%",
+    height: 300,
+    width: "120%",
   },
   wrapper: {
     justifyContent: "center",
@@ -39,16 +46,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   image: {
-    width: "80%",
+    width: "100%",
     height: "100%",
     resizeMode: "cover",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#757575",
+
     alignSelf: "center",
   },
   buttonText: {
     fontSize: 50,
+    margin: 10,
     color: "#fff",
   },
 });
