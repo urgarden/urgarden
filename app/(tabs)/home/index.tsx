@@ -1,34 +1,54 @@
-import { Image, StyleSheet, Platform } from "react-native";
-
-import { HelloWave } from "@/components/HelloWave";
-
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { Link } from "expo-router";
+import BackButton from "@/components/buttons/BackButton";
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.titleContainer}>
-      <ThemedText type="title">Welcome!</ThemedText>
-      <HelloWave />
-    </ThemedView>
+    <View style={styles.container}>
+      <BackButton />
+      <Text style={styles.title}>
+        Urgarden: A Mobile-based Planner for Vegetables Urban Gardening
+      </Text>
+      <View style={styles.buttonContainer}></View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+    backgroundColor: "#f5f5f5",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 40,
+    color: "#333",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "80%",
+  },
+  button: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    backgroundColor: "#4CAF50",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 100,
+    marginHorizontal: 10,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginLeft: 8,
   },
 });

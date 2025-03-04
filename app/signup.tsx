@@ -56,9 +56,7 @@ const SignupPage = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topButtonsContainer}>
-        <BackButton />
-      </View>
+      <BackButton />
 
       <ThemedText type="title">URGARDEN SIGNUP</ThemedText>
       {signupFormFields.map((field) => (
@@ -97,14 +95,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f5f5f5",
   },
-  topButtonsContainer: {
-    position: "absolute",
-    top: 40,
-    left: 20,
-    right: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
+
   formGroup: {
     width: "100%",
     alignItems: "center",
