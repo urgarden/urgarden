@@ -1,14 +1,7 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  Image,
-} from "react-native";
+import { StyleSheet, View, Text, TextInput, FlatList } from "react-native";
 import BackButton from "@/components/buttons/BackButton";
-import Carousel from "react-native-snap-carousel";
+import ImagePreviewer from "@/components/ImagePrev";
 
 const trendingVeggies = [
   { id: "1", name: "Tomato", image: "https://example.com/tomato.jpg" },
@@ -27,27 +20,15 @@ const allVeggies = [
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const renderCarouselItem = ({
-    item,
-  }: {
-    item: { id: string; name: string; image: string };
-  }) => (
-    <View style={styles.carouselItem}>
-      <Image source={{ uri: item.image }} style={styles.carouselImage} />
-      <Text style={styles.carouselText}>{item.name}</Text>
-    </View>
-  );
-
   const filteredVeggies = allVeggies.filter((veggie) =>
     veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const trendingVeggieImages = trendingVeggies.map((veggie) => veggie.image);
+
   return (
     <View style={styles.container}>
       <BackButton />
-      <Text style={styles.title}>
-        Urgarden: A Mobile-based Planner for Vegetables Urban Gardening
-      </Text>
 
       {/* Search Component */}
       <TextInput
@@ -57,27 +38,23 @@ export default function HomeScreen() {
         onChangeText={setSearchQuery}
       />
 
-      {/* Trending Vegetables Carousel */}
-      <Text style={styles.sectionTitle}>Trending Vegetables</Text>
-      <Carousel
-        data={trendingVeggies}
-        renderItem={renderCarouselItem}
-        sliderWidth={300}
-        itemWidth={250}
-        loop={true}
-      />
+      <View style={styles.contentContainer}>
+        {/* Trending Vegetables Carousel */}
+        <Text style={styles.sectionTitle}>Trending Vegetables</Text>
+        <ImagePreviewer imageUrls={trendingVeggieImages} />
 
-      {/* List of All Vegetables */}
-      <Text style={styles.sectionTitle}>All Vegetables</Text>
-      <FlatList
-        data={filteredVeggies}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.veggieItem}>
-            <Text style={styles.veggieText}>{item.name}</Text>
-          </View>
-        )}
-      />
+        {/* List of All Vegetables */}
+        <Text style={styles.sectionTitle}>All Vegetables</Text>
+        <FlatList
+          data={filteredVeggies}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={styles.veggieItem}>
+              <Text style={styles.veggieText}>{item.name}</Text>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 }
@@ -90,6 +67,14 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f5f5f5",
   },
+  contentContainer: {
+    width: "100%",
+    padding: 16,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 4,
+  },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -99,35 +84,20 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 40,
+    marginTop: 80,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 20,
-    width: "100%",
+    width: "80%",
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
     color: "#333",
-  },
-  carouselItem: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 10,
-    alignItems: "center",
-  },
-  carouselImage: {
-    width: 200,
-    height: 150,
-    borderRadius: 8,
-  },
-  carouselText: {
-    marginTop: 10,
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    marginTop: 20,
   },
   veggieItem: {
     padding: 10,
