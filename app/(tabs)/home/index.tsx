@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     width: "100%",
     height: "100%",
-    padding: 16,
+    paddingHorizontal: 16,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 20,
     color: "#333",
     marginTop: 20,
   },
