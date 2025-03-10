@@ -40,11 +40,7 @@ export default function TabLayout() {
         options={{
           title: "Planner",
           tabBarIcon: ({ color }) => (
-            <IconSymbol
-              size={28}
-              name="camera.badge.clock.fill"
-              color={color}
-            />
+            <IconSymbol size={28} name="calendar.circle.fill" color={color} />
           ),
         }}
       />
@@ -53,11 +49,7 @@ export default function TabLayout() {
         options={{
           title: "My Garden",
           tabBarIcon: ({ color }) => (
-            <IconSymbol
-              size={28}
-              name="camera.badge.clock.fill"
-              color={color}
-            />
+            <IconSymbol size={28} name="leaf.circle.fill" color={color} />
           ),
         }}
       />
@@ -66,11 +58,7 @@ export default function TabLayout() {
         options={{
           title: "Plant Care",
           tabBarIcon: ({ color }) => (
-            <IconSymbol
-              size={28}
-              name="camera.badge.clock.fill"
-              color={color}
-            />
+            <IconSymbol size={28} name="hand.tap.fill" color={color} />
           ),
         }}
       />

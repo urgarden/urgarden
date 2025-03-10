@@ -33,7 +33,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "light" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <FlashMessage position="bottom" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
