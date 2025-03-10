@@ -38,6 +38,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Back Button */}
       <BackButton />
 
       {/* Search Component */}
@@ -92,12 +93,12 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 40,
-    marginTop: 80,
+    marginTop: 90,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
-    width: "90%",
+    width: "80%",
     marginBottom: 10,
   },
   sectionTitle: {
