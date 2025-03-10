@@ -34,7 +34,7 @@ const ImagePreviewer = ({ imageUrls }: ImagePreviewerProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 300,
+    height: "35%",
     width: "120%",
   },
   wrapper: {

@@ -10,3 +10,9 @@ export type SignUpResponse = {
   error: boolean;
   status: number | string;
 };
+
+export interface Veggie {
+  id: string;
+  name: string;
+  image?: any;
+}
