@@ -20,3 +20,11 @@ export const recommendedPlants = [
   { id: "4", name: "Pepper", image: pepper },
   { id: "5", name: "Cucumber", image: cucumber },
 ];
+
+export const Veggies = [
+  { id: "1", name: "Tomato", type: "Fruit", image: tomato },
+  { id: "2", name: "Carrot", type: "Root", image: carrot },
+  { id: "3", name: "Cabage", type: "Leaf", image: cabage },
+  { id: "4", name: "Cucumber", type: "Fruit", image: cucumber },
+  { id: "5", name: "Pepper", type: "Fruit", image: pepper },
+];

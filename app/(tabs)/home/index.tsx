@@ -6,21 +6,7 @@ import { useSearch } from "@/hooks/useSearch";
 import VeggieItem from "@/components/home/VeggieItem"; // Add this line to import VeggieItem
 import { useRouter } from "expo-router";
 import { Veggie } from "@/lib/definitions";
-
-// Import local images using require
-const tomato = require("@/assets/images/tomato.jpg");
-const carrot = require("@/assets/images/carrot.jpg");
-const cabage = require("@/assets/images/cabage.jpg");
-const cucumber = require("@/assets/images/cucumber.jpg");
-const pepper = require("@/assets/images/pepper.jpg");
-
-const vegiImage = [
-  { id: "1", name: "Tomato", image: tomato },
-  { id: "2", name: "Carrot", image: carrot },
-  { id: "3", name: "Cabage", image: cabage },
-  { id: "4", name: "Cucumber", image: cucumber },
-  { id: "5", name: "Pepper", image: pepper },
-];
+import { vegiImage } from "@/lib/config";
 
 export default function HomeScreen() {
   const {
