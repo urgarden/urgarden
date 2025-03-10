@@ -53,10 +53,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     margin: 5,
-    borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 8,
     minWidth: "45%",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
   },
   veggieImage: {
     width: 80,
