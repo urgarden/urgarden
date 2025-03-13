@@ -11,7 +11,7 @@ const onion = require("@/assets/images/bulb/onion/o8.webp");
 const scallion = require("@/assets/images/bulb/scallion/w7.jpg");
 const shallot = require("@/assets/images/bulb/shallot/o7.png");
 
-// const artichoke = require("@/assets/images/flower/artichoke/a6.JPG");
+const artichoke = require("@/assets/images/flower/artichoke/artichoke.jpg");
 const bananaBlossom = require("@/assets/images/flower/banana/b7.jpg");
 const cauliflower = require("@/assets/images/flower/cauli flower/7.jpg");
 const pigeonwings = require("@/assets/images/flower/pigeonwings/a6.jpg");
@@ -26,17 +26,17 @@ const onionLeaf = require("@/assets/images/leaf/onion/onionLeaf.webp");
 const parsley = require("@/assets/images/leaf/parsley/parsley.webp");
 const spinach = require("@/assets/images/leaf/spinach/spinach.webp");
 
-// const cucumberFruit = require("@/assets/images/fruit/cucumber/cucumber.jpg");
-// const okra = require("@/assets/images/fruit/okra/okra.jpg");
-// const pepperFruit = require("@/assets/images/fruit/pepper/pepper.jpg");
-// const squash = require("@/assets/images/fruit/squash/squash.jpg");
-// const tomatoFruit = require("@/assets/images/fruit/tomato/tomato.jpg");
+const cucumberFruit = require("@/assets/images/fruit/cucumber/cucumber.jpg");
+const okra = require("@/assets/images/fruit/okra/okra.webp");
+const pepperFruit = require("@/assets/images/fruit/pepper/pepper.webp");
+const squash = require("@/assets/images/fruit/squash/squash.jpg");
+const tomatoFruit = require("@/assets/images/fruit/tomato/tomato.webp");
 
-// const carrotRoot = require("@/assets/images/root/carrot/carrot.jpg");
-// const ginger = require("@/assets/images/root/ginger/ginger.jpg");
-// const potato = require("@/assets/images/root/potato/potato.jpg");
-// const radish = require("@/assets/images/root/radish/radish.jpg");
-// const sweetPotato = require("@/assets/images/root/sweet-potato/sweet-potato.jpg");
+const carrotRoot = require("@/assets/images/root/carrot/carrot.jpg");
+const ginger = require("@/assets/images/root/ginger/ginger.jpg");
+const potato = require("@/assets/images/root/potato/potato.jpg");
+const radish = require("@/assets/images/root/radish/radish.jpg");
+const sweetPotato = require("@/assets/images/root/sweet potato/sweetPotato.jpg");
 
 export const vegiImage = [
   { id: "1", name: "Tomato", image: tomato },
@@ -127,35 +127,35 @@ export const Veggies = {
       name: "Tomato",
       description: "A juicy, red fruit commonly used in salads and sauces.",
       type: "fruit",
-      image: "tomatoFruit",
+      image: tomatoFruit,
     },
     {
       id: 12,
       name: "Squash",
       description: "A versatile vegetable with a slightly sweet taste.",
       type: "fruit",
-      image: "squash",
+      image: squash,
     },
     {
       id: 13,
       name: "Pepper",
       description: "A colorful fruit with mild to spicy flavors.",
       type: "fruit",
-      image: "pepperFruit",
+      image: pepperFruit,
     },
     {
       id: 14,
       name: "Okra",
       description: "A green pod vegetable known for its slimy texture.",
       type: "fruit",
-      image: "okra",
+      image: okra,
     },
     {
       id: 15,
       name: "Cucumber",
       description: "A refreshing fruit often used in salads and pickles.",
       type: "fruit",
-      image: "cucumberFruit",
+      image: cucumberFruit,
     },
   ],
   bulb: [
@@ -209,7 +209,7 @@ export const Veggies = {
       name: "Artichoke",
       description: "A thistle-like flower vegetable with tender hearts.",
       type: "flower",
-      image: "artichoke",
+      image: artichoke,
     },
     {
       id: 23,
@@ -232,35 +232,35 @@ export const Veggies = {
       name: "Carrot",
       description: "A crunchy root vegetable, typically orange in color.",
       type: "root",
-      image: "carrotRoot",
+      image: carrotRoot,
     },
     {
       id: 26,
       name: "Sweet Potato",
       description: "A sweet and starchy root vegetable, rich in nutrients.",
       type: "root",
-      image: " sweetPotato",
+      image: sweetPotato,
     },
     {
       id: 27,
       name: "Potato",
       description: "A versatile root vegetable used in a variety of dishes.",
       type: "root",
-      image: "potato",
+      image: potato,
     },
     {
       id: 28,
       name: "Radish",
       description: "A peppery-flavored root, often used in salads.",
       type: "root",
-      image: "radish",
+      image: radish,
     },
     {
       id: 29,
       name: "Ginger",
       description: "A spicy and aromatic root used in cooking and tea.",
       type: "root",
-      image: "ginger",
+      image: ginger,
     },
   ],
 };
