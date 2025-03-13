@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Text,
+  TextInput,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -15,6 +16,7 @@ import { Veggies } from "@/lib/config";
 
 export default function PlannerScreen() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const router = useRouter();
 
   const handleTypePress = (type: string | null) => {
@@ -26,8 +28,14 @@ export default function PlannerScreen() {
   };
 
   const filteredVeggies = selectedType
-    ? Veggies[selectedType as keyof typeof Veggies]
-    : Object.values(Veggies).flat();
+    ? Veggies[selectedType as keyof typeof Veggies].filter((veggie) =>
+        veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : Object.values(Veggies)
+        .flat()
+        .filter((veggie) =>
+          veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
   return (
     <ThemedView style={styles.container}>
@@ -61,6 +69,14 @@ export default function PlannerScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      {/* Search Input */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
 
       {/* List of Vegetables */}
       <View
@@ -110,6 +126,16 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  searchInput: {
+    height: 40,
+    marginTop: -40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
   },
   columnWrapper: {
     justifyContent: "space-between",

@@ -21,7 +21,7 @@ export default function HomeScreen() {
         <ImagePreviewer imageUrls={trendingVeggieImages} />
 
         {/* List of All Vegetables */}
-        <Text style={styles.sectionTitle}>Popular Vegetables</Text>
+        <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
         <FlatList
           data={vegiImage}
           keyExtractor={(item) => item.id}
