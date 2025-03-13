@@ -11,8 +11,10 @@ export type SignUpResponse = {
   status: number | string;
 };
 
-export interface Veggie {
+export interface VeggieType {
   id: string;
   name: string;
+  type?: string;
+  description?: string;
   image?: any;
 }

@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import {
   StyleSheet,
   View,
-  Text,
   FlatList,
   TouchableOpacity,
   ScrollView,
+  Text,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -26,8 +26,8 @@ export default function PlannerScreen() {
   };
 
   const filteredVeggies = selectedType
-    ? Veggies.filter((veggie) => veggie.type === selectedType)
-    : Veggies;
+    ? Veggies[selectedType as keyof typeof Veggies]
+    : Object.values(Veggies).flat();
 
   return (
     <ThemedView style={styles.container}>
@@ -48,7 +48,7 @@ export default function PlannerScreen() {
         >
           <Text style={styles.buttonText}>All</Text>
         </TouchableOpacity>
-        {["Flower", "Leaf", "Root", "Fruit", "Bulb", "Stem"].map((type) => (
+        {["leaf", "fruit", "bulb", "flower", "root"].map((type) => (
           <TouchableOpacity
             key={type}
             style={[
@@ -63,15 +63,17 @@ export default function PlannerScreen() {
       </ScrollView>
 
       {/* List of Vegetables */}
-      <View style={styles.itemContainer}>
+      <View style={{ flex: 14, padding: 16, backgroundColor: "#f0f0f0" }}>
         <FlatList
           data={filteredVeggies}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <VeggieItem
-              item={item}
-              onPress={() => handleVeggiePress(item.id)}
-            />
+            <View>
+              <VeggieItem
+                item={item}
+                onPress={() => handleVeggiePress(item.id.toString())}
+              />
+            </View>
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
@@ -88,12 +90,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
+    marginBottom: 16,
     height: "auto",
     marginHorizontal: 16,
-    paddingHorizontal: 5,
   },
   button: {
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
     backgroundColor: "#ccc",
@@ -109,11 +111,5 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
-  },
-
-  itemContainer: {
-    flex: 14,
-    paddingHorizontal: 16,
-    backgroundColor: "#f0f0f0",
   },
 });

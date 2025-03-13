@@ -1,22 +1,15 @@
-import React from "react";
-import { StyleSheet, View, Text, TextInput, FlatList } from "react-native";
+import { StyleSheet, View, Text, FlatList } from "react-native";
 import BackButton from "@/components/buttons/BackButton";
 import ImagePreviewer from "@/components/ImagePrev";
-import { useSearch } from "@/hooks/useSearch";
 import VeggieItem from "@/components/home/VeggieItem"; // Add this line to import VeggieItem
 import { useRouter } from "expo-router";
-import { Veggie } from "@/lib/definitions";
+import { VeggieType } from "@/lib/definitions";
 import { vegiImage } from "@/lib/config";
 
 export default function HomeScreen() {
-  const {
-    searchQuery,
-    setSearchQuery,
-    filteredItems: filteredVeggies,
-  } = useSearch(vegiImage);
   const router = useRouter();
 
-  const handleVeggiePress = (veggie: Veggie) => {
+  const handleVeggiePress = (veggie: VeggieType) => {
     router.push(`/veggie/${veggie.id}` as any);
   };
 
@@ -27,14 +20,6 @@ export default function HomeScreen() {
       {/* Back Button */}
       <BackButton />
 
-      {/* Search Component */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search Vegetables..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
         <ImagePreviewer imageUrls={trendingVeggieImages} />
@@ -42,7 +27,7 @@ export default function HomeScreen() {
         {/* List of All Vegetables */}
         <Text style={styles.sectionTitle}>Popular Vegetables</Text>
         <FlatList
-          data={filteredVeggies}
+          data={vegiImage}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <VeggieItem item={item} onPress={() => handleVeggiePress(item)} />
@@ -60,12 +45,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
   },
   contentContainer: {
     width: "100%",
     height: "100%",
+    marginTop: 100,
     paddingHorizontal: 16,
+    backgroundColor: "#f5f5f5",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
