@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -17,7 +17,13 @@ interface VeggieItemProps {
 }
 
 const VeggieItem: React.FC<VeggieItemProps> = ({ item, onPress }) => {
+  const [loading, setLoading] = useState(true);
   const scale = new Animated.Value(1);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000); // Simulate loading time
+    return () => clearTimeout(timer);
+  }, []);
 
   const handlePressIn = () => {
     Animated.spring(scale, {
@@ -32,6 +38,15 @@ const VeggieItem: React.FC<VeggieItemProps> = ({ item, onPress }) => {
       useNativeDriver: true,
     }).start();
   };
+
+  if (loading) {
+    return (
+      <View style={styles.veggieItem}>
+        <View style={styles.skeletonImage} />
+        <View style={styles.skeletonText} />
+      </View>
+    );
+  }
 
   return (
     <TouchableWithoutFeedback
@@ -62,6 +77,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   veggieImage: {
     width: 80,
@@ -73,6 +91,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#333",
     textAlign: "center", // Center text
+  },
+  skeletonImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#e0e0e0",
+    marginBottom: 10,
+  },
+  skeletonText: {
+    width: 60,
+    height: 20,
+    borderRadius: 4,
+    backgroundColor: "#e0e0e0",
+    marginTop: 10,
   },
 });
 
