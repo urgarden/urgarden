@@ -63,7 +63,9 @@ export default function PlannerScreen() {
       </ScrollView>
 
       {/* List of Vegetables */}
-      <View style={{ flex: 14, padding: 16, backgroundColor: "#f0f0f0" }}>
+      <View
+        style={{ flex: 14, paddingHorizontal: 16, backgroundColor: "#f0f0f0" }}
+      >
         <FlatList
           data={filteredVeggies}
           keyExtractor={(item) => item.id.toString()}

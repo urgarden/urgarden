@@ -1,5 +1,4 @@
 import { StyleSheet, View, Text, FlatList } from "react-native";
-import BackButton from "@/components/buttons/BackButton";
 import ImagePreviewer from "@/components/ImagePrev";
 import VeggieItem from "@/components/home/VeggieItem"; // Add this line to import VeggieItem
 import { useRouter } from "expo-router";
@@ -17,9 +16,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
-      <BackButton />
-
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
         <ImagePreviewer imageUrls={trendingVeggieImages} />
@@ -50,7 +46,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     width: "100%",
     height: "100%",
-    marginTop: 100,
     paddingHorizontal: 16,
     backgroundColor: "#f5f5f5",
     flex: 1,
