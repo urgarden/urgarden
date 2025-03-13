@@ -7,24 +7,24 @@ const pepper = require("@/assets/images/pepper.jpg");
 
 const funnel = require("@/assets/images/bulb/fennel/f7.jpg");
 const garlic = require("@/assets/images/bulb/garlic/g6.jpg");
-const onion = require("@/assets/images/bulb/onion/o7.png");
+const onion = require("@/assets/images/bulb/onion/o8.webp");
 const scallion = require("@/assets/images/bulb/scallion/w7.jpg");
 const shallot = require("@/assets/images/bulb/shallot/o7.png");
 
-// const artichoke = require("@/assets/images/flower/artichoke/a1.jpg");
-// const bananaBlossom = require("@/assets/images/flower/banana/b7.jpg");
-// const cauliflower = require("@/assets/images/flower/cauli flower/7.jpg");
-// const pigeonwings = require("@/assets/images/flower/pigeonwings/a6.jpg");
+// const artichoke = require("@/assets/images/flower/artichoke/a6.JPG");
+const bananaBlossom = require("@/assets/images/flower/banana/b7.jpg");
+const cauliflower = require("@/assets/images/flower/cauli flower/7.jpg");
+const pigeonwings = require("@/assets/images/flower/pigeonwings/a6.jpg");
 
-// const cabbage = require("@/assets/images/leaf/cabbage/c5.webp");
-// const celery = require("@/assets/images/leaf/celery/celery.jpg");
-// const chard = require("@/assets/images/leaf/chard/chard.jpg");
-// const cilantro = require("@/assets/images/leaf/cilantro/cilantro.jpg");
-// const kale = require("@/assets/images/leaf/kale/kale.jpg");
-// const lettuce = require("@/assets/images/leaf/lettuce/lettuce.jpg");
-// const onionLeaf = require("@/assets/images/leaf/onion/onion.jpg");
-// const parsley = require("@/assets/images/leaf/parsley/parsley.jpg");
-// const spinach = require("@/assets/images/leaf/spinach/spinach.jpg");
+const cabbage = require("@/assets/images/leaf/cabbage/c5.webp");
+const celery = require("@/assets/images/leaf/celery/celery.webp");
+const chard = require("@/assets/images/leaf/chard/chard.webp");
+const cilantro = require("@/assets/images/leaf/cilantro/cilantro.webp");
+const kale = require("@/assets/images/leaf/kale/kale.webp");
+const lettuce = require("@/assets/images/leaf/lettuce/lettuce.jpg");
+const onionLeaf = require("@/assets/images/leaf/onion/onionLeaf.webp");
+const parsley = require("@/assets/images/leaf/parsley/parsley.webp");
+const spinach = require("@/assets/images/leaf/spinach/spinach.webp");
 
 // const cucumberFruit = require("@/assets/images/fruit/cucumber/cucumber.jpg");
 // const okra = require("@/assets/images/fruit/okra/okra.jpg");
@@ -61,56 +61,56 @@ export const Veggies = {
       name: "Spinach",
       description: "A nutrient-rich leafy green vegetable.",
       type: "leaf",
-      image: "spinach",
+      image: spinach,
     },
     {
       id: 2,
       name: "Parsley",
       description: "An aromatic herb used for flavoring dishes.",
       type: "leaf",
-      image: "parsley",
+      image: parsley,
     },
     {
       id: 3,
       name: "Onion",
       description: "A versatile vegetable with pungent, edible leaves.",
       type: "leaf",
-      image: "onionLeaf",
+      image: onionLeaf,
     },
     {
       id: 4,
       name: "Lettuce",
       description: "A crisp and refreshing salad staple.",
       type: "leaf",
-      image: "lettuce,",
+      image: lettuce,
     },
     {
       id: 5,
       name: "Kale",
       description: "A hardy, nutrient-packed leafy green.",
       type: "leaf",
-      image: "kale",
+      image: kale,
     },
     {
       id: 6,
       name: "Chard",
       description: "A leafy vegetable with colorful stems.",
       type: "leaf",
-      image: "chard",
+      image: chard,
     },
     {
       id: 7,
       name: "Celery",
       description: "A crunchy stalk with edible leaves.",
       type: "leaf",
-      image: "celery",
+      image: celery,
     },
     {
       id: 8,
       name: "Cabbage",
       description: "A dense leafy vegetable, often used in slaws.",
       type: "leaf",
-      image: "cabbage",
+      image: cabbage,
     },
 
     {
@@ -118,7 +118,7 @@ export const Veggies = {
       name: "Cilantro",
       description: "A fragrant herb used in diverse cuisines.",
       type: "leaf",
-      image: "cilantro",
+      image: cilantro,
     },
   ],
   fruit: [
@@ -175,7 +175,7 @@ export const Veggies = {
     },
     {
       id: 18,
-      name: "Onions",
+      name: "Onion",
       description: "A staple vegetable with a pungent and versatile flavor.",
       type: "bulb",
       image: onion,
@@ -202,28 +202,28 @@ export const Veggies = {
       name: "Cauliflower",
       description: "A white flowering vegetable with a mild flavor.",
       type: "flower",
-      image: "cauliflower",
+      image: cauliflower,
     },
     {
       id: 22,
       name: "Artichoke",
       description: "A thistle-like flower vegetable with tender hearts.",
       type: "flower",
-      image: "",
+      image: "artichoke",
     },
     {
       id: 23,
       name: "Banana Blossom",
       description: "A purple flower used in various Asian cuisines.",
       type: "flower",
-      image: "bananaBlossom",
+      image: bananaBlossom,
     },
     {
       id: 24,
       name: "Asian Pigeonwings",
       description: "A vibrant blue flower often used as a natural dye.",
       type: "flower",
-      image: "pigeonwings",
+      image: pigeonwings,
     },
   ],
   root: [
