@@ -54,6 +54,8 @@ export const recommendedPlants = [
   { id: "5", name: "Cucumber", image: cucumber },
 ];
 
+export const categories = ["leaf", "fruit", "bulb", "flower", "root", "stem"];
+
 export const Veggies = {
   leaf: [
     {
