@@ -65,14 +65,14 @@ export default function PlannerScreen() {
         </TouchableOpacity>
         {categories.map((type) => (
           <TouchableOpacity
-            key={type}
+            key={type.id}
             style={[
               styles.button,
-              selectedType === type && styles.selectedButton,
+              selectedType === type.value && styles.selectedButton,
             ]}
-            onPress={() => handleTypePress(type)}
+            onPress={() => handleTypePress(type.value)}
           >
-            <Text style={styles.buttonText}>{type}</Text>
+            <Text style={styles.buttonText}>{type.title}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>

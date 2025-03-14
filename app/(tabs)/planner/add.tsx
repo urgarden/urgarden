@@ -8,34 +8,21 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { categories } from "@/lib/config";
-// import { addVeggieToFirebase } from "@/lib/firebaseFunctions";
-
-interface Stage {
-  stageNumber: number;
-  title: string;
-  description: string;
-  imageUrl: string | null;
-}
-
-interface Veggie {
-  name: string;
-  description: string;
-  type: string;
-  image: string | null;
-  stages: Stage[];
-}
+import { addVeggieToFirebase } from "@/services/api/addVeggie";
+import { showMessage } from "react-native-flash-message";
+import { validateVeggieForm } from "@/lib/veggieValidation";
+import { VeggieForm, Stage } from "@/lib/definitions";
 
 const AddVeggie = () => {
-  const [formData, setFormData] = useState<Veggie>({
+  const [formData, setFormData] = useState<VeggieForm>({
     name: "",
     description: "",
-    type: categories[0],
+    type: categories[0].value,
     image: null,
     stages: [
       { stageNumber: 1, title: "", description: "", imageUrl: null },
@@ -43,6 +30,7 @@ const AddVeggie = () => {
       { stageNumber: 3, title: "", description: "", imageUrl: null },
     ],
   });
+  const [errors, setErrors] = useState<any>({});
   const router = useRouter();
 
   const pickImage = async (setImageCallback: (uri: string) => void) => {
@@ -74,10 +62,14 @@ const AddVeggie = () => {
     });
   };
 
-  const handleInputChange = (field: keyof Veggie, value: string | null) => {
+  const handleInputChange = (field: keyof VeggieForm, value: string | null) => {
     setFormData({
       ...formData,
       [field]: value,
+    });
+    setErrors({
+      ...errors,
+      [field]: "",
     });
   };
 
@@ -92,6 +84,16 @@ const AddVeggie = () => {
       ...formData,
       stages: newStages,
     });
+    setErrors({
+      ...errors,
+      stages: {
+        ...errors.stages,
+        [index]: {
+          ...errors.stages?.[index],
+          [field]: "",
+        },
+      },
+    });
   };
 
   const handleStageImageChange = (index: number, uri: string) => {
@@ -101,40 +103,43 @@ const AddVeggie = () => {
       ...formData,
       stages: newStages,
     });
-  };
-
-  const validateForm = () => {
-    const { name, description, type, image, stages } = formData;
-    if (!name || !description || !type || !image) {
-      Alert.alert("Error", "Please fill out all fields.");
-      return false;
-    }
-    if (stages.length < 3) {
-      Alert.alert("Error", "Please add at least 3 stages.");
-      return false;
-    }
-    for (const stage of stages) {
-      if (!stage.title || !stage.description || !stage.imageUrl) {
-        Alert.alert("Error", "Please fill out all stage fields.");
-        return false;
-      }
-    }
-    return true;
+    setErrors({
+      ...errors,
+      stages: {
+        ...errors.stages,
+        [index]: {
+          ...errors.stages?.[index],
+          imageUrl: "",
+        },
+      },
+    });
   };
 
   const handleAddPress = async () => {
-    if (!validateForm()) {
+    const { valid, newErrors } = validateVeggieForm(formData);
+    if (!valid) {
+      setErrors(newErrors);
+      showMessage({
+        message: "Please fix the errors in the form.",
+        type: "danger",
+      });
       return;
     }
 
-    console.log("Form data: ", JSON.stringify(formData, null, 2));
-
-    // try {
-    //   await addVeggieToFirebase(formData);
-    //   router.back();
-    // } catch (error) {
-    //   console.error("Error adding vegetable: ", error);
-    // }
+    try {
+      await addVeggieToFirebase(formData);
+      showMessage({
+        message: "Vegetable added successfully!",
+        type: "success",
+      });
+      router.back();
+    } catch (error) {
+      console.error("Error adding vegetable: ", error);
+      showMessage({
+        message: "Error adding vegetable.",
+        type: "danger",
+      });
+    }
   };
 
   return (
@@ -146,6 +151,7 @@ const AddVeggie = () => {
         onChangeText={(value) => handleInputChange("name", value)}
         placeholder="Enter vegetable name"
       />
+      {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
       <Text style={styles.label}>Description</Text>
       <TextInput
         style={styles.input}
@@ -153,6 +159,9 @@ const AddVeggie = () => {
         onChangeText={(value) => handleInputChange("description", value)}
         placeholder="Enter vegetable description"
       />
+      {errors.description && (
+        <Text style={styles.errorText}>{errors.description}</Text>
+      )}
       <Text style={styles.label}>Type</Text>
       <View
         style={{
@@ -170,12 +179,16 @@ const AddVeggie = () => {
             handleInputChange("type", itemValue)
           }
         >
-          {categories.map((category: string) => (
-            <Picker.Item key={category} label={category} value={category} />
+          {categories.map((category) => (
+            <Picker.Item
+              key={category.id}
+              label={category.title}
+              value={category.value}
+            />
           ))}
         </Picker>
       </View>
-
+      {errors.type && <Text style={styles.errorText}>{errors.type}</Text>}
       <Text style={styles.label}>Image</Text>
       <TouchableOpacity
         onPress={() => pickImage((uri) => handleInputChange("image", uri))}
@@ -186,6 +199,7 @@ const AddVeggie = () => {
       {formData.image && (
         <Image source={{ uri: formData.image }} style={styles.image} />
       )}
+      {errors.image && <Text style={styles.errorText}>{errors.image}</Text>}
       <Text style={styles.label}>Growing Stages</Text>
       {formData.stages.map((stage, index) => (
         <View key={index} style={styles.stageContainer}>
@@ -196,6 +210,9 @@ const AddVeggie = () => {
             onChangeText={(value) => handleStageChange(index, "title", value)}
             placeholder="Enter stage title"
           />
+          {errors.stages?.[index]?.title && (
+            <Text style={styles.errorText}>{errors.stages[index].title}</Text>
+          )}
           <TextInput
             style={styles.input}
             value={stage.description}
@@ -204,6 +221,11 @@ const AddVeggie = () => {
             }
             placeholder="Enter stage description"
           />
+          {errors.stages?.[index]?.description && (
+            <Text style={styles.errorText}>
+              {errors.stages[index].description}
+            </Text>
+          )}
           <TouchableOpacity
             onPress={() =>
               pickImage((uri) => handleStageImageChange(index, uri))
@@ -214,6 +236,11 @@ const AddVeggie = () => {
           </TouchableOpacity>
           {stage.imageUrl && (
             <Image source={{ uri: stage.imageUrl }} style={styles.image} />
+          )}
+          {errors.stages?.[index]?.imageUrl && (
+            <Text style={styles.errorText}>
+              {errors.stages[index].imageUrl}
+            </Text>
           )}
         </View>
       ))}
@@ -284,6 +311,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 16,
     paddingBottom: 40,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 8,
   },
 });
 
