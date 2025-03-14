@@ -1,32 +1,19 @@
-import {
-  Image,
-  StyleSheet,
-  Platform,
-  View,
-  Text,
-  Button,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { Link } from "expo-router";
 
-import { HelloWave } from "@/components/HelloWave";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-
-export default function HomeScreen() {
+export default function LandingPage() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
         Urgarden: A Mobile-based Planner for Vegetables Urban Gardening
       </Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            /* Add navigation logic here */
-          }}
-        >
-          <Text style={styles.buttonText}>Next</Text>
-        </TouchableOpacity>
+        <Link href="/login" asChild>
+          <TouchableOpacity style={styles.button}>
+            <Icon name="arrow-right" size={20} color="#fff" />
+          </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );
@@ -48,16 +35,17 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   buttonContainer: {
-    flexDirection: "column",
-    gap: 16,
-    justifyContent: "space-between",
+    flexDirection: "row",
+    justifyContent: "center",
     width: "80%",
   },
   button: {
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: "#4CAF50",
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 100,
     marginHorizontal: 10,
   },
   buttonText: {
@@ -65,21 +53,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+    marginLeft: 8,
   },
 });
