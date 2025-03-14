@@ -1,4 +1,4 @@
-import { db } from "../FirebaseConfig";
+import { db } from "../../FirebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { VeggieForm } from "@/lib/definitions";
 

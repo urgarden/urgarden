@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { categories } from "@/lib/config";
-import { addVeggieToFirebase } from "@/services/api/addVeggie";
+import { addVeggieToFirebase } from "@/services/api/planner/addVeggie";
 import { showMessage } from "react-native-flash-message";
 import { validateVeggieForm } from "@/lib/veggieValidation";
 import { VeggieForm, Stage } from "@/lib/definitions";
