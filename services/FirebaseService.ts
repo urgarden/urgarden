@@ -1,18 +1,70 @@
-import { db } from "./FirebaseConfig";
-import { doc, setDoc } from "firebase/firestore";
+import { db, auth } from "./FirebaseConfig";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
+import { SignUpData, SignUpResponse } from "@/lib/definitions";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
-export const saveUserToFirestore = async (user: {
-  id: string;
-  username: string;
-  email: string;
-}) => {
+export const signup = async (data: SignUpData): Promise<SignUpResponse> => {
+  let dateCreated = Timestamp.fromDate(new Date());
+
   try {
-    await setDoc(doc(db, "users", user.id), {
-      username: user.username,
-      email: user.email,
+    // Signup using createUserWithEmailAndPassword function of Firebase
+    await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+    // Get the user object after signup
+    const user = auth.currentUser;
+
+    if (!user) {
+      throw new Error("User not found after signup.");
+    }
+
+    // Use user.uid as the docId
+    const userDocRef = doc(db, "users", user.uid);
+
+    // Exclude the password and confirmPassword fields from the data
+    const { password, confirmPassword, ...userData } = data;
+
+    // Set the data in the document
+    await setDoc(userDocRef, {
+      ...userData,
+      userId: user.uid,
+      dateCreated,
     });
+
+    return {
+      message: "Account successfully created!",
+      error: false,
+      status: 201,
+    };
+  } catch (error: any) {
+    return { error: true, message: error.message, status: error.code };
+  }
+};
+
+export const login = async (
+  email: string,
+  password: string
+): Promise<SignUpResponse> => {
+  try {
+    // Login using signInWithEmailAndPassword function of Firebase
+    await signInWithEmailAndPassword(auth, email, password);
+
+    return {
+      message: "Login successful!",
+      error: false,
+      status: 200,
+    };
+  } catch (error: any) {
+    return { error: true, message: error.message, status: error.code };
+  }
+};
+
+export const logoutUser = async (): Promise<void> => {
+  try {
+    await auth.signOut();
   } catch (error) {
-    console.error("Error adding document: ", error);
-    throw new Error("Failed to save user to Firestore");
+    throw new Error("Failed to log out user");
   }
 };

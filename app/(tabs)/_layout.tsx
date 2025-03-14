@@ -27,11 +27,40 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="Home"
+        name="home/index"
         options={{
           title: "Home",
+          headerTitleStyle: { display: "none" },
+          headerShown: true,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="planner"
+        options={{
+          title: "Planner",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="calendar.circle.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="my-garden/index"
+        options={{
+          title: "My Garden",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="leaf.circle.fill" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="plant-care/index"
+        options={{
+          title: "Plant Care",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="hand.tap.fill" color={color} />
           ),
         }}
       />
