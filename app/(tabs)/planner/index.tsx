@@ -24,7 +24,7 @@ export default function PlannerScreen() {
   };
 
   const handleVeggiePress = (veggieId: string) => {
-    router.push(`/veggie/${veggieId}` as any);
+    router.push(`/planner/details/${veggieId}` as any);
   };
 
   const filteredVeggies = selectedType
