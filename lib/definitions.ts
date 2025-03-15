@@ -18,3 +18,18 @@ export interface VeggieType {
   description?: string;
   image?: any;
 }
+
+export interface Stage {
+  stageNumber: number;
+  title: string;
+  description: string;
+  imageUrl: string | null;
+}
+
+export interface VeggieForm {
+  name: string;
+  description: string;
+  type: string;
+  image: string | null;
+  stages: Stage[];
+}

@@ -7,16 +7,19 @@ import {
   ScrollView,
   Text,
   TextInput,
+  Button,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import VeggieItem from "@/components/home/VeggieItem"; // Import VeggieItem component
+import VeggieItem from "@/components/home/VeggieItem";
 import { useRouter } from "expo-router";
 import { Veggies } from "@/lib/config";
+import { categories } from "@/lib/config";
 
 export default function PlannerScreen() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState<boolean>(true); // Set to true for demonstration
   const router = useRouter();
 
   const handleTypePress = (type: string | null) => {
@@ -24,7 +27,11 @@ export default function PlannerScreen() {
   };
 
   const handleVeggiePress = (veggieId: string) => {
-    router.push(`/planner/details/${veggieId}` as any);
+    router.push(`/planner/details/${veggieId}`);
+  };
+
+  const handleAddVeggiePress = () => {
+    router.push(`/planner/add`);
   };
 
   const filteredVeggies = selectedType
@@ -56,16 +63,16 @@ export default function PlannerScreen() {
         >
           <Text style={styles.buttonText}>All</Text>
         </TouchableOpacity>
-        {["leaf", "fruit", "bulb", "flower", "root"].map((type) => (
+        {categories.map((type) => (
           <TouchableOpacity
-            key={type}
+            key={type.id}
             style={[
               styles.button,
-              selectedType === type && styles.selectedButton,
+              selectedType === type.value && styles.selectedButton,
             ]}
-            onPress={() => handleTypePress(type)}
+            onPress={() => handleTypePress(type.value)}
           >
-            <Text style={styles.buttonText}>{type}</Text>
+            <Text style={styles.buttonText}>{type.title}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -77,6 +84,13 @@ export default function PlannerScreen() {
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
+
+      {/* Add Vegetable Button */}
+      {isAdmin && (
+        <View style={styles.addButtonContainer}>
+          <Button title="Add Vegetable" onPress={handleAddVeggiePress} />
+        </View>
+      )}
 
       {/* List of Vegetables */}
       <View
@@ -118,7 +132,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#ccc",
     marginHorizontal: 5,
-    alignSelf: "flex-start", // Ensure button fits to text
+    alignSelf: "flex-start",
   },
   selectedButton: {
     backgroundColor: "#4CAF50",
@@ -129,11 +143,15 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 40,
-    marginTop: -40,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
+    marginTop: -40,
     paddingHorizontal: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  addButtonContainer: {
     marginHorizontal: 16,
     marginBottom: 16,
   },
