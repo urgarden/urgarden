@@ -1,13 +1,13 @@
 import { supabaseServerClient } from "../server";
 import { SignUpData, SignUpResponse } from "@/lib/definitions";
 
-export const signup = async (data: SignUpData): Promise<SignUpResponse> => {
+export const signup = async (formData: SignUpData): Promise<SignUpResponse> => {
   try {
     // Signup using Supabase's signUp function
     const { data: authData, error: authError } =
       await supabaseServerClient.auth.signUp({
-        email: data.email,
-        password: data.password,
+        email: formData.email,
+        password: formData.password,
       });
 
     if (authError) {
@@ -20,20 +20,30 @@ export const signup = async (data: SignUpData): Promise<SignUpResponse> => {
       throw new Error("User not found after signup.");
     }
 
-    // Exclude the password and confirmPassword fields from the data
-    const { password, confirmPassword, ...userData } = data;
+    // Save the additional user data in your database
+    const { error: insertError, data } = await supabaseServerClient
+      .from("users")
+      .insert([
+        {
+          user_id: user?.id,
+          username: formData.username,
+          email: formData.email,
+          created_at: new Date().toISOString(),
+        },
+      ]);
 
-    // Insert user data into the "users" table
-    const { error: dbError } = await supabaseServerClient.from("users").insert({
-      ...userData,
-      userId: user.id,
-      dateCreated: new Date().toISOString(),
-    });
+    if (insertError) {
+      // If there is an error inserting user data, delete the user from auth
+      if (user?.id) {
+        await supabaseServerClient.auth.admin.deleteUser(user.id);
+      }
 
-    if (dbError) {
-      throw new Error(dbError.message);
+      return {
+        message: insertError.message,
+        error: true,
+        status: 400,
+      };
     }
-
     return {
       message: "Account successfully created!",
       error: false,
