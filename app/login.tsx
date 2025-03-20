@@ -7,7 +7,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
-import { login } from "@/services/FirebaseService";
+import { login } from "@/services/supabase/api/auth";
 import { showMessage } from "react-native-flash-message";
 
 type LoginPageProps = {
@@ -23,7 +23,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const result = await login(email, password);
+      const result = await login(email, password); // Call Supabase login function
       if (result.error) {
         showMessage({
           message: "Login Failed",
@@ -37,7 +37,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
           type: "success",
         });
         console.log("Login successful");
-        nav.navigate("(tabs)", { screen: "Home" });
+        nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen
       }
     } catch (error) {
       showMessage({
@@ -49,7 +49,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
   };
 
   const handleGuestLogin = () => {
-    nav.navigate("(tabs)", { screen: "Home" });
+    nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
   };
 
   const buttons = [
@@ -101,6 +101,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       <ProceedButton title="Login" onPress={handleLogin} />
       <TouchableOpacity
         style={styles.forgotPasswordButton}
+        // Uncomment and implement navigation to forgot-password screen if needed
         // onPress={() => nav.navigate("forgot-password")}
       >
         <ThemedText type="link">Forgot Password?</ThemedText>
