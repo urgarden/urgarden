@@ -38,7 +38,7 @@ export default function RootLayout() {
             : never
         ); // Redirect to the appropriate route
       } else {
-        setInitialRoute("/(tabs)"); // Default to the main app if authenticated
+        setInitialRoute("/"); // Default to the main app if authenticated
       }
       SplashScreen.hideAsync();
     };
