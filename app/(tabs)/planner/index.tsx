@@ -18,11 +18,12 @@ import { useRouter } from "expo-router";
 import { categories } from "@/lib/config";
 import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
 import { useUserStore } from "@/lib/stores/userStore";
+import { deleteVeggie } from "@/lib/api/veggie";
+import { showMessage } from "react-native-flash-message";
 
 export default function PlannerScreen() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
   const [veggies, setVeggies] = useState<any[]>([]); // State to store fetched veggies
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
@@ -68,9 +69,37 @@ export default function PlannerScreen() {
     });
   };
 
-  const handleDeleteVeggie = async (id) => {
-    // await deleteVeggie(id);
-    // refreshVeggieList();
+  const handleDeleteVeggie = async (id: any) => {
+    try {
+      setLoading(true); // Show loading indicator during deletion
+      const result = await deleteVeggie(id); // Call the delete API
+
+      if (result.success) {
+        // Filter out the deleted veggie from the state
+        setVeggies((prevVeggies) =>
+          prevVeggies.filter((veggie) => veggie.id !== id)
+        );
+
+        showMessage({
+          message: "Vegetable deleted successfully!",
+          type: "success",
+        });
+      } else {
+        showMessage({
+          message: "Error deleting vegetable.",
+          description: result.message,
+          type: "danger",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting vegetable:", error);
+      showMessage({
+        message: "Error deleting vegetable.",
+        type: "danger",
+      });
+    } finally {
+      setLoading(false); // Hide loading indicator
+    }
   };
 
   const filteredVeggies = selectedType
@@ -148,7 +177,7 @@ export default function PlannerScreen() {
                 item={item}
                 onPress={() => handleVeggiePress(item)}
                 onEdit={() => handleEditVeggiePress(item)}
-                onDelete={() => handleDeleteitem(item.id)}
+                onDelete={() => handleDeleteVeggie(item.id)}
               />
             )}
             numColumns={2}
