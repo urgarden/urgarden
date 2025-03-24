@@ -90,17 +90,29 @@ export const createVeggie = async (veggie: VeggieType) => {
   }
 };
 
-// Fetch all vegetables
-export const getAllVeggies = async () => {
+// Fetch all vegetables with pagination
+export const getAllVeggies = async (page: number, limit: number) => {
   try {
-    const { data, error } = await supabase.from("veggies").select("*");
+    const start = (page - 1) * limit; // Calculate the starting index
+    const end = start + limit - 1; // Calculate the ending index
+
+    const { data, error, count } = await supabase
+      .from("veggies")
+      .select("*", { count: "exact" }) // Fetch total count for pagination
+      .range(start, end); // Fetch records within the range
+
     if (error) {
       throw new Error(error.message);
     }
-    return data || [];
+
+    return {
+      success: true,
+      data,
+      total: count, // Total number of records
+      totalPages: Math.ceil((count ?? 0) / limit), // Calculate total pages
+    };
   } catch (error: any) {
-    console.error("Error fetching veggies:", error.message);
-    throw error;
+    return { success: false, message: error.message };
   }
 };
 // Fetch a specific vegetable by ID

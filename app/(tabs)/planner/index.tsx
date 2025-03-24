@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { VeggieType } from "@/lib/definitions";
 import {
   StyleSheet,
   View,
@@ -14,6 +13,7 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import VeggieItem from "@/components/planner/VeggieItem";
+import Pagination from "@/components/Pagination"; // Import the Pagination component
 import { useRouter } from "expo-router";
 import { categories } from "@/lib/config";
 import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
@@ -27,33 +27,41 @@ export default function PlannerScreen() {
   const [veggies, setVeggies] = useState<any[]>([]); // State to store fetched veggies
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
+  const [currentPage, setCurrentPage] = useState<number>(1); // Current page
+  const [totalPages, setTotalPages] = useState<number>(1); // Total pages
+  const [limit] = useState<number>(10); // Items per page
   const router = useRouter();
   const { userDetails } = useUserStore();
 
   const isAdmin = userDetails?.role === "admin";
 
-  useEffect(() => {
-    const fetchVeggies = async () => {
-      try {
-        setLoading(true);
-        const fetchedVeggies = await getAllVeggies(); // Fetch veggies from the database
-        setVeggies(fetchedVeggies);
-      } catch (err: any) {
-        console.error("Error fetching veggies:", err.message);
-        setError("Failed to load veggies. Please try again.");
-      } finally {
-        setLoading(false);
+  const fetchVeggies = async (page: number) => {
+    try {
+      setLoading(true);
+      const result = await getAllVeggies(page, limit); // Fetch veggies with pagination
+      if (result.success) {
+        setVeggies(result.data ?? []);
+        setTotalPages(result.totalPages ?? 1); // Update total pages with fallback
+      } else {
+        setError(result.message);
       }
-    };
+    } catch (err: any) {
+      console.error("Error fetching veggies:", err.message);
+      setError("Failed to load veggies. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchVeggies();
-  }, []);
+  useEffect(() => {
+    fetchVeggies(currentPage); // Fetch veggies for the current page
+  }, [currentPage]);
 
   const handleTypePress = (type: string | null) => {
     setSelectedType(type);
   };
 
-  const handleVeggiePress = (item: VeggieType) => {
+  const handleVeggiePress = (item: any) => {
     // Navigate to the details screen with the veggie ID
     router.push(`/planner/details/${item.id}`);
   };
@@ -62,7 +70,7 @@ export default function PlannerScreen() {
     router.push(`/planner/add`);
   };
 
-  const handleEditVeggiePress = (veggieData: VeggieType) => {
+  const handleEditVeggiePress = (veggieData: any) => {
     router.push({
       pathname: "/planner/add",
       params: { mode: "edit", veggie: JSON.stringify(veggieData) },
@@ -169,20 +177,34 @@ export default function PlannerScreen() {
         ) : error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : (
-          <FlatList
-            data={filteredVeggies}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <VeggieItem
-                item={item}
-                onPress={() => handleVeggiePress(item)}
-                onEdit={() => handleEditVeggiePress(item)}
-                onDelete={() => handleDeleteVeggie(item.id)}
-              />
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <FlatList
+              data={filteredVeggies}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <VeggieItem
+                  item={item}
+                  onPress={() => handleVeggiePress(item)}
+                  onEdit={() => handleEditVeggiePress(item)}
+                  onDelete={() => handleDeleteVeggie(item.id)}
+                />
+              )}
+              numColumns={2}
+              columnWrapperStyle={styles.columnWrapper}
+              scrollEnabled={false} // Disable FlatList's internal scrolling
+            />
+
+            {/* Pagination Component */}
+            {filteredVeggies.length > 0 && (
+              <View style={styles.paginationContainer}>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page) => setCurrentPage(page)}
+                />
+              </View>
             )}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-          />
+          </ScrollView>
         )}
       </View>
     </ThemedView>
@@ -194,6 +216,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 50,
   },
+
+  paginationContainer: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+
   buttonContainer: {
     flexDirection: "row",
     marginBottom: 16,

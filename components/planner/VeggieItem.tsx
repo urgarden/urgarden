@@ -70,7 +70,16 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
     >
       <Animated.View style={[styles.veggieItem, { transform: [{ scale }] }]}>
         {/* Use the image URL from the database */}
-        <Image source={{ uri: item.image }} style={styles.veggieImage} />
+        {item.image ? (
+          <Image
+            source={{ uri: item.image }}
+            alt=""
+            style={styles.veggieImage}
+          />
+        ) : (
+          <View style={styles.skeletonImage} />
+        )}
+
         <Text style={styles.veggieText}>{item.name}</Text>
 
         {/* Kebab Menu Button */}
