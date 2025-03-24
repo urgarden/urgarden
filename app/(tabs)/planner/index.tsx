@@ -17,15 +17,19 @@ import VeggieItem from "@/components/planner/VeggieItem";
 import { useRouter } from "expo-router";
 import { categories } from "@/lib/config";
 import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
+import { useUserStore } from "@/lib/stores/userStore";
 
 export default function PlannerScreen() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isAdmin, setIsAdmin] = useState<boolean>(true); // Set to true for demonstration
+
   const [veggies, setVeggies] = useState<any[]>([]); // State to store fetched veggies
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
   const router = useRouter();
+  const { userDetails } = useUserStore();
+
+  const isAdmin = userDetails?.role === "admin";
 
   useEffect(() => {
     const fetchVeggies = async () => {
@@ -55,6 +59,18 @@ export default function PlannerScreen() {
 
   const handleAddVeggiePress = () => {
     router.push(`/planner/add`);
+  };
+
+  const handleEditVeggiePress = (veggieData: VeggieType) => {
+    router.push({
+      pathname: "/planner/add",
+      params: { mode: "edit", veggie: JSON.stringify(veggieData) },
+    });
+  };
+
+  const handleDeleteVeggie = async (id) => {
+    // await deleteVeggie(id);
+    // refreshVeggieList();
   };
 
   const filteredVeggies = selectedType
@@ -130,7 +146,9 @@ export default function PlannerScreen() {
             renderItem={({ item }) => (
               <VeggieItem
                 item={item}
-                onPress={() => handleVeggiePress(item)} // Pass the entire item object
+                onPress={() => handleVeggiePress(item)}
+                onEdit={() => handleEditVeggiePress(item)}
+                onDelete={() => handleDeleteitem(item.id)}
               />
             )}
             numColumns={2}

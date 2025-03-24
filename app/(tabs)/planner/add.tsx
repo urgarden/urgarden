@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -10,30 +10,34 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { categories } from "@/lib/config";
 import { showMessage } from "react-native-flash-message";
 import { validateVeggieForm } from "@/lib/veggieValidation";
 import { VeggieType, Stage } from "@/lib/definitions";
-import { createVeggie } from "@/lib/api/veggie";
+import { createVeggie, updateVeggie } from "@/lib/api/veggie";
 
 const AddVeggie = () => {
+  const router = useRouter();
+  const { mode, veggie } = useLocalSearchParams(); // Get mode ("add" or "edit") and veggie data
   const [formData, setFormData] = useState<VeggieType>({
     name: "",
     description: "",
     type: categories[0].value,
     image: null,
-    stages: [
-      { stageNumber: 1, title: "", description: "", imageUrl: null },
-      // { stageNumber: 2, title: "", description: "", imageUrl: null },
-      // { stageNumber: 3, title: "", description: "", imageUrl: null },
-    ],
+    stages: [{ stageNumber: 1, title: "", description: "", imageUrl: null }],
   });
   const [errors, setErrors] = useState<any>({});
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  // Pre-fill the form if in "edit" mode
+  useEffect(() => {
+    if (mode === "edit" && veggie) {
+      setFormData(JSON.parse(veggie as string)); // Parse the veggie data passed as a string
+    }
+  }, [mode, veggie]);
 
   const pickImage = async (setImageCallback: (uri: string) => void) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -117,7 +121,7 @@ const AddVeggie = () => {
     });
   };
 
-  const handleAddPress = async () => {
+  const handleSavePress = async () => {
     const { valid, newErrors } = validateVeggieForm(formData);
     if (!valid) {
       setErrors(newErrors);
@@ -130,7 +134,19 @@ const AddVeggie = () => {
 
     setLoading(true); // Start loading animation
     try {
-      const result = await createVeggie(formData);
+      let result;
+      if (mode === "edit") {
+        // Update veggie if in "edit" mode
+        if (formData.id) {
+          result = await updateVeggie(String(formData.id), formData);
+        } else {
+          throw new Error("Veggie ID is missing.");
+        }
+      } else {
+        // Create veggie if in "add" mode
+        result = await createVeggie(formData);
+      }
+
       if (result.success) {
         showMessage({
           message: result.message,
@@ -139,15 +155,15 @@ const AddVeggie = () => {
         router.back();
       } else {
         showMessage({
-          message: "Error adding vegetable.",
+          message: "Error saving vegetable.",
           description: result.message,
           type: "danger",
         });
       }
     } catch (error) {
-      console.error("Error adding vegetable: ", error);
+      console.error("Error saving vegetable: ", error);
       showMessage({
-        message: "Error adding vegetable.",
+        message: "Error saving vegetable.",
         type: "danger",
       });
     } finally {
@@ -262,7 +278,10 @@ const AddVeggie = () => {
         {loading ? (
           <ActivityIndicator size="large" color="#4CAF50" />
         ) : (
-          <Button title="Add Vegetable" onPress={handleAddPress} />
+          <Button
+            title={mode === "edit" ? "Save Changes" : "Add Vegetable"}
+            onPress={handleSavePress}
+          />
         )}
       </View>
     </ScrollView>
@@ -316,14 +335,6 @@ const styles = StyleSheet.create({
   stageLabel: {
     fontSize: 16,
     marginBottom: 8,
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    backgroundColor: "#ccc",
-    marginHorizontal: 5,
-    alignSelf: "flex-start",
   },
   buttonContainer: {
     flexDirection: "column",

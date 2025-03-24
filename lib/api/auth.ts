@@ -58,25 +58,40 @@ export const login = async (
 ): Promise<SignUpResponse> => {
   try {
     // Login using Supabase's signInWithPassword function
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data: authData, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (authError) {
       throw new Error(authError.message);
     }
 
+    const user = authData.user;
+
+    if (!user) {
+      throw new Error("User not found after login.");
+    }
+
+    // Retrieve user metadata (e.g., role)
+    const role = user.user_metadata?.role || ""; // Default to an empty string if no role is found
+
+    // Return user details along with the login response
     return {
       message: "Login successful!",
       error: false,
       status: 200,
+      user: {
+        id: user.id,
+        email: user.email || "",
+        role, // Include the role in the response
+      },
     };
   } catch (error: any) {
     return { error: true, message: error.message, status: 400 };
   }
 };
-
 export const logoutUser = async (): Promise<void> => {
   try {
     const { error } = await supabase.auth.signOut();

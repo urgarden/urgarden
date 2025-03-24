@@ -128,9 +128,12 @@ export const updateVeggie = async (
   updatedVeggie: Partial<VeggieType>
 ) => {
   try {
+    // Remove the `id` field from the update payload if it exists
+    const { id: _, ...updatePayload } = updatedVeggie;
+
     const { error } = await supabase
       .from("veggies")
-      .update(updatedVeggie)
+      .update(updatePayload)
       .eq("id", id);
 
     if (error) {

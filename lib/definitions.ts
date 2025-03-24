@@ -9,6 +9,7 @@ export type SignUpResponse = {
   message: string;
   error: boolean;
   status: number | string;
+  user?: { id: string; email: string; role: string };
 };
 
 export interface Stage {

@@ -9,6 +9,7 @@ import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
 import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
+import { useUserStore } from "@/lib/stores/userStore";
 
 type LoginPageProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "login">;
@@ -31,6 +32,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
           type: "danger",
         });
       } else {
+        const user = result.user; // Get the user object from the login result
+        const role = user?.role === "admin" ? "admin" : ""; // Determine the role
+
+        // Save user details in Zustand store
+        useUserStore.getState().setUserDetails({
+          id: user?.id ?? "",
+          email: user?.email ?? "",
+          role,
+        });
+
         showMessage({
           message: "Login Successful",
           description: "You have successfully logged in!",
@@ -47,7 +58,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       });
     }
   };
-
   const handleGuestLogin = () => {
     nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
   };
