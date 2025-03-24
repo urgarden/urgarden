@@ -10,7 +10,7 @@ import {
 
 interface VeggieItemProps {
   item: {
-    image: any;
+    image: string;
     name: string;
   };
   onPress: () => void;
@@ -21,7 +21,7 @@ const VeggieItem: React.FC<VeggieItemProps> = ({ item, onPress }) => {
   const scale = new Animated.Value(1);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000); // Simulate loading time
+    const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -55,7 +55,8 @@ const VeggieItem: React.FC<VeggieItemProps> = ({ item, onPress }) => {
       onPress={onPress}
     >
       <Animated.View style={[styles.veggieItem, { transform: [{ scale }] }]}>
-        <Image source={item.image} style={styles.veggieImage} />
+        {/* Use the image URL from the database */}
+        <Image source={{ uri: item.image }} style={styles.veggieImage} />
         <Text style={styles.veggieText}>{item.name}</Text>
       </Animated.View>
     </TouchableWithoutFeedback>
@@ -86,6 +87,8 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     marginBottom: 10,
+    objectFit: "cover",
+    backgroundColor: "#e0e0e0",
   },
   veggieText: {
     fontSize: 18,

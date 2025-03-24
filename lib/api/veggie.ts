@@ -1,7 +1,6 @@
 import { supabase } from "@/utils/supabase";
 import { VeggieForm } from "@/lib/definitions";
 import * as FileSystem from "expo-file-system";
-import { create } from "zustand";
 
 // Upload image to Supabase Storage
 const uploadImageToStorage = async (imageUri: string, fileName: string) => {
@@ -95,17 +94,15 @@ export const createVeggie = async (veggie: VeggieForm) => {
 export const getAllVeggies = async () => {
   try {
     const { data, error } = await supabase.from("veggies").select("*");
-
     if (error) {
       throw new Error(error.message);
     }
-
-    return { success: true, data };
+    return data || [];
   } catch (error: any) {
-    return { success: false, message: error.message };
+    console.error("Error fetching veggies:", error.message);
+    throw error;
   }
 };
-
 // Fetch a specific vegetable by ID
 export const getVeggieById = async (id: string) => {
   try {

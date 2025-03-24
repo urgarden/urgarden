@@ -22,7 +22,7 @@ export default function HomeScreen() {
 
         {/* List of All Vegetables */}
         <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
-        <FlatList
+        {/* <FlatList
           data={vegiImage}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
@@ -30,7 +30,7 @@ export default function HomeScreen() {
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-        />
+        /> */}
       </View>
     </View>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -8,19 +8,40 @@ import {
   Text,
   TextInput,
   Button,
+  ActivityIndicator,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import VeggieItem from "@/components/home/VeggieItem";
 import { useRouter } from "expo-router";
-import { Veggies } from "@/lib/config";
 import { categories } from "@/lib/config";
+import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
 
 export default function PlannerScreen() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(true); // Set to true for demonstration
+  const [veggies, setVeggies] = useState<any[]>([]); // State to store fetched veggies
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchVeggies = async () => {
+      try {
+        setLoading(true);
+        const fetchedVeggies = await getAllVeggies(); // Fetch veggies from the database
+        setVeggies(fetchedVeggies);
+      } catch (err: any) {
+        console.error("Error fetching veggies:", err.message);
+        setError("Failed to load veggies. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVeggies();
+  }, []);
 
   const handleTypePress = (type: string | null) => {
     setSelectedType(type);
@@ -35,14 +56,14 @@ export default function PlannerScreen() {
   };
 
   const filteredVeggies = selectedType
-    ? Veggies[selectedType as keyof typeof Veggies].filter((veggie) =>
-        veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : Object.values(Veggies)
-        .flat()
-        .filter((veggie) =>
+    ? veggies.filter(
+        (veggie) =>
+          veggie.type === selectedType &&
           veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+      )
+    : veggies.filter((veggie) =>
+        veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
 
   return (
     <ThemedView style={styles.container}>
@@ -96,20 +117,24 @@ export default function PlannerScreen() {
       <View
         style={{ flex: 14, paddingHorizontal: 16, backgroundColor: "#f0f0f0" }}
       >
-        <FlatList
-          data={filteredVeggies}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#4CAF50" />
+        ) : error ? (
+          <Text style={styles.errorText}>{error}</Text>
+        ) : (
+          <FlatList
+            data={filteredVeggies}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
               <VeggieItem
                 item={item}
                 onPress={() => handleVeggiePress(item.id.toString())}
               />
-            </View>
-          )}
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-        />
+            )}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+          />
+        )}
       </View>
     </ThemedView>
   );
@@ -157,5 +182,10 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
