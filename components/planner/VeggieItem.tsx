@@ -18,6 +18,7 @@ interface VeggieItemProps {
   onPress: () => void;
   onEdit: () => void; // Callback for edit action
   onDelete: () => void; // Callback for delete action
+  isAdmin: boolean;
 }
 
 const VeggieItem: React.FC<VeggieItemProps> = ({
@@ -25,6 +26,7 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
   onPress,
   onEdit,
   onDelete,
+  isAdmin,
 }) => {
   const [loading, setLoading] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false); // State for kebab menu visibility
@@ -82,44 +84,48 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
 
         <Text style={styles.veggieText}>{item.name}</Text>
 
-        {/* Kebab Menu Button */}
-        <TouchableOpacity style={styles.kebabButton} onPress={toggleMenu}>
-          <Text style={styles.kebabText}>⋮</Text>
-        </TouchableOpacity>
-
-        {/* Modal for Edit/Delete Options */}
-        {menuVisible && (
-          <Modal
-            transparent={true}
-            animationType="fade"
-            visible={menuVisible}
-            onRequestClose={toggleMenu}
-          >
-            <TouchableWithoutFeedback onPress={toggleMenu}>
-              <View style={styles.modalOverlay}>
-                <View style={styles.menuContainer}>
-                  <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => {
-                      toggleMenu();
-                      onEdit();
-                    }}
-                  >
-                    <Text style={styles.menuText}>Edit</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => {
-                      toggleMenu();
-                      onDelete();
-                    }}
-                  >
-                    <Text style={styles.menuText}>Delete</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </Modal>
+        {isAdmin && (
+          <>
+            {" "}
+            {/* Kebab Menu Button */}
+            <TouchableOpacity style={styles.kebabButton} onPress={toggleMenu}>
+              <Text style={styles.kebabText}>⋮</Text>
+            </TouchableOpacity>
+            {/* Modal for Edit/Delete Options */}
+            {menuVisible && (
+              <Modal
+                transparent={true}
+                animationType="fade"
+                visible={menuVisible}
+                onRequestClose={toggleMenu}
+              >
+                <TouchableWithoutFeedback onPress={toggleMenu}>
+                  <View style={styles.modalOverlay}>
+                    <View style={styles.menuContainer}>
+                      <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => {
+                          toggleMenu();
+                          onEdit();
+                        }}
+                      >
+                        <Text style={styles.menuText}>Edit</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.menuItem}
+                        onPress={() => {
+                          toggleMenu();
+                          onDelete();
+                        }}
+                      >
+                        <Text style={styles.menuText}>Delete</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </TouchableWithoutFeedback>
+              </Modal>
+            )}
+          </>
         )}
       </Animated.View>
     </TouchableWithoutFeedback>

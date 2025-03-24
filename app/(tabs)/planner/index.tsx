@@ -20,10 +20,11 @@ import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
 import { useUserStore } from "@/lib/stores/userStore";
 import { deleteVeggie } from "@/lib/api/veggie";
 import { showMessage } from "react-native-flash-message";
+import { CategoryType } from "@/lib/definitions";
 
 export default function PlannerScreen() {
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedType, setSelectedType] = useState<CategoryType | undefined>();
+  const [searchQuery, setSearchQuery] = useState<string>(""); // Search query
   const [veggies, setVeggies] = useState<any[]>([]); // State to store fetched veggies
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
@@ -38,7 +39,13 @@ export default function PlannerScreen() {
   const fetchVeggies = async (page: number) => {
     try {
       setLoading(true);
-      const result = await getAllVeggies(page, limit); // Fetch veggies with pagination
+      const result = await getAllVeggies(
+        page,
+        limit,
+        searchQuery, // Pass the search query
+        selectedType?.value // Pass the selected type
+      );
+
       if (result.success) {
         setVeggies(result.data ?? []);
         setTotalPages(result.totalPages ?? 1); // Update total pages with fallback
@@ -53,12 +60,14 @@ export default function PlannerScreen() {
     }
   };
 
+  // Fetch veggies whenever the current page, search query, or selected type changes
   useEffect(() => {
-    fetchVeggies(currentPage); // Fetch veggies for the current page
-  }, [currentPage]);
+    fetchVeggies(currentPage);
+  }, [currentPage, searchQuery, selectedType]);
 
-  const handleTypePress = (type: string | null) => {
-    setSelectedType(type);
+  const handleTypePress = (type: CategoryType | null) => {
+    setSelectedType(type || undefined);
+    setCurrentPage(1); // Reset to the first page when the type changes
   };
 
   const handleVeggiePress = (item: any) => {
@@ -110,16 +119,6 @@ export default function PlannerScreen() {
     }
   };
 
-  const filteredVeggies = selectedType
-    ? veggies.filter(
-        (veggie) =>
-          veggie.type === selectedType &&
-          veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : veggies.filter((veggie) =>
-        veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">PLANNER</ThemedText>
@@ -144,9 +143,9 @@ export default function PlannerScreen() {
             key={type.id}
             style={[
               styles.button,
-              selectedType === type.value && styles.selectedButton,
+              selectedType?.value === type.value && styles.selectedButton,
             ]}
-            onPress={() => handleTypePress(type.value)}
+            onPress={() => handleTypePress(type)}
           >
             <Text style={styles.buttonText}>{type.title}</Text>
           </TouchableOpacity>
@@ -158,7 +157,10 @@ export default function PlannerScreen() {
         style={styles.searchInput}
         placeholder="Search..."
         value={searchQuery}
-        onChangeText={setSearchQuery}
+        onChangeText={(text) => {
+          setSearchQuery(text);
+          setCurrentPage(1); // Reset to the first page when the search query changes
+        }}
       />
 
       {/* Add Vegetable Button */}
@@ -179,11 +181,12 @@ export default function PlannerScreen() {
         ) : (
           <ScrollView contentContainerStyle={{ flexGrow: 1, gap: 20 }}>
             <FlatList
-              data={filteredVeggies}
+              data={veggies}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
                 <VeggieItem
                   item={item}
+                  isAdmin={isAdmin}
                   onPress={() => handleVeggiePress(item)}
                   onEdit={() => handleEditVeggiePress(item)}
                   onDelete={() => handleDeleteVeggie(item.id)}
@@ -195,7 +198,7 @@ export default function PlannerScreen() {
             />
 
             {/* Pagination Component */}
-            {filteredVeggies.length > 0 && (
+            {veggies.length > 0 && (
               <View style={styles.paginationContainer}>
                 <Pagination
                   currentPage={currentPage}

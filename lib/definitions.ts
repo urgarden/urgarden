@@ -29,3 +29,9 @@ export interface VeggieType {
   created_at?: string;
   updated_at?: string;
 }
+
+export type CategoryType = {
+  id: number;
+  title: string;
+  value: string;
+};

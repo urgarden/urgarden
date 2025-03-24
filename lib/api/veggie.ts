@@ -90,16 +90,34 @@ export const createVeggie = async (veggie: VeggieType) => {
   }
 };
 
-// Fetch all vegetables with pagination
-export const getAllVeggies = async (page: number, limit: number) => {
+// Fetch all vegetables
+export const getAllVeggies = async (
+  page: number = 1,
+  limit: number = 10,
+  searchTerm?: string,
+  type?: string
+) => {
   try {
-    const start = (page - 1) * limit; // Calculate the starting index
-    const end = start + limit - 1; // Calculate the ending index
+    const offset = (page - 1) * limit; // Calculate the starting index
 
-    const { data, error, count } = await supabase
+    // Build the query
+    let query = supabase
       .from("veggies")
       .select("*", { count: "exact" }) // Fetch total count for pagination
-      .range(start, end); // Fetch records within the range
+      .range(offset, offset + limit - 1); // Fetch records within the range
+
+    // Apply search filter if searchTerm is provided
+    if (searchTerm) {
+      query = query.ilike("name", `%${searchTerm}%`);
+    }
+
+    // Apply type filter if type is provided
+    if (type) {
+      query = query.eq("type", type);
+    }
+
+    // Execute the query
+    const { data, error, count } = await query;
 
     if (error) {
       throw new Error(error.message);
@@ -110,11 +128,14 @@ export const getAllVeggies = async (page: number, limit: number) => {
       data,
       total: count, // Total number of records
       totalPages: Math.ceil((count ?? 0) / limit), // Calculate total pages
+      page,
+      limit,
     };
   } catch (error: any) {
     return { success: false, message: error.message };
   }
 };
+
 // Fetch a specific vegetable by ID
 export const getVeggieById = async (id: string) => {
   try {
@@ -145,7 +166,7 @@ export const updateVeggie = async (
 
     const { error } = await supabase
       .from("veggies")
-      .update(updatePayload)
+      .update(updatePayload) // Use the cleaned update payload
       .eq("id", id);
 
     if (error) {
