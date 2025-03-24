@@ -27,8 +27,8 @@ const AddVeggie = () => {
     image: null,
     stages: [
       { stageNumber: 1, title: "", description: "", imageUrl: null },
-      { stageNumber: 2, title: "", description: "", imageUrl: null },
-      { stageNumber: 3, title: "", description: "", imageUrl: null },
+      // { stageNumber: 2, title: "", description: "", imageUrl: null },
+      // { stageNumber: 3, title: "", description: "", imageUrl: null },
     ],
   });
   const [errors, setErrors] = useState<any>({});
