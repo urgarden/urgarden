@@ -159,7 +159,7 @@ export default function PlannerScreen() {
         value={searchQuery}
         onChangeText={(text) => {
           setSearchQuery(text);
-          setCurrentPage(1); // Reset to the first page when the search query changes
+          setCurrentPage(1);
         }}
       />
 
@@ -194,7 +194,7 @@ export default function PlannerScreen() {
               )}
               numColumns={2}
               columnWrapperStyle={styles.columnWrapper}
-              scrollEnabled={false} // Disable FlatList's internal scrolling
+              scrollEnabled={false}
             />
 
             {/* Pagination Component */}

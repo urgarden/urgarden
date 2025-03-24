@@ -86,7 +86,6 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
 
         {isAdmin && (
           <>
-            {" "}
             {/* Kebab Menu Button */}
             <TouchableOpacity style={styles.kebabButton} onPress={toggleMenu}>
               <Text style={styles.kebabText}>⋮</Text>
