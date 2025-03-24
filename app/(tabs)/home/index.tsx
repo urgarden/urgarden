@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, FlatList } from "react-native";
 import ImagePreviewer from "@/components/ImagePrev";
-import VeggieItem from "@/components/home/VeggieItem"; // Add this line to import VeggieItem
+// import VeggieItem from "@/components/home/VeggieItem";
 import { useRouter } from "expo-router";
 import { VeggieType } from "@/lib/definitions";
 import { vegiImage } from "@/lib/config";

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import VeggieItem from "@/components/home/VeggieItem";
+import VeggieItem from "@/components/planner/VeggieItem";
 import { useRouter } from "expo-router";
 import { categories } from "@/lib/config";
 import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
