@@ -1,14 +1,14 @@
-import { supabaseServerClient } from "../server";
+// import { supabaseServerClient } from "../../utils/supabase/server";
 import { SignUpData, SignUpResponse } from "@/lib/definitions";
+import { supabase } from "@/utils/supabase";
 
 export const signup = async (formData: SignUpData): Promise<SignUpResponse> => {
   try {
     // Signup using Supabase's signUp function
-    const { data: authData, error: authError } =
-      await supabaseServerClient.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-      });
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+    });
 
     if (authError) {
       throw new Error(authError.message);
@@ -21,21 +21,19 @@ export const signup = async (formData: SignUpData): Promise<SignUpResponse> => {
     }
 
     // Save the additional user data in your database
-    const { error: insertError, data } = await supabaseServerClient
-      .from("users")
-      .insert([
-        {
-          user_id: user?.id,
-          username: formData.username,
-          email: formData.email,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+    const { error: insertError, data } = await supabase.from("users").insert([
+      {
+        user_id: user?.id,
+        username: formData.username,
+        email: formData.email,
+        created_at: new Date().toISOString(),
+      },
+    ]);
 
     if (insertError) {
       // If there is an error inserting user data, delete the user from auth
       if (user?.id) {
-        await supabaseServerClient.auth.admin.deleteUser(user.id);
+        await supabase.auth.admin.deleteUser(user.id);
       }
 
       return {
@@ -60,11 +58,10 @@ export const login = async (
 ): Promise<SignUpResponse> => {
   try {
     // Login using Supabase's signInWithPassword function
-    const { error: authError } =
-      await supabaseServerClient.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (authError) {
       throw new Error(authError.message);
@@ -82,7 +79,7 @@ export const login = async (
 
 export const logoutUser = async (): Promise<void> => {
   try {
-    const { error } = await supabaseServerClient.auth.signOut();
+    const { error } = await supabase.auth.signOut();
     if (error) {
       throw new Error("Failed to log out user");
     }

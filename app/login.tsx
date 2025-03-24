@@ -7,7 +7,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
-import { login } from "@/services/supabase/api/auth";
+import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
 
 type LoginPageProps = {
@@ -80,7 +80,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       </View>
       <ThemedText type="title">URGARDEN LOGIN</ThemedText>
       <InputField
-        label="Username or Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"

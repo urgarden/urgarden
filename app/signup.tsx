@@ -6,7 +6,7 @@ import { signupFormFields } from "@/utils/formFields";
 import InputField from "@/components/InputField";
 import BackButton from "@/components/buttons/BackButton";
 import ThemedText from "@/components/ThemedText";
-import { signup } from "@/services/supabase/api/auth";
+import { signup } from "@/lib/api/auth";
 import ProceedButton from "@/components/buttons/ProceedButton";
 import { showMessage } from "react-native-flash-message";
 
