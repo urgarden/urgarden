@@ -33,10 +33,6 @@ export default function PlannerScreen() {
         setLoading(true);
         const fetchedVeggies = await getAllVeggies(); // Fetch veggies from the database
         setVeggies(fetchedVeggies);
-        // console.log(
-        //   "Fetched veggies:",
-        //   JSON.stringify(fetchedVeggies, null, 2)
-        // );
       } catch (err: any) {
         console.error("Error fetching veggies:", err.message);
         setError("Failed to load veggies. Please try again.");
