@@ -177,7 +177,7 @@ export default function PlannerScreen() {
         ) : error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : (
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1, gap: 20 }}>
             <FlatList
               data={filteredVeggies}
               keyExtractor={(item) => item.id.toString()}
@@ -218,7 +218,6 @@ const styles = StyleSheet.create({
   },
 
   paginationContainer: {
-    marginTop: 16,
     alignItems: "center",
   },
 
