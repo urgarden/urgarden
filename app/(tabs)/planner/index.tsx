@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { VeggieType } from "@/lib/definitions";
 import {
   StyleSheet,
   View,
@@ -32,6 +33,10 @@ export default function PlannerScreen() {
         setLoading(true);
         const fetchedVeggies = await getAllVeggies(); // Fetch veggies from the database
         setVeggies(fetchedVeggies);
+        // console.log(
+        //   "Fetched veggies:",
+        //   JSON.stringify(fetchedVeggies, null, 2)
+        // );
       } catch (err: any) {
         console.error("Error fetching veggies:", err.message);
         setError("Failed to load veggies. Please try again.");
@@ -47,8 +52,9 @@ export default function PlannerScreen() {
     setSelectedType(type);
   };
 
-  const handleVeggiePress = (veggieId: string) => {
-    router.push(`/planner/details/${veggieId}`);
+  const handleVeggiePress = (item: VeggieType) => {
+    // Navigate to the details screen with the veggie ID
+    router.push(`/planner/details/${item.id}`);
   };
 
   const handleAddVeggiePress = () => {
@@ -128,7 +134,7 @@ export default function PlannerScreen() {
             renderItem={({ item }) => (
               <VeggieItem
                 item={item}
-                onPress={() => handleVeggiePress(item.id.toString())}
+                onPress={() => handleVeggiePress(item)} // Pass the entire item object
               />
             )}
             numColumns={2}

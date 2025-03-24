@@ -16,11 +16,11 @@ import * as ImagePicker from "expo-image-picker";
 import { categories } from "@/lib/config";
 import { showMessage } from "react-native-flash-message";
 import { validateVeggieForm } from "@/lib/veggieValidation";
-import { VeggieForm, Stage } from "@/lib/definitions";
+import { VeggieType, Stage } from "@/lib/definitions";
 import { createVeggie } from "@/lib/api/veggie";
 
 const AddVeggie = () => {
-  const [formData, setFormData] = useState<VeggieForm>({
+  const [formData, setFormData] = useState<VeggieType>({
     name: "",
     description: "",
     type: categories[0].value,
@@ -64,7 +64,7 @@ const AddVeggie = () => {
     });
   };
 
-  const handleInputChange = (field: keyof VeggieForm, value: string | null) => {
+  const handleInputChange = (field: keyof VeggieType, value: string | null) => {
     setFormData({
       ...formData,
       [field]: value,

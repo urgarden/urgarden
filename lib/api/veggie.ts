@@ -1,5 +1,5 @@
 import { supabase } from "@/utils/supabase";
-import { VeggieForm } from "@/lib/definitions";
+import { VeggieType } from "@/lib/definitions";
 import * as FileSystem from "expo-file-system";
 
 // Upload image to Supabase Storage
@@ -43,7 +43,7 @@ const uploadImageToStorage = async (imageUri: string, fileName: string) => {
 };
 
 // Create a new vegetable
-export const createVeggie = async (veggie: VeggieForm) => {
+export const createVeggie = async (veggie: VeggieType) => {
   try {
     let imageUrl = null;
 
@@ -125,7 +125,7 @@ export const getVeggieById = async (id: string) => {
 // Update an existing vegetable
 export const updateVeggie = async (
   id: string,
-  updatedVeggie: Partial<VeggieForm>
+  updatedVeggie: Partial<VeggieType>
 ) => {
   try {
     const { error } = await supabase

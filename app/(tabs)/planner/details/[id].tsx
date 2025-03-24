@@ -1,76 +1,93 @@
-import { StyleSheet, View, Text, Image, Button } from "react-native";
+import React, { useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { Veggies } from "@/lib/config";
+import { View, Text, Image, StyleSheet, ActivityIndicator } from "react-native";
+import { getVeggieById } from "@/lib/api/veggie"; // API function to fetch veggie details
 
-const VeggieDetails = () => {
+export default function VeggieDetails() {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
-  const veggieId = parseInt(id as string, 10);
-  const veggie = Object.values(Veggies)
-    .flat()
-    .find((v) => v.id === veggieId);
+  const { id } = useLocalSearchParams(); // Get the veggie ID from the URL
+  const [veggie, setVeggie] = useState<any>(null); // State to store veggie details
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
 
-  if (!veggie) {
+  useEffect(() => {
+    const fetchVeggieDetails = async () => {
+      try {
+        setLoading(true);
+        const fetchedVeggie = await getVeggieById(id as string); // Fetch veggie details by ID
+        setVeggie(fetchedVeggie);
+        console.log("Fetched veggie details:", fetchedVeggie);
+      } catch (err: any) {
+        console.error("Error fetching veggie details:", err.message);
+        setError("Failed to load veggie details. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchVeggieDetails();
+    }
+  }, [id]);
+
+  if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>Vegetable not found</Text>
-      </View>
+      <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
     );
   }
 
-  const handlePlantPress = () => {
-    // Handle the plant action here
-    console.log(`Planting ${veggie.name}`);
-  };
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
+
+  if (!veggie) {
+    return <Text style={styles.errorText}>Veggie not found.</Text>;
+  }
 
   return (
     <View style={styles.container}>
-      <Image source={veggie.image} style={styles.image} />
-      <Text style={styles.name}>{veggie.name}</Text>
+      <Image source={{ uri: veggie.image }} style={styles.image} />
+      <Text style={styles.title}>{veggie.name}</Text>
       <Text style={styles.description}>{veggie.description}</Text>
-      <View style={styles.buttonContainer}>
-        <Button title="Plant" onPress={handlePlantPress} />
-      </View>
+      <Text style={styles.type}>Type: {veggie.type}</Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: "100%",
     padding: 16,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "#fff",
   },
   image: {
     width: 200,
     height: 200,
-    borderRadius: 10,
-    marginBottom: 20,
+    borderRadius: 8,
+    marginBottom: 16,
   },
-  name: {
+  title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   description: {
     fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 8,
   },
-  buttonContainer: {
-    position: "absolute",
-    bottom: 30,
-    left: 0,
-    right: 0,
+  type: {
+    fontSize: 14,
+    color: "#666",
+  },
+  loader: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   errorText: {
-    fontSize: 18,
     color: "red",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
-
-export default VeggieDetails;

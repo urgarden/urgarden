@@ -11,14 +11,6 @@ export type SignUpResponse = {
   status: number | string;
 };
 
-export interface VeggieType {
-  id: string;
-  name: string;
-  type?: string;
-  description?: string;
-  image?: any;
-}
-
 export interface Stage {
   stageNumber: number;
   title: string;
@@ -26,10 +18,13 @@ export interface Stage {
   imageUrl: string | null;
 }
 
-export interface VeggieForm {
+export interface VeggieType {
+  id?: number;
   name: string;
   description: string;
   type: string;
   image: string | null;
   stages: Stage[];
+  created_at?: string;
+  updated_at?: string;
 }

@@ -1,6 +1,6 @@
-import { VeggieForm } from "@/lib/definitions";
+import { VeggieType } from "@/lib/definitions";
 
-export const validateVeggieForm = (formData: VeggieForm) => {
+export const validateVeggieForm = (formData: VeggieType) => {
   const { name, description, type, image, stages } = formData;
   let valid = true;
   let newErrors: any = {};
