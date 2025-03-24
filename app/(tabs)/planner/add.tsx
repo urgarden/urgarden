@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -8,15 +8,16 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { categories } from "@/lib/config";
-// import { addVeggieToFirebase } from "@/services/api/planner/addVeggie";
 import { showMessage } from "react-native-flash-message";
 import { validateVeggieForm } from "@/lib/veggieValidation";
 import { VeggieForm, Stage } from "@/lib/definitions";
+import { createVeggie } from "@/lib/api/veggie";
 
 const AddVeggie = () => {
   const [formData, setFormData] = useState<VeggieForm>({
@@ -32,6 +33,7 @@ const AddVeggie = () => {
   });
   const [errors, setErrors] = useState<any>({});
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const pickImage = async (setImageCallback: (uri: string) => void) => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -126,19 +128,30 @@ const AddVeggie = () => {
       return;
     }
 
+    setLoading(true); // Start loading animation
     try {
-      // await addVeggieToFirebase(formData);
-      showMessage({
-        message: "Vegetable added successfully!",
-        type: "success",
-      });
-      router.back();
+      const result = await createVeggie(formData);
+      if (result.success) {
+        showMessage({
+          message: result.message,
+          type: "success",
+        });
+        router.back();
+      } else {
+        showMessage({
+          message: "Error adding vegetable.",
+          description: result.message,
+          type: "danger",
+        });
+      }
     } catch (error) {
       console.error("Error adding vegetable: ", error);
       showMessage({
         message: "Error adding vegetable.",
         type: "danger",
       });
+    } finally {
+      setLoading(false); // Stop loading animation
     }
   };
 
@@ -246,11 +259,17 @@ const AddVeggie = () => {
       ))}
       <View style={styles.buttonContainer}>
         <Button title="Add Stage" color="gray" onPress={handleAddStage} />
-        <Button title="Add Vegetable" onPress={handleAddPress} />
+        {loading ? (
+          <ActivityIndicator size="large" color="#4CAF50" />
+        ) : (
+          <Button title="Add Vegetable" onPress={handleAddPress} />
+        )}
       </View>
     </ScrollView>
   );
 };
+
+export default AddVeggie;
 
 const styles = StyleSheet.create({
   container: {
@@ -317,5 +336,3 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 });
-
-export default AddVeggie;
