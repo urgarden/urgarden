@@ -21,6 +21,10 @@ export const validateVeggieForm = (formData: VeggieType) => {
     newErrors.image = "Image is required.";
     valid = false;
   }
+  if (!image) {
+    newErrors.image = "Image is required.";
+    valid = false;
+  }
   if (stages.length < 1) {
     newErrors.stages = "Please add at least 3 stages.";
     valid = false;

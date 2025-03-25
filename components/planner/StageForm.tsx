@@ -42,30 +42,42 @@ const StageForm: React.FC<StageFormProps> = ({
         style={{
           flex: 1,
           flexDirection: "row",
-          justifyContent: "space-between",
         }}
       >
-        <TextInput
-          style={{ ...styles.input, width: "48%" }}
-          value={stage.title}
-          onChangeText={(value) => onStageChange(index, "title", value)}
-          placeholder="Enter stage title"
-        />
-        {errors?.[index]?.title && (
-          <Text style={styles.errorText}>{errors[index].title}</Text>
-        )}
-        <TextInput
-          style={{ ...styles.input, width: "48%" }}
-          value={
-            stage.stageEndDays !== 1 ? String(stage.stageEndDays) : undefined
-          }
-          onChangeText={(value) => onStageChange(index, "stageEndDays", value)}
-          placeholder="Number of Days"
-          keyboardType="numeric"
-        />
-        {errors?.[index]?.title && (
-          <Text style={styles.errorText}>{errors[index].title}</Text>
-        )}
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            marginBottom: 8,
+            justifyContent: "space-between",
+          }}
+        >
+          <TextInput
+            style={{ ...styles.input, width: "95%" }}
+            value={stage.title}
+            onChangeText={(value) => onStageChange(index, "title", value)}
+            placeholder="Enter stage title"
+          />
+          {errors?.[index]?.title && (
+            <Text style={styles.errorText}>{errors[index].title}</Text>
+          )}
+        </View>
+        <View style={{ flex: 1, width: "48%", marginBottom: 8 }}>
+          <TextInput
+            style={{ ...styles.input, width: "95%" }}
+            value={
+              stage.stageEndDays !== 1 ? String(stage.stageEndDays) : undefined
+            }
+            onChangeText={(value) =>
+              onStageChange(index, "stageEndDays", value)
+            }
+            placeholder="Number of Days"
+            keyboardType="numeric"
+          />
+          {errors?.[index]?.stageEndDays && (
+            <Text style={styles.errorText}>{errors[index].stageEndDays}</Text>
+          )}
+        </View>
       </View>
 
       <TextInput
