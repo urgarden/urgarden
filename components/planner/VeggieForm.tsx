@@ -60,6 +60,12 @@ const VeggieForm: React.FC<VeggieFormProps> = ({
             onInputChange("type", itemValue)
           }
         >
+          <Picker.Item
+            key={0}
+            label={"Select a category"}
+            value={""} // Empty string as the default value
+            enabled={false} // Disable this option to prevent selection
+          />
           {categories.map((category) => (
             <Picker.Item
               key={category.id}
@@ -107,7 +113,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   picker: {
-    height: 50,
+    height: 55,
     width: "100%",
   },
   imagePicker: {

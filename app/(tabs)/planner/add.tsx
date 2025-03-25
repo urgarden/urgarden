@@ -22,7 +22,7 @@ const AddVeggie = () => {
   const [formData, setFormData] = useState<VeggieType>({
     name: "",
     description: "",
-    type: "leaf",
+    type: "",
     image: null,
     stages: [
       {
