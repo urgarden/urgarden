@@ -18,7 +18,6 @@ export default function HomeScreen() {
   const [recommendedVeggies, setRecommendedVeggies] = useState<VeggieType[]>(
     []
   );
-  const [loading, setLoading] = useState(true);
 
   const handleVeggiePress = (veggie: VeggieType) => {
     router.push(`/home/details/${veggie.veggie_id}` as any);
@@ -30,13 +29,12 @@ export default function HomeScreen() {
   useEffect(() => {
     const fetchVeggies = async () => {
       const result = await getRecommendedVeggies();
-      console.log("Recommended veggies:", JSON.stringify(result, null, 2));
+
       if (result.success) {
         setRecommendedVeggies(result.data);
       } else {
         console.error("Error fetching recommended veggies:", result.message);
       }
-      setLoading(false);
     };
 
     fetchVeggies();
@@ -50,30 +48,27 @@ export default function HomeScreen() {
 
         {/* List of All Vegetables */}
         <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
-        {loading ? (
-          <ActivityIndicator size="large" color="#4CAF50" />
-        ) : (
-          <FlatList
-            style={{ paddingBottom: 20 }}
-            data={recommendedVeggies}
-            keyExtractor={(item) => (item.id ?? "").toString()}
-            renderItem={({ item }) => (
-              <VeggieItem
-                item={{
-                  ...item,
-                  image: item.veggies.image,
-                  name: item.veggies.name,
-                }}
-                onPress={() => handleVeggiePress(item)}
-                onEdit={() => console.log("Edit", item.id)}
-                onDelete={() => console.log("Delete", item.id)}
-                isAdmin={false}
-              />
-            )}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-          />
-        )}
+
+        <FlatList
+          style={{ paddingBottom: 20 }}
+          data={recommendedVeggies}
+          keyExtractor={(item) => (item.id ?? "").toString()}
+          renderItem={({ item }) => (
+            <VeggieItem
+              item={{
+                ...item,
+                image: item.veggies.image,
+                name: item.veggies.name,
+              }}
+              onPress={() => handleVeggiePress(item)}
+              onEdit={() => console.log("Edit", item.id)}
+              onDelete={() => console.log("Delete", item.id)}
+              isAdmin={false}
+            />
+          )}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapper}
+        />
       </View>
     </View>
   );

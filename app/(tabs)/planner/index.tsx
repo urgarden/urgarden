@@ -38,7 +38,6 @@ export default function PlannerScreen() {
 
   const fetchVeggies = async (page: number) => {
     try {
-      setLoading(true);
       const result = await getAllVeggies(
         page,
         limit,
@@ -56,7 +55,6 @@ export default function PlannerScreen() {
       console.error("Error fetching veggies:", err.message);
       setError("Failed to load veggies. Please try again.");
     } finally {
-      setLoading(false);
     }
   };
 
