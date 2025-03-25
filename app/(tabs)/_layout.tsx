@@ -30,8 +30,6 @@ export default function TabLayout() {
         name="home"
         options={{
           title: "Home",
-          headerTitleStyle: { display: "none" },
-          headerShown: true,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),

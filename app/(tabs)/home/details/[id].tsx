@@ -65,31 +65,28 @@ export default function VeggieDetails() {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {veggie.image && (
-          <Image source={{ uri: veggie.image }} style={styles.image} />
-        )}
-        <Text style={styles.title}>{veggie.name}</Text>
-        <Text style={styles.type}>Type: {veggie.type}</Text>
-        <Text style={styles.description}>{veggie.description}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      {veggie.image && (
+        <Image source={{ uri: veggie.image }} style={styles.image} />
+      )}
+      <Text style={styles.title}>{veggie.name}</Text>
+      <Text style={styles.type}>Type: {veggie.type}</Text>
+      <Text style={styles.description}>{veggie.description}</Text>
 
-        {/* Plant Button */}
-        <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
-          <Text style={styles.plantButtonText}>Plant</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+      {/* Plant Button */}
+      <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
+        <Text style={styles.plantButtonText}>Plant</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 16,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
   },
   image: {
     width: "100%",

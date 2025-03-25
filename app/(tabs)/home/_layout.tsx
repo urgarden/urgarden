@@ -11,7 +11,6 @@ const HomeLayout = () => {
         name="details/[id]"
         options={{
           title: "Veggie Details",
-          headerShown: true,
         }}
       />
     </Stack>
