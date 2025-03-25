@@ -156,17 +156,51 @@ export const getVeggieById = async (id: string) => {
 };
 
 // Update an existing vegetable
+// Update an existing vegetable
 export const updateVeggie = async (
   id: string,
   updatedVeggie: Partial<VeggieType>
 ) => {
   try {
-    // Remove the `id` field from the update payload if it exists
-    const { id: _, ...updatePayload } = updatedVeggie;
+    let imageUrl = updatedVeggie.image;
 
+    // Upload the main image to Supabase Storage if a new image is provided
+    if (updatedVeggie.image && !updatedVeggie.image.startsWith("http")) {
+      const fileName = `veggie-${id}-${Date.now()}.jpg`; // Generate a unique file name
+      imageUrl = await uploadImageToStorage(updatedVeggie.image, fileName);
+    }
+
+    // Upload images for each stage and update the stages array
+    const updatedStages = await Promise.all(
+      (updatedVeggie.stages || []).map(async (stage, index) => {
+        if (stage.imageUrl && !stage.imageUrl.startsWith("http")) {
+          const stageFileName = `veggie-stage-${id}-${
+            index + 1
+          }-${Date.now()}.jpg`;
+          const stageImageUrl = await uploadImageToStorage(
+            stage.imageUrl,
+            stageFileName
+          );
+          return { ...stage, imageUrl: stageImageUrl };
+        }
+        return stage;
+      })
+    );
+
+    // Prepare the payload for updating the database
+    const updatePayload = {
+      ...updatedVeggie,
+      image: imageUrl, // Save the main image URL
+      stages: updatedStages, // Save the updated stages with image URLs
+    };
+
+    // Remove the `id` field from the update payload if it exists
+    const { id: _, ...cleanedPayload } = updatePayload;
+
+    // Update the vegetable in the database
     const { error } = await supabase
       .from("veggies")
-      .update(updatePayload) // Use the cleaned update payload
+      .update(cleanedPayload)
       .eq("id", id);
 
     if (error) {

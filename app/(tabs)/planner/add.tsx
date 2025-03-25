@@ -1,31 +1,28 @@
 import { useState, useEffect } from "react";
 import {
   StyleSheet,
-  View,
-  TextInput,
-  Button,
-  Text,
   ScrollView,
-  TouchableOpacity,
-  Image,
+  View,
+  Button,
   ActivityIndicator,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import { categories } from "@/lib/config";
 import { showMessage } from "react-native-flash-message";
 import { validateVeggieForm } from "@/lib/veggieValidation";
 import { VeggieType, Stage } from "@/lib/definitions";
 import { createVeggie, updateVeggie } from "@/lib/api/veggie";
+import VeggieForm from "@/components/planner/VeggieForm";
+import StageForm from "@/components/planner/StageForm";
 
 const AddVeggie = () => {
   const router = useRouter();
-  const { mode, veggie } = useLocalSearchParams(); // Get mode ("add" or "edit") and veggie data
+  const { mode, veggie } = useLocalSearchParams();
+
   const [formData, setFormData] = useState<VeggieType>({
     name: "",
     description: "",
-    type: categories[0].value,
+    type: "leaf",
     image: null,
     stages: [{ stageNumber: 1, title: "", description: "", imageUrl: null }],
   });
@@ -40,7 +37,7 @@ const AddVeggie = () => {
   }, [mode, veggie]);
 
   const pickImage = async (setImageCallback: (uri: string) => void) => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 3],
@@ -167,112 +164,31 @@ const AddVeggie = () => {
         type: "danger",
       });
     } finally {
-      setLoading(false); // Stop loading animation
+      setLoading(false);
     }
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.label}>Name</Text>
-      <TextInput
-        style={styles.input}
-        value={formData.name}
-        onChangeText={(value) => handleInputChange("name", value)}
-        placeholder="Enter vegetable name"
+      <VeggieForm
+        formData={formData}
+        errors={errors}
+        onInputChange={handleInputChange}
+        pickImage={pickImage}
       />
-      {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-      <Text style={styles.label}>Description</Text>
-      <TextInput
-        style={styles.input}
-        value={formData.description}
-        onChangeText={(value) => handleInputChange("description", value)}
-        placeholder="Enter vegetable description"
-      />
-      {errors.description && (
-        <Text style={styles.errorText}>{errors.description}</Text>
-      )}
-      <Text style={styles.label}>Type</Text>
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          borderRadius: 8,
-          height: 55,
-          marginBottom: 10,
-        }}
-      >
-        <Picker
-          selectedValue={formData.type}
-          style={styles.picker}
-          onValueChange={(itemValue: string) =>
-            handleInputChange("type", itemValue)
-          }
-        >
-          {categories.map((category) => (
-            <Picker.Item
-              key={category.id}
-              label={category.title}
-              value={category.value}
-            />
-          ))}
-        </Picker>
-      </View>
-      {errors.type && <Text style={styles.errorText}>{errors.type}</Text>}
-      <Text style={styles.label}>Image</Text>
-      <TouchableOpacity
-        onPress={() => pickImage((uri) => handleInputChange("image", uri))}
-        style={styles.imagePicker}
-      >
-        <Text style={styles.imagePickerText}>Pick an image from gallery</Text>
-      </TouchableOpacity>
-      {formData.image && (
-        <Image source={{ uri: formData.image }} style={styles.image} />
-      )}
-      {errors.image && <Text style={styles.errorText}>{errors.image}</Text>}
-      <Text style={styles.label}>Growing Stages</Text>
+
       {formData.stages.map((stage, index) => (
-        <View key={index} style={styles.stageContainer}>
-          <Text style={styles.stageLabel}>Stage {index + 1}</Text>
-          <TextInput
-            style={styles.input}
-            value={stage.title}
-            onChangeText={(value) => handleStageChange(index, "title", value)}
-            placeholder="Enter stage title"
-          />
-          {errors.stages?.[index]?.title && (
-            <Text style={styles.errorText}>{errors.stages[index].title}</Text>
-          )}
-          <TextInput
-            style={styles.input}
-            value={stage.description}
-            onChangeText={(value) =>
-              handleStageChange(index, "description", value)
-            }
-            placeholder="Enter stage description"
-          />
-          {errors.stages?.[index]?.description && (
-            <Text style={styles.errorText}>
-              {errors.stages[index].description}
-            </Text>
-          )}
-          <TouchableOpacity
-            onPress={() =>
-              pickImage((uri) => handleStageImageChange(index, uri))
-            }
-            style={styles.imagePicker}
-          >
-            <Text style={styles.imagePickerText}>Photo/Icon</Text>
-          </TouchableOpacity>
-          {stage.imageUrl && (
-            <Image source={{ uri: stage.imageUrl }} style={styles.image} />
-          )}
-          {errors.stages?.[index]?.imageUrl && (
-            <Text style={styles.errorText}>
-              {errors.stages[index].imageUrl}
-            </Text>
-          )}
-        </View>
+        <StageForm
+          key={index}
+          stage={stage}
+          index={index}
+          errors={errors.stages}
+          onStageChange={handleStageChange}
+          onImageChange={handleStageImageChange}
+          pickImage={pickImage}
+        />
       ))}
+
       <View style={styles.buttonContainer}>
         <Button title="Add Stage" color="gray" onPress={handleAddStage} />
         {loading ? (
@@ -296,54 +212,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#fff",
   },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  input: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 16,
-  },
-  picker: {
-    height: 50,
-    width: "100%",
-    marginBottom: 16,
-  },
-  imagePicker: {
-    backgroundColor: "gray",
-    padding: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  imagePickerText: {
-    color: "#fff",
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  stageContainer: {
-    marginBottom: 16,
-  },
-  stageLabel: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
   buttonContainer: {
     flexDirection: "column",
     justifyContent: "space-between",
     gap: 16,
     paddingBottom: 40,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 8,
   },
 });
