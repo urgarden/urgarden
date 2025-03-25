@@ -46,7 +46,7 @@ const StageForm: React.FC<StageFormProps> = ({
         }}
       >
         <TextInput
-          style={{ ...styles.input, width: "45%" }}
+          style={{ ...styles.input, width: "48%" }}
           value={stage.title}
           onChangeText={(value) => onStageChange(index, "title", value)}
           placeholder="Enter stage title"
@@ -55,9 +55,9 @@ const StageForm: React.FC<StageFormProps> = ({
           <Text style={styles.errorText}>{errors[index].title}</Text>
         )}
         <TextInput
-          style={{ ...styles.input, width: "45%" }}
-          value={stage.title}
-          onChangeText={(value) => onStageChange(index, "stageEndDate", value)}
+          style={{ ...styles.input, width: "48%" }}
+          value={String(stage.stageEndDays)}
+          onChangeText={(value) => onStageChange(index, "stageEndDays", value)}
           placeholder="Number of Days"
         />
         {errors?.[index]?.title && (

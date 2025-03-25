@@ -17,7 +17,7 @@ export type Stage = {
   title: string;
   description: string;
   imageUrl: string | null;
-  stageEndDate: number;
+  stageEndDays: number;
 };
 
 export type VeggieType = {

@@ -45,6 +45,27 @@ const uploadImageToStorage = async (imageUri: string, fileName: string) => {
 // Create a new vegetable
 export const createVeggie = async (veggie: VeggieType) => {
   try {
+    // Check if a veggie with the same name already exists (case-insensitive)
+    const { data: existingVeggie, error: checkError } = await supabase
+      .from("veggies")
+      .select("name")
+      .eq("lower(name)", veggie.name.toLowerCase()) // Convert to lowercase for comparison
+      .single();
+
+    if (checkError && checkError.code !== "PGRST116") {
+      // Handle unexpected errors (ignore "PGRST116" which means no rows found)
+      throw new Error(checkError.message);
+    }
+
+    if (existingVeggie) {
+      // If a veggie with the same name exists, return an error
+      return {
+        success: false,
+        message:
+          "A vegetable with this name already exists. Please use a different name.",
+      };
+    }
+
     let imageUrl = null;
 
     // Upload the main image to Supabase Storage if an image is provided
@@ -156,12 +177,33 @@ export const getVeggieById = async (id: string) => {
 };
 
 // Update an existing vegetable
-// Update an existing vegetable
 export const updateVeggie = async (
   id: string,
   updatedVeggie: Partial<VeggieType>
 ) => {
   try {
+    // Check if a veggie with the same name already exists (excluding the current veggie, case-insensitive)
+    const { data: existingVeggie, error: checkError } = await supabase
+      .from("veggies")
+      .select("id, name")
+      .eq("lower(name)", updatedVeggie.name?.toLowerCase()) // Convert to lowercase for comparison
+      .neq("id", id) // Exclude the current veggie
+      .single();
+
+    if (checkError && checkError.code !== "PGRST116") {
+      // Handle unexpected errors (ignore "PGRST116" which means no rows found)
+      throw new Error(checkError.message);
+    }
+
+    if (existingVeggie) {
+      // If a veggie with the same name exists, return an error
+      return {
+        success: false,
+        message:
+          "A vegetable with this name already exists. Please use a different name.",
+      };
+    }
+
     let imageUrl = updatedVeggie.image;
 
     // Upload the main image to Supabase Storage if a new image is provided

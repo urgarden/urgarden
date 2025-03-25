@@ -30,7 +30,7 @@ const AddVeggie = () => {
         title: "",
         description: "",
         imageUrl: null,
-        stageEndDate: 1,
+        stageEndDays: 1,
       },
     ],
   });
@@ -68,7 +68,7 @@ const AddVeggie = () => {
           title: "",
           description: "",
           imageUrl: null,
-          stageEndDate: 1,
+          stageEndDays: 1,
         },
       ],
     });
