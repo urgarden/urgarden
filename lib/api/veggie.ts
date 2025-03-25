@@ -49,7 +49,7 @@ export const createVeggie = async (veggie: VeggieType) => {
     const { data: existingVeggie, error: checkError } = await supabase
       .from("veggies")
       .select("name")
-      .eq("lower(name)", veggie.name.toLowerCase()) // Convert to lowercase for comparison
+      .ilike("name", veggie.name) // Use ilike for case-insensitive comparison
       .single();
 
     if (checkError && checkError.code !== "PGRST116") {
@@ -186,7 +186,7 @@ export const updateVeggie = async (
     const { data: existingVeggie, error: checkError } = await supabase
       .from("veggies")
       .select("id, name")
-      .eq("lower(name)", updatedVeggie.name?.toLowerCase()) // Convert to lowercase for comparison
+      .ilike("name", updatedVeggie.name || "") // Use ilike for case-insensitive comparison
       .neq("id", id) // Exclude the current veggie
       .single();
 
@@ -254,7 +254,6 @@ export const updateVeggie = async (
     return { success: false, message: error.message };
   }
 };
-
 // Delete a vegetable by ID
 export const deleteVeggie = async (id: string) => {
   try {
