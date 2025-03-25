@@ -1,9 +1,9 @@
-export interface SignUpData {
+export type SignUpData = {
   username: string;
   email: string;
   password: string;
   confirmPassword: string;
-}
+};
 
 export type SignUpResponse = {
   message: string;
@@ -12,14 +12,15 @@ export type SignUpResponse = {
   user?: { id: string; email: string; role: string };
 };
 
-export interface Stage {
+export type Stage = {
   stageNumber: number;
   title: string;
   description: string;
   imageUrl: string | null;
-}
+  stageEndDate: number;
+};
 
-export interface VeggieType {
+export type VeggieType = {
   id?: number;
   name: string;
   description: string;
@@ -28,7 +29,7 @@ export interface VeggieType {
   stages: Stage[];
   created_at?: string;
   updated_at?: string;
-}
+};
 
 export type CategoryType = {
   id: number;

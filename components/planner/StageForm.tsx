@@ -28,16 +28,43 @@ const StageForm: React.FC<StageFormProps> = ({
 }) => {
   return (
     <View style={styles.stageContainer}>
-      <Text style={styles.stageLabel}>Stage {index + 1}</Text>
-      <TextInput
-        style={styles.input}
-        value={stage.title}
-        onChangeText={(value) => onStageChange(index, "title", value)}
-        placeholder="Enter stage title"
-      />
-      {errors?.[index]?.title && (
-        <Text style={styles.errorText}>{errors[index].title}</Text>
-      )}
+      <Text
+        style={{
+          ...styles.stageLabel,
+          borderTopColor: "#ccc",
+          borderTopWidth: 1,
+          paddingTop: 10,
+        }}
+      >
+        Stage {index + 1}
+      </Text>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <TextInput
+          style={{ ...styles.input, width: "45%" }}
+          value={stage.title}
+          onChangeText={(value) => onStageChange(index, "title", value)}
+          placeholder="Enter stage title"
+        />
+        {errors?.[index]?.title && (
+          <Text style={styles.errorText}>{errors[index].title}</Text>
+        )}
+        <TextInput
+          style={{ ...styles.input, width: "45%" }}
+          value={stage.title}
+          onChangeText={(value) => onStageChange(index, "stageEndDate", value)}
+          placeholder="Number of Days"
+        />
+        {errors?.[index]?.title && (
+          <Text style={styles.errorText}>{errors[index].title}</Text>
+        )}
+      </View>
+
       <TextInput
         style={styles.input}
         value={stage.description}
