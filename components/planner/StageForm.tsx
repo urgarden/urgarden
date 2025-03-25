@@ -56,9 +56,12 @@ const StageForm: React.FC<StageFormProps> = ({
         )}
         <TextInput
           style={{ ...styles.input, width: "48%" }}
-          value={String(stage.stageEndDays)}
+          value={
+            stage.stageEndDays !== 1 ? String(stage.stageEndDays) : undefined
+          }
           onChangeText={(value) => onStageChange(index, "stageEndDays", value)}
           placeholder="Number of Days"
+          keyboardType="numeric"
         />
         {errors?.[index]?.title && (
           <Text style={styles.errorText}>{errors[index].title}</Text>
