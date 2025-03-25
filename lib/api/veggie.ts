@@ -268,3 +268,37 @@ export const deleteVeggie = async (id: string) => {
     return { success: false, message: error.message };
   }
 };
+
+// Fetch recommended vegetables with related veggie data
+export const getRecommendedVeggies = async () => {
+  try {
+    // Fetch all recommended veggies and their related veggie data
+    const { data, error } = await supabase.from("recommended_veggie") // Replace with your actual table name
+      .select(`
+        id,
+        veggie_id,
+        created_at,
+        veggies (
+          id,
+          name,
+          description,
+          image,
+          type
+        )
+      `); // Fetch related columns from the "veggies" table
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+      data, // Return the fetched data
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+};

@@ -71,13 +71,21 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
       onPress={onPress}
     >
       <Animated.View style={[styles.veggieItem, { transform: [{ scale }] }]}>
-        {/* Use the image URL from the database */}
-        {item.image ? (
-          <Image
-            source={{ uri: item.image }}
-            alt=""
-            style={styles.veggieImage}
-          />
+        {/* Check if the image is a remote URL or a local file path */}
+        {item.image && typeof item.image === "string" ? (
+          item.image.startsWith("http") || item.image.startsWith("https") ? (
+            <Image
+              source={{ uri: item.image }} // Remote image
+              alt=""
+              style={styles.veggieImage}
+            />
+          ) : (
+            <Image
+              source={{ uri: item.image }}
+              alt=""
+              style={styles.veggieImage}
+            />
+          )
         ) : (
           <View style={styles.skeletonImage} />
         )}
@@ -130,7 +138,6 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
     </TouchableWithoutFeedback>
   );
 };
-
 const styles = StyleSheet.create({
   veggieItem: {
     flexDirection: "column",

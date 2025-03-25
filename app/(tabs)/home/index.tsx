@@ -1,18 +1,46 @@
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import ImagePreviewer from "@/components/ImagePrev";
-// import VeggieItem from "@/components/home/VeggieItem";
+import VeggieItem from "@/components/planner/VeggieItem";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { getRecommendedVeggies } from "@/lib/api/veggie"; // Import the API function
 import { VeggieType } from "@/lib/definitions";
 import { vegiImage } from "@/lib/config";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const [recommendedVeggies, setRecommendedVeggies] = useState<VeggieType[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
 
   const handleVeggiePress = (veggie: VeggieType) => {
-    router.push(`/veggie/${veggie.id}` as any);
+    router.push(`/home/details/${veggie.veggie_id}` as any);
   };
 
   const trendingVeggieImages = vegiImage.map((plant) => plant.image);
+
+  // Fetch recommended veggies on component mount
+  useEffect(() => {
+    const fetchVeggies = async () => {
+      const result = await getRecommendedVeggies();
+      console.log("Recommended veggies:", JSON.stringify(result, null, 2));
+      if (result.success) {
+        setRecommendedVeggies(result.data);
+      } else {
+        console.error("Error fetching recommended veggies:", result.message);
+      }
+      setLoading(false);
+    };
+
+    fetchVeggies();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -22,15 +50,30 @@ export default function HomeScreen() {
 
         {/* List of All Vegetables */}
         <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
-        {/* <FlatList
-          data={vegiImage}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <VeggieItem item={item} onPress={() => handleVeggiePress(item)} />
-          )}
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-        /> */}
+        {loading ? (
+          <ActivityIndicator size="large" color="#4CAF50" />
+        ) : (
+          <FlatList
+            style={{ paddingBottom: 20 }}
+            data={recommendedVeggies}
+            keyExtractor={(item) => (item.id ?? "").toString()}
+            renderItem={({ item }) => (
+              <VeggieItem
+                item={{
+                  ...item,
+                  image: item.veggies.image,
+                  name: item.veggies.name,
+                }}
+                onPress={() => handleVeggiePress(item)}
+                onEdit={() => console.log("Edit", item.id)}
+                onDelete={() => console.log("Delete", item.id)}
+                isAdmin={false}
+              />
+            )}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+          />
+        )}
       </View>
     </View>
   );

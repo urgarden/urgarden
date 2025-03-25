@@ -29,6 +29,7 @@ export type VeggieType = {
   stages: Stage[];
   created_at?: string;
   updated_at?: string;
+  veggies?: string[];
 };
 
 export type CategoryType = {
