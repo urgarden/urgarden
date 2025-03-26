@@ -26,8 +26,6 @@ export default function PlannerScreen() {
   const [selectedType, setSelectedType] = useState<CategoryType | undefined>();
   const [searchQuery, setSearchQuery] = useState<string>(""); // Search query
   const [veggies, setVeggies] = useState<any[]>([]); // State to store fetched veggies
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
   const [currentPage, setCurrentPage] = useState<number>(1); // Current page
   const [totalPages, setTotalPages] = useState<number>(1); // Total pages
   const [limit] = useState<number>(10); // Items per page
@@ -49,11 +47,9 @@ export default function PlannerScreen() {
         setVeggies(result.data ?? []);
         setTotalPages(result.totalPages ?? 1); // Update total pages with fallback
       } else {
-        setError(result.message);
       }
     } catch (err: any) {
       console.error("Error fetching veggies:", err.message);
-      setError("Failed to load veggies. Please try again.");
     } finally {
     }
   };
@@ -86,7 +82,6 @@ export default function PlannerScreen() {
 
   const handleDeleteVeggie = async (id: any) => {
     try {
-      setLoading(true); // Show loading indicator during deletion
       const result = await deleteVeggie(id); // Call the delete API
 
       if (result.success) {
@@ -113,7 +108,6 @@ export default function PlannerScreen() {
         type: "danger",
       });
     } finally {
-      setLoading(false); // Hide loading indicator
     }
   };
 
@@ -172,41 +166,35 @@ export default function PlannerScreen() {
       <View
         style={{ flex: 14, paddingHorizontal: 16, backgroundColor: "#f0f0f0" }}
       >
-        {loading ? (
-          <ActivityIndicator size="large" color="#4CAF50" />
-        ) : error ? (
-          <Text style={styles.errorText}>{error}</Text>
-        ) : (
-          <ScrollView contentContainerStyle={{ flexGrow: 1, gap: 20 }}>
-            <FlatList
-              data={veggies}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <VeggieItem
-                  item={item}
-                  isAdmin={isAdmin}
-                  onPress={() => handleVeggiePress(item)}
-                  onEdit={() => handleEditVeggiePress(item)}
-                  onDelete={() => handleDeleteVeggie(item.id)}
-                />
-              )}
-              numColumns={2}
-              columnWrapperStyle={styles.columnWrapper}
-              scrollEnabled={false}
-            />
-
-            {/* Pagination Component */}
-            {veggies.length > 0 && (
-              <View style={styles.paginationContainer}>
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={(page) => setCurrentPage(page)}
-                />
-              </View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, gap: 20 }}>
+          <FlatList
+            data={veggies}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <VeggieItem
+                item={item}
+                isAdmin={isAdmin}
+                onPress={() => handleVeggiePress(item)}
+                onEdit={() => handleEditVeggiePress(item)}
+                onDelete={() => handleDeleteVeggie(item.id)}
+              />
             )}
-          </ScrollView>
-        )}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+            scrollEnabled={false}
+          />
+
+          {/* Pagination Component */}
+          {veggies.length > 0 && (
+            <View style={styles.paginationContainer}>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            </View>
+          )}
+        </ScrollView>
       </View>
     </ThemedView>
   );
