@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { getVeggieById } from "@/lib/api/veggie";
-import { VeggieType, Stage } from "@/lib/definitions";
+import { VeggieType } from "@/lib/definitions";
 
 export default function VeggieDetails() {
   const router = useRouter();
@@ -89,13 +89,16 @@ export default function VeggieDetails() {
                 style={styles.stageImage}
               />
             )}
-            <Text style={styles.stageTitle}>
-              Stage {stage.stageNumber}: {stage.title}
-            </Text>
-            <Text style={styles.stageDescription}>{stage.description}</Text>
-            <Text style={styles.stageEndDays}>
-              {stage.stageEndDays} {+stage.stageEndDays === 1 ? "day" : "days"}
-            </Text>
+            <View style={styles.stageDetails}>
+              <Text style={styles.stageTitle}>
+                Stage {stage.stageNumber}: {stage.title}
+              </Text>
+              <Text style={styles.stageDescription}>{stage.description}</Text>
+              <Text style={styles.stageEndDays}>
+                {stage.stageEndDays}{" "}
+                {+stage.stageEndDays === 1 ? "day" : "days"}
+              </Text>
+            </View>
           </View>
         ))}
 
@@ -153,6 +156,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "auto",
     padding: 16,
+    gap: 8,
     backgroundColor: "#f9f9f9",
     borderRadius: 8,
     shadowColor: "#000",
@@ -161,10 +165,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
     marginBottom: 20,
+    flexDirection: "row",
+  },
+  stageDetails: {
+    marginBottom: 8,
+    width: "65%",
   },
   stageImage: {
-    width: "100%",
-    height: 150,
+    width: "30%",
+    height: "auto",
     borderRadius: 8,
     marginBottom: 8,
     objectFit: "cover",
