@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { getVeggieById } from "@/lib/api/veggie";
-import { VeggieType, Stage } from "@/lib/definitions";
+import { VeggieType } from "@/lib/definitions";
 
 export default function VeggieDetails() {
   const router = useRouter();
