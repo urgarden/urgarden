@@ -6,18 +6,23 @@ import {
   Text,
   Image,
   ActivityIndicator,
+  TouchableOpacity,
+  Modal,
+  Alert,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { getAllByUserId } from "@/lib/api/garden";
+import { getAllByUserId, deletePlant, cancelPlant } from "@/lib/api/garden"; // Import delete and cancel APIs
 import { useUserStore } from "@/lib/stores/userStore";
-import { GetAllByUserIdResult, PlantType } from "@/lib/definitions"; // Adjust the import path as needed
+import { GetAllByUserIdResult, PlantType } from "@/lib/definitions";
 
 export default function MyGardenScreen() {
-  const [plants, setPlants] = useState<PlantType[]>([]); // Use the Plant type
+  const [plants, setPlants] = useState<PlantType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPlant, setSelectedPlant] = useState<PlantType | null>(null); // Selected plant for the modal
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // Modal visibility
   const userId = useUserStore((state) => state.userDetails?.id);
 
   const fetchPlants = useCallback(async () => {
@@ -28,7 +33,7 @@ export default function MyGardenScreen() {
         setLoading(false);
         return;
       }
-      const result: GetAllByUserIdResult = await getAllByUserId(userId); // Use the result type
+      const result: GetAllByUserIdResult = await getAllByUserId(userId);
 
       if (result.success) {
         setPlants(result.data || []);
@@ -50,8 +55,29 @@ export default function MyGardenScreen() {
   }, [fetchPlants]);
 
   const handleRefresh = async () => {
-    setRefreshing(true); // Start the refreshing indicator
+    setRefreshing(true);
     await fetchPlants();
+  };
+
+  const handleDelete = async () => {
+    if (!selectedPlant || !userId) return;
+    try {
+      const result = await deletePlant(
+        userId,
+        selectedPlant.veggie_id.toString()
+      );
+      if (result.success) {
+        Alert.alert("Success", "Plant deleted successfully!");
+        fetchPlants(); // Refresh the list
+      } else {
+        Alert.alert("Error", result.message || "Failed to delete plant.");
+      }
+    } catch (err: any) {
+      console.error("Error deleting plant:", err.message);
+      Alert.alert("Error", "An unexpected error occurred.");
+    } finally {
+      setModalVisible(false);
+    }
   };
 
   if (loading && !refreshing) {
@@ -93,12 +119,44 @@ export default function MyGardenScreen() {
               </Text>
               <Text style={styles.cardStatus}>Status: {item.status}</Text>
             </View>
+            <TouchableOpacity
+              style={styles.kebabMenu}
+              onPress={() => {
+                setSelectedPlant(item);
+                setModalVisible(true);
+              }}
+            >
+              <Text style={styles.kebabMenuText}>⋮</Text>
+            </TouchableOpacity>
           </View>
         )}
         contentContainerStyle={styles.listContent}
-        refreshing={refreshing} // Bind the refreshing state
-        onRefresh={handleRefresh} // Bind the refresh handler
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
       />
+
+      {/* Modal for Delete and Cancel */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Manage Plant</Text>
+            <TouchableOpacity style={styles.modalButton} onPress={handleDelete}>
+              <Text style={styles.modalButtonText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.modalCloseButton]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ThemedView>
   );
 }
@@ -143,6 +201,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    position: "relative",
   },
   cardImage: {
     width: 80,
@@ -167,5 +226,48 @@ const styles = StyleSheet.create({
   cardStatus: {
     fontSize: 14,
     color: "#888",
+  },
+  kebabMenu: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+  },
+  kebabMenuText: {
+    fontSize: 24,
+    color: "#888",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  modalButton: {
+    width: "100%",
+    padding: 12,
+    backgroundColor: "#f44336",
+    borderRadius: 8,
+    marginBottom: 8,
+    alignItems: "center",
+  },
+  modalCloseButton: {
+    backgroundColor: "#ccc",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
