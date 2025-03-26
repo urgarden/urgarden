@@ -7,8 +7,9 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
-import { login } from "@/services/FirebaseService";
+import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
+import { useUserStore } from "@/lib/stores/userStore";
 
 type LoginPageProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, "login">;
@@ -23,7 +24,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const result = await login(email, password);
+      const result = await login(email, password); // Call Supabase login function
       if (result.error) {
         showMessage({
           message: "Login Failed",
@@ -31,13 +32,23 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
           type: "danger",
         });
       } else {
+        const user = result.user; // Get the user object from the login result
+        const role = user?.role === "admin" ? "admin" : ""; // Determine the role
+
+        // Save user details in Zustand store
+        useUserStore.getState().setUserDetails({
+          id: user?.id ?? "",
+          email: user?.email ?? "",
+          role,
+        });
+
         showMessage({
           message: "Login Successful",
           description: "You have successfully logged in!",
           type: "success",
         });
         console.log("Login successful");
-        nav.navigate("(tabs)", { screen: "Home" });
+        nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen
       }
     } catch (error) {
       showMessage({
@@ -47,9 +58,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       });
     }
   };
-
   const handleGuestLogin = () => {
-    nav.navigate("(tabs)", { screen: "Home" });
+    nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
   };
 
   const buttons = [
@@ -80,7 +90,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       </View>
       <ThemedText type="title">URGARDEN LOGIN</ThemedText>
       <InputField
-        label="Username or Email"
+        label="Email"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -101,6 +111,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       <ProceedButton title="Login" onPress={handleLogin} />
       <TouchableOpacity
         style={styles.forgotPasswordButton}
+        // Uncomment and implement navigation to forgot-password screen if needed
         // onPress={() => nav.navigate("forgot-password")}
       >
         <ThemedText type="link">Forgot Password?</ThemedText>

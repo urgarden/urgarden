@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -8,41 +8,108 @@ import {
   Text,
   TextInput,
   Button,
+  ActivityIndicator,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import VeggieItem from "@/components/home/VeggieItem";
+import VeggieItem from "@/components/planner/VeggieItem";
+import Pagination from "@/components/Pagination"; // Import the Pagination component
 import { useRouter } from "expo-router";
-import { Veggies } from "@/lib/config";
 import { categories } from "@/lib/config";
+import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
+import { useUserStore } from "@/lib/stores/userStore";
+import { deleteVeggie } from "@/lib/api/veggie";
+import { showMessage } from "react-native-flash-message";
+import { CategoryType } from "@/lib/definitions";
 
 export default function PlannerScreen() {
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isAdmin, setIsAdmin] = useState<boolean>(true); // Set to true for demonstration
+  const [selectedType, setSelectedType] = useState<CategoryType | undefined>();
+  const [searchQuery, setSearchQuery] = useState<string>(""); // Search query
+  const [veggies, setVeggies] = useState<any[]>([]); // State to store fetched veggies
+  const [currentPage, setCurrentPage] = useState<number>(1); // Current page
+  const [totalPages, setTotalPages] = useState<number>(1); // Total pages
+  const [limit] = useState<number>(10); // Items per page
   const router = useRouter();
+  const { userDetails } = useUserStore();
 
-  const handleTypePress = (type: string | null) => {
-    setSelectedType(type);
+  const isAdmin = userDetails?.role === "admin";
+
+  const fetchVeggies = async (page: number) => {
+    try {
+      const result = await getAllVeggies(
+        page,
+        limit,
+        searchQuery, // Pass the search query
+        selectedType?.value // Pass the selected type
+      );
+
+      if (result.success) {
+        setVeggies(result.data ?? []);
+        setTotalPages(result.totalPages ?? 1); // Update total pages with fallback
+      } else {
+      }
+    } catch (err: any) {
+      console.error("Error fetching veggies:", err.message);
+    } finally {
+    }
   };
 
-  const handleVeggiePress = (veggieId: string) => {
-    router.push(`/planner/details/${veggieId}`);
+  // Fetch veggies whenever the current page, search query, or selected type changes
+  useEffect(() => {
+    fetchVeggies(currentPage);
+  }, [currentPage, searchQuery, selectedType]);
+
+  const handleTypePress = (type: CategoryType | null) => {
+    setSelectedType(type || undefined);
+    setCurrentPage(1); // Reset to the first page when the type changes
+  };
+
+  const handleVeggiePress = (item: any) => {
+    // Navigate to the details screen with the veggie ID
+    router.push(`/planner/details/${item.id}`);
   };
 
   const handleAddVeggiePress = () => {
     router.push(`/planner/add`);
   };
 
-  const filteredVeggies = selectedType
-    ? Veggies[selectedType as keyof typeof Veggies].filter((veggie) =>
-        veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : Object.values(Veggies)
-        .flat()
-        .filter((veggie) =>
-          veggie.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleEditVeggiePress = (veggieData: any) => {
+    router.push({
+      pathname: "/planner/add",
+      params: { mode: "edit", veggie: JSON.stringify(veggieData) },
+    });
+  };
+
+  const handleDeleteVeggie = async (id: any) => {
+    try {
+      const result = await deleteVeggie(id); // Call the delete API
+
+      if (result.success) {
+        // Filter out the deleted veggie from the state
+        setVeggies((prevVeggies) =>
+          prevVeggies.filter((veggie) => veggie.id !== id)
         );
+
+        showMessage({
+          message: "Vegetable deleted successfully!",
+          type: "success",
+        });
+      } else {
+        showMessage({
+          message: "Error deleting vegetable.",
+          description: result.message,
+          type: "danger",
+        });
+      }
+    } catch (error) {
+      console.error("Error deleting vegetable:", error);
+      showMessage({
+        message: "Error deleting vegetable.",
+        type: "danger",
+      });
+    } finally {
+    }
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -68,9 +135,9 @@ export default function PlannerScreen() {
             key={type.id}
             style={[
               styles.button,
-              selectedType === type.value && styles.selectedButton,
+              selectedType?.value === type.value && styles.selectedButton,
             ]}
-            onPress={() => handleTypePress(type.value)}
+            onPress={() => handleTypePress(type)}
           >
             <Text style={styles.buttonText}>{type.title}</Text>
           </TouchableOpacity>
@@ -82,7 +149,10 @@ export default function PlannerScreen() {
         style={styles.searchInput}
         placeholder="Search..."
         value={searchQuery}
-        onChangeText={setSearchQuery}
+        onChangeText={(text) => {
+          setSearchQuery(text);
+          setCurrentPage(1);
+        }}
       />
 
       {/* Add Vegetable Button */}
@@ -96,20 +166,35 @@ export default function PlannerScreen() {
       <View
         style={{ flex: 14, paddingHorizontal: 16, backgroundColor: "#f0f0f0" }}
       >
-        <FlatList
-          data={filteredVeggies}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, gap: 20 }}>
+          <FlatList
+            data={veggies}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
               <VeggieItem
                 item={item}
-                onPress={() => handleVeggiePress(item.id.toString())}
+                isAdmin={isAdmin}
+                onPress={() => handleVeggiePress(item)}
+                onEdit={() => handleEditVeggiePress(item)}
+                onDelete={() => handleDeleteVeggie(item.id)}
+              />
+            )}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
+            scrollEnabled={false}
+          />
+
+          {/* Pagination Component */}
+          {veggies.length > 0 && (
+            <View style={styles.paginationContainer}>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
               />
             </View>
           )}
-          numColumns={2}
-          columnWrapperStyle={styles.columnWrapper}
-        />
+        </ScrollView>
       </View>
     </ThemedView>
   );
@@ -120,6 +205,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 50,
   },
+
+  paginationContainer: {
+    alignItems: "center",
+  },
+
   buttonContainer: {
     flexDirection: "row",
     marginBottom: 16,
@@ -157,5 +247,10 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 20,
   },
 });

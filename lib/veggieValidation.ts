@@ -1,6 +1,6 @@
-import { VeggieForm } from "@/lib/definitions";
+import { VeggieType } from "@/lib/definitions";
 
-export const validateVeggieForm = (formData: VeggieForm) => {
+export const validateVeggieForm = (formData: VeggieType) => {
   const { name, description, type, image, stages } = formData;
   let valid = true;
   let newErrors: any = {};
@@ -21,7 +21,11 @@ export const validateVeggieForm = (formData: VeggieForm) => {
     newErrors.image = "Image is required.";
     valid = false;
   }
-  if (stages.length < 3) {
+  if (!image) {
+    newErrors.image = "Image is required.";
+    valid = false;
+  }
+  if (stages.length < 1) {
     newErrors.stages = "Please add at least 3 stages.";
     valid = false;
   }

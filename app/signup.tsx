@@ -6,7 +6,7 @@ import { signupFormFields } from "@/utils/formFields";
 import InputField from "@/components/InputField";
 import BackButton from "@/components/buttons/BackButton";
 import ThemedText from "@/components/ThemedText";
-import { signup } from "@/services/FirebaseService";
+import { signup } from "@/lib/api/auth";
 import ProceedButton from "@/components/buttons/ProceedButton";
 import { showMessage } from "react-native-flash-message";
 
@@ -30,15 +30,20 @@ const SignupPage = () => {
   };
 
   const handleSignup = async () => {
+    // Validate the form data
     const error = validateSignupFormData(formData);
     if (error) {
       setErrorMessage(error);
       return;
     }
 
+    // Call the Supabase signup function
     const result = await signup(formData);
 
+    console.log(result);
+
     if (result.error) {
+      // Show error message if signup fails
       showMessage({
         message: "Signup Failed!",
         description: result.message,
@@ -46,6 +51,7 @@ const SignupPage = () => {
       });
       return;
     } else {
+      // Show success message and navigate to login
       showMessage({
         message: "Signup Successful!",
         type: "success",
