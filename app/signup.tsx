@@ -40,8 +40,6 @@ const SignupPage = () => {
     // Call the Supabase signup function
     const result = await signup(formData);
 
-    console.log(result);
-
     if (result.error) {
       // Show error message if signup fails
       showMessage({

@@ -37,3 +37,23 @@ export type CategoryType = {
   title: string;
   value: string;
 };
+
+// Define possible statuses for a plant
+export type PlantStatus = "ongoing" | "done" | "canceled";
+
+// Type definition for a plant in the garden
+export type PlantType = {
+  id: number;
+  user_id: string;
+  veggie_id: number;
+  created_at: string;
+  status: PlantStatus;
+  veggie: VeggieType;
+};
+
+// Type definition for the API result
+export type GetAllByUserIdResult = {
+  success: boolean;
+  data?: PlantType[];
+  message?: string;
+};

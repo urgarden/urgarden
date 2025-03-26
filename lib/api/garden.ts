@@ -5,9 +5,6 @@ export type PlantStatus = "ongoing" | "done" | "canceled";
 
 // Function to add a plant to the garden table
 export async function addPlant(userId: string, veggieId: string) {
-  console.log("userId", userId);
-  console.log("veggieId", veggieId);
-
   try {
     // Check if the plant already exists for the user
     const { data: existingPlant, error: checkError } = await supabase
