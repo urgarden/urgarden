@@ -50,7 +50,7 @@ export default function HomeScreen() {
         <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
 
         <FlatList
-          style={{ paddingBottom: 20 }}
+          style={{ width: "100%" }}
           data={recommendedVeggies}
           keyExtractor={(item) => (item.id ?? "").toString()}
           renderItem={({ item }) => (
@@ -68,6 +68,7 @@ export default function HomeScreen() {
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       </View>
     </View>
