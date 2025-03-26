@@ -182,6 +182,7 @@ export default function PlannerScreen() {
             numColumns={2}
             columnWrapperStyle={styles.columnWrapper}
             scrollEnabled={false}
+            contentContainerStyle={{ paddingBottom: 20 }}
           />
 
           {/* Pagination Component */}

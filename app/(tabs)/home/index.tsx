@@ -10,16 +10,29 @@ import VeggieItem from "@/components/planner/VeggieItem";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { getRecommendedVeggies } from "@/lib/api/veggie"; // Import the API function
-import { VeggieType } from "@/lib/definitions";
 import { vegiImage } from "@/lib/config";
+
+// Define the type for recommended veggies
+type RecommendedVeggie = {
+  id: number;
+  veggie_id: number;
+  created_at: string;
+  veggies: {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+    type: string;
+  };
+};
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [recommendedVeggies, setRecommendedVeggies] = useState<VeggieType[]>(
-    []
-  );
+  const [recommendedVeggies, setRecommendedVeggies] = useState<
+    RecommendedVeggie[]
+  >([]);
 
-  const handleVeggiePress = (veggie: VeggieType) => {
+  const handleVeggiePress = (veggie: RecommendedVeggie) => {
     router.push(`/home/details/${veggie.veggie_id}` as any);
   };
 
@@ -30,8 +43,15 @@ export default function HomeScreen() {
     const fetchVeggies = async () => {
       const result = await getRecommendedVeggies();
 
-      if (result.success) {
-        setRecommendedVeggies(result.data);
+      if (result.success && result.data) {
+        setRecommendedVeggies(
+          result.data.map((item: any) => ({
+            ...item,
+            veggies: Array.isArray(item.veggies)
+              ? item.veggies[0]
+              : item.veggies,
+          }))
+        );
       } else {
         console.error("Error fetching recommended veggies:", result.message);
       }
@@ -50,7 +70,7 @@ export default function HomeScreen() {
         <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
 
         <FlatList
-          style={{ paddingBottom: 20 }}
+          style={{ width: "100%" }}
           data={recommendedVeggies}
           keyExtractor={(item) => (item.id ?? "").toString()}
           renderItem={({ item }) => (
@@ -68,6 +88,7 @@ export default function HomeScreen() {
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       </View>
     </View>

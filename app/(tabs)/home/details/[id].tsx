@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { getVeggieById } from "@/lib/api/veggie";
-import { VeggieType } from "@/lib/definitions";
+import { VeggieType, Stage } from "@/lib/definitions";
 
 export default function VeggieDetails() {
   const router = useRouter();
@@ -59,19 +59,45 @@ export default function VeggieDetails() {
   }
 
   const handlePlantPress = () => {
-    // Navigate to a planting screen or perform an action
     console.log("Plant button pressed for:", veggie.name);
-    // router.push(`/planner/plant/${veggie.id}`);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      style={{ flex: 1 }} // Ensure ScrollView takes full height
+      contentContainerStyle={{
+        ...styles.container,
+        flexGrow: 1, // Ensure content grows and scrolls properly
+      }}
+    >
       {veggie.image && (
         <Image source={{ uri: veggie.image }} style={styles.image} />
       )}
       <Text style={styles.title}>{veggie.name}</Text>
       <Text style={styles.type}>Type: {veggie.type}</Text>
       <Text style={styles.description}>{veggie.description}</Text>
+
+      {/* Display Stages */}
+      <Text style={styles.sectionTitle}>Growth Stages</Text>
+      {veggie.stages
+        .sort((a, b) => a.stageNumber - b.stageNumber) // Sort stages by stageNumber
+        .map((stage) => (
+          <View key={stage.stageNumber} style={styles.stageContainer}>
+            {stage.imageUrl && (
+              <Image
+                source={{ uri: stage.imageUrl }}
+                style={styles.stageImage}
+              />
+            )}
+            <Text style={styles.stageTitle}>
+              Stage {stage.stageNumber}: {stage.title}
+            </Text>
+            <Text style={styles.stageDescription}>{stage.description}</Text>
+            <Text style={styles.stageEndDays}>
+              {stage.stageEndDays} {+stage.stageEndDays === 1 ? "day" : "days"}
+            </Text>
+          </View>
+        ))}
 
       {/* Plant Button */}
       <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
@@ -83,14 +109,13 @@ export default function VeggieDetails() {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
     padding: 16,
     backgroundColor: "#fff",
-    alignItems: "center",
+    paddingBottom: 500,
   },
   image: {
     width: "100%",
-    height: "35%",
+    height: "30%",
     objectFit: "contain",
     borderRadius: 8,
     marginBottom: 16,
@@ -113,12 +138,60 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     textAlign: "center",
   },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#333",
+    textAlign: "center",
+    borderTopColor: "#ddd",
+    borderTopWidth: 1,
+    paddingTop: 16,
+    marginTop: 16,
+  },
+  stageContainer: {
+    width: "100%",
+    height: "auto",
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    marginBottom: 20,
+  },
+  stageImage: {
+    width: "100%",
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
+    objectFit: "cover",
+  },
+  stageTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 4,
+    color: "#333",
+  },
+  stageDescription: {
+    fontSize: 16,
+    color: "#555",
+    marginBottom: 8,
+  },
+  stageEndDays: {
+    fontSize: 14,
+    color: "#888",
+    textAlign: "right",
+  },
   plantButton: {
     backgroundColor: "#4CAF50",
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
     marginTop: 16,
+    marginBottom: 32,
   },
   plantButtonText: {
     color: "#fff",
