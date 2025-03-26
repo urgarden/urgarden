@@ -31,9 +31,6 @@ const StageForm: React.FC<StageFormProps> = ({
       <Text
         style={{
           ...styles.stageLabel,
-          borderTopColor: "#ccc",
-          borderTopWidth: 1,
-          paddingTop: 10,
         }}
       >
         Stage {index + 1}
@@ -108,10 +105,17 @@ const StageForm: React.FC<StageFormProps> = ({
 const styles = StyleSheet.create({
   stageContainer: {
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 16,
+    borderRadius: 8,
   },
   stageLabel: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    paddingBottom: 8,
   },
   input: {
     height: 40,
