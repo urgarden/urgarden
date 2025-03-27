@@ -103,13 +103,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 20,
     paddingBottom: 40,
-    gap: 8,
+    gap: 2,
   },
   button: {
     paddingVertical: 8,
     paddingHorizontal: 12,
     backgroundColor: "#4CAF50",
-    borderRadius: 4,
+    borderRadius: 8,
     marginHorizontal: 4,
   },
   disabledButton: {
