@@ -3,7 +3,6 @@ import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/lib/navigationTypes";
 import { Link, useNavigation } from "expo-router";
-import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
@@ -64,11 +63,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
     useUserStore.getState().setUserDetails({
       id: "",
       email: "",
-      role: "guest", // Set role to "guest" for guest users
+      role: "guest",
     });
 
     nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
   };
+
+  const navigateToForgotPassword = () => {
+    nav.navigate("forgot-password");
+  };
+
   const buttons = [
     {
       style: styles.guestButton,
@@ -113,8 +117,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       <ProceedButton title="Login" onPress={handleLogin} />
       <TouchableOpacity
         style={styles.forgotPasswordButton}
-        // Uncomment and implement navigation to forgot-password screen if needed
-        // onPress={() => nav.navigate("forgot-password")}
+        onPress={navigateToForgotPassword} // Navigate to Forgot Password screen
       >
         <ThemedText type="link">Forgot Password?</ThemedText>
       </TouchableOpacity>
