@@ -33,13 +33,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
         });
       } else {
         const user = result.user; // Get the user object from the login result
-        const role = user?.role === "admin" ? "admin" : ""; // Determine the role
 
-        // Save user details in Zustand store
+        // Save user details in Zustand store with role set to "customer"
         useUserStore.getState().setUserDetails({
           id: user?.id ?? "",
           email: user?.email ?? "",
-          role,
+          role: "customer", // Set role to "customer" for authenticated users
         });
 
         showMessage({
@@ -58,10 +57,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       });
     }
   };
+
   const handleGuestLogin = () => {
+    // Clear user details and set role to "guest"
+    useUserStore.getState().clearUserDetails();
+    useUserStore.getState().setUserDetails({
+      id: "",
+      email: "",
+      role: "guest", // Set role to "guest" for guest users
+    });
+
     nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
   };
-
   const buttons = [
     {
       style: styles.backButton,
