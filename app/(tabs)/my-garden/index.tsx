@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { getAllByUserId, deletePlant, cancelPlant } from "@/lib/api/garden"; // Import delete and cancel APIs
+import { getAllByUserId, deletePlant } from "@/lib/api/garden"; // Import delete and cancel APIs
 import { useUserStore } from "@/lib/stores/userStore";
 import { GetAllByUserIdResult, PlantType } from "@/lib/definitions";
 

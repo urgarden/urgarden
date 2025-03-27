@@ -9,15 +9,6 @@ export const vegiImage = [
   { id: "1", name: "Tomato", image: tomato },
   { id: "2", name: "Carrot", image: carrot },
   { id: "3", name: "cabage", image: cabage },
-  { id: "4", name: "Pepper", image: pepper },
-  { id: "5", name: "Cucumber", image: cucumber },
-];
-
-export const recommendedPlants = [
-  { id: "1", name: "Tomato", image: tomato },
-  { id: "2", name: "Carrot", image: carrot },
-  { id: "3", name: "cabage", image: cabage },
-  { id: "4", name: "Pepper", image: pepper },
   { id: "5", name: "Cucumber", image: cucumber },
 ];
 

@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { getRecommendedVeggies } from "@/lib/api/veggie"; // Import the API function
 import { vegiImage } from "@/lib/config";
+import { StatusBar } from "expo-status-bar";
 
 // Define the type for recommended veggies
 type RecommendedVeggie = {
@@ -62,6 +63,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" backgroundColor="#fff" />
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
         <ImagePreviewer imageUrls={trendingVeggieImages} />
