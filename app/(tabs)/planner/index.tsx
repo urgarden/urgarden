@@ -113,7 +113,7 @@ export default function PlannerScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">PLANNER</ThemedText>
+      <ThemedText type="title">Planner</ThemedText>
 
       {/* Sorting Buttons */}
       <ScrollView
