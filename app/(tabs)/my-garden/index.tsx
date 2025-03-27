@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useRouter } from "expo-router";
+
 import {
   StyleSheet,
   FlatList,
@@ -24,12 +26,13 @@ export default function MyGardenScreen() {
   const [selectedPlant, setSelectedPlant] = useState<PlantType | null>(null); // Selected plant for the modal
   const [modalVisible, setModalVisible] = useState<boolean>(false); // Modal visibility
   const userId = useUserStore((state) => state.userDetails?.id);
+  const router = useRouter();
 
   const fetchPlants = useCallback(async () => {
     try {
       setLoading(true);
       if (!userId) {
-        setError("User ID is not available.");
+        setError("Please login to start planting and managing your garden.");
         setLoading(false);
         return;
       }
@@ -59,6 +62,22 @@ export default function MyGardenScreen() {
     await fetchPlants();
   };
 
+  if (!userId) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>
+          Please login to start planting and managing your garden.
+        </Text>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push("/login")} // Redirect to login page
+        >
+          <Text style={styles.loginButtonText}>Go to Login</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   const handleDelete = async () => {
     if (!selectedPlant || !userId) return;
     try {
@@ -68,7 +87,7 @@ export default function MyGardenScreen() {
       );
       if (result.success) {
         Alert.alert("Success", "Plant deleted successfully!");
-        fetchPlants(); // Refresh the list
+        fetchPlants();
       } else {
         Alert.alert("Error", result.message || "Failed to delete plant.");
       }
@@ -179,6 +198,7 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
+    padding: 16,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -269,5 +289,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  loginButton: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    marginTop: 30,
+  },
+  loginButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
