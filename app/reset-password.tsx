@@ -7,16 +7,26 @@ import {
   StyleSheet,
 } from "react-native";
 import { supabase } from "@/utils/supabase";
+import { useRouter } from "expo-router"; // Use router for navigation
+import { showMessage } from "react-native-flash-message"; // Import flash message for notifications
 
 const ResetPasswordScreen = () => {
   const [newPassword, setNewPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter(); // Initialize the router for navigation
 
   const handleResetPassword = async () => {
     if (!newPassword) {
-      setMessage("Please enter a new password.");
+      showMessage({
+        message: "Error",
+        description: "Please enter a new password.",
+        type: "danger",
+      });
       return;
     }
+
+    setLoading(true);
 
     try {
       const { error } = await supabase.auth.updateUser({
@@ -24,12 +34,31 @@ const ResetPasswordScreen = () => {
       });
 
       if (error) {
-        setMessage("Failed to reset password: " + error.message);
+        showMessage({
+          message: "Error",
+          description: "Failed to reset password: " + error.message,
+          type: "danger",
+        });
       } else {
-        setMessage("Password reset successfully! You can now log in.");
+        showMessage({
+          message: "Success",
+          description: "Password reset successfully! Redirecting to login...",
+          type: "success",
+        });
+
+        // Redirect to login screen after a short delay
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
       }
     } catch (err) {
-      setMessage("An unexpected error occurred. Please try again.");
+      showMessage({
+        message: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        type: "danger",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,10 +72,15 @@ const ResetPasswordScreen = () => {
         onChangeText={setNewPassword}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-        <Text style={styles.buttonText}>Reset Password</Text>
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
+        onPress={handleResetPassword}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Resetting..." : "Reset Password"}
+        </Text>
       </TouchableOpacity>
-      {message ? <Text style={styles.message}>{message}</Text> : null}
     </View>
   );
 };
@@ -75,16 +109,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#4CAF50",
     padding: 12,
     borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonDisabled: {
+    backgroundColor: "#A5D6A7",
   },
   buttonText: {
     color: "#fff",
     fontSize: 16,
-  },
-  message: {
-    marginTop: 16,
-    fontSize: 14,
-    color: "gray",
-    textAlign: "center",
   },
 });
 

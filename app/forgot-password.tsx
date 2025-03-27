@@ -7,10 +7,14 @@ import {
   StyleSheet,
 } from "react-native";
 import { forgotPassword } from "@/lib/api/auth"; // Import the forgotPassword API
+import { useRouter } from "expo-router"; // Import useRouter for navigation
 
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter(); // Initialize the router
 
   const handleForgotPassword = async () => {
     if (!email) {
@@ -18,13 +22,20 @@ const ForgotPasswordScreen = () => {
       return;
     }
 
+    setLoading(true);
+
     const result = await forgotPassword(email);
 
     if (result.success) {
-      setMessage("Password reset email sent. Please check your inbox.");
+      setMessage("Password reset email sent. Redirecting...");
+      setTimeout(() => {
+        router.push("/reset-password"); // Redirect to ResetPasswordScreen
+      }, 2000); // Add a delay to show the success message before redirecting
     } else {
       setMessage(result.message || "Failed to send password reset email.");
     }
+
+    setLoading(false);
   };
 
   return (
@@ -38,8 +49,14 @@ const ForgotPasswordScreen = () => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      <TouchableOpacity style={styles.button} onPress={handleForgotPassword}>
-        <Text style={styles.buttonText}>Send Reset Email</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={handleForgotPassword}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Sending..." : "Send Reset Email"}
+        </Text>
       </TouchableOpacity>
       {message ? <Text style={styles.message}>{message}</Text> : null}
     </View>

@@ -45,7 +45,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
           description: "You have successfully logged in!",
           type: "success",
         });
-        console.log("Login successful");
         nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen
       }
     } catch (error) {

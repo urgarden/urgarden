@@ -124,13 +124,12 @@ export const logoutUser = async (): Promise<void> => {
     throw new Error("Failed to log out user");
   }
 };
-
 export const forgotPassword = async (
   email: string
 ): Promise<{ success: boolean; message: string }> => {
   try {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "exp://192.168.1.53:8081/reset-password", // Ensure this matches your deep link
+      redirectTo: "exp://192.168.1.53:8081/reset-password", // Use your app's deep link
     });
 
     if (error) {
