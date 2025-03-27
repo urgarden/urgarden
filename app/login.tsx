@@ -71,11 +71,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
   };
   const buttons = [
     {
-      style: styles.backButton,
-      onPress: () => nav.goBack(),
-      icon: <Icon name="arrow-left" size={20} color="#4CAF50" />,
-    },
-    {
       style: styles.guestButton,
       onPress: handleGuestLogin,
       text: <ThemedText type="linkB">Guest</ThemedText>,
@@ -91,7 +86,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
             style={button.style}
             onPress={button.onPress}
           >
-            {button.icon || button.text}
+            {button.text}
           </TouchableOpacity>
         ))}
       </View>
