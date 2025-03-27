@@ -13,10 +13,10 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import VeggieItem from "@/components/planner/VeggieItem";
-import Pagination from "@/components/Pagination"; // Import the Pagination component
+import Pagination from "@/components/Pagination";
 import { useRouter } from "expo-router";
 import { categories } from "@/lib/config";
-import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
+import { getAllVeggies } from "@/lib/api/veggie";
 import { useUserStore } from "@/lib/stores/userStore";
 import { deleteVeggie } from "@/lib/api/veggie";
 import { showMessage } from "react-native-flash-message";

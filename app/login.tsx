@@ -32,12 +32,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
         });
       } else {
         const user = result.user; // Get the user object from the login result
+        const role = user?.role === "admin" ? "admin" : "customer"; // Determine the role
 
         // Save user details in Zustand store with role set to "customer"
         useUserStore.getState().setUserDetails({
           id: user?.id ?? "",
           email: user?.email ?? "",
-          role: "customer", // Set role to "customer" for authenticated users
+          role: role,
         });
 
         showMessage({

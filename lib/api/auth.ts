@@ -107,7 +107,7 @@ export const login = async (
       user: {
         id: user.id,
         email: user.email || "",
-        role, // Include the role in the response
+        role,
       },
     };
   } catch (error: any) {

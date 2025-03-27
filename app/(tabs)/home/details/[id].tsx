@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: "#fff",
-    paddingBottom: 500,
+    paddingBottom: 300,
   },
   image: {
     width: "100%",
