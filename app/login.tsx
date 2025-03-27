@@ -68,10 +68,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
     nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
   };
 
-  const navigateToForgotPassword = () => {
-    nav.navigate("forgot-password");
-  };
-
   const buttons = [
     {
       style: styles.guestButton,
@@ -114,12 +110,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
         <ThemedText type="errorMessage">{errorMessage}</ThemedText>
       )}
       <ProceedButton title="Login" onPress={handleLogin} />
-      <TouchableOpacity
-        style={styles.forgotPasswordButton}
-        onPress={navigateToForgotPassword} // Navigate to Forgot Password screen
-      >
-        <ThemedText type="link">Forgot Password?</ThemedText>
-      </TouchableOpacity>
+
+      <Link href="/forgot-password" asChild>
+        <TouchableOpacity style={styles.forgotPasswordButton}>
+          <ThemedText type="linkB">Forgot Password?</ThemedText>
+        </TouchableOpacity>
+      </Link>
       <View style={styles.signupContainer}>
         <ThemedText style={styles.signupText}>
           Need to create an account?
