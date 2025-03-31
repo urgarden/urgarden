@@ -15,11 +15,11 @@ export default function PlantCareScreen() {
         </TouchableOpacity>
       </Link>
       {/* Navigate to Gardening Ideas */}
-      {/* <Link href="/plant-care/" asChild>
+      <Link href="/plant-care/gardening-ideas" asChild>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Gardening Ideas</Text>
         </TouchableOpacity>
-      </Link> */}
+      </Link>
     </ThemedView>
   );
 }

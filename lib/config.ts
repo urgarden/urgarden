@@ -3,7 +3,6 @@ const tomato = require("@/assets/images/tomato.jpg");
 const carrot = require("@/assets/images/carrot.jpg");
 const cabage = require("@/assets/images/cabage.jpg");
 const cucumber = require("@/assets/images/cucumber.jpg");
-const pepper = require("@/assets/images/pepper.jpg");
 
 export const vegiImage = [
   { id: "1", name: "Tomato", image: tomato },
@@ -36,7 +35,7 @@ export const organicPlantCare = {
       preparation:
         "Chop 15 grams of garlic and 10 grams of soap into 1 liter of water. Mix well and filter.",
       usage:
-        "Acts as a repellent and insecticide for most pests. Apply at sunrise or sunset for about 5 days.",
+        "Acts as a repellent and insecticide for most pests. Apply at sunrise or sunset for about a5 days.",
     },
     {
       name: "Eggshells",
@@ -73,6 +72,51 @@ export const compostMaterials = {
         "Sawdust",
         "Ashes",
         "Straw",
+      ],
+    },
+  ],
+};
+
+export const gardeningIdeas = {
+  title: "Gardening Ideas",
+  ideas: [
+    {
+      id: 1,
+      title: "Vertical Gardening",
+      description:
+        "Maximize space by growing plants vertically using trellises, wall planters, or hanging pots.",
+      images: [
+        require("@/assets/images/gardening-ideas/v1.jpg"),
+        require("@/assets/images/gardening-ideas/v2.jpg"),
+        require("@/assets/images/gardening-ideas/v3.jpg"),
+        require("@/assets/images/gardening-ideas/v4.jpg"),
+        require("@/assets/images/gardening-ideas/v5.jpg"),
+      ],
+    },
+    {
+      id: 2,
+      title: "Container Gardening",
+      description:
+        "Use pots, containers, or raised beds to grow plants in small spaces or on patios.",
+      images: [
+        require("@/assets/images/gardening-ideas/p1.jpg"),
+        require("@/assets/images/gardening-ideas/p2.jpg"),
+        require("@/assets/images/gardening-ideas/p3.jpg"),
+        require("@/assets/images/gardening-ideas/p4.webp"),
+        require("@/assets/images/gardening-ideas/p5.jpg"),
+      ],
+    },
+    {
+      id: 3,
+      title: "Herb Spiral",
+      description:
+        "Create a spiral garden bed to grow various herbs in a small area with different microclimates.",
+      images: [
+        require("@/assets/images/gardening-ideas/s1.jpg"),
+        require("@/assets/images/gardening-ideas/s2.jpg"),
+        require("@/assets/images/gardening-ideas/s3.jpg"),
+        require("@/assets/images/gardening-ideas/s4.jpg"),
+        require("@/assets/images/gardening-ideas/s5.jpg"),
       ],
     },
   ],
