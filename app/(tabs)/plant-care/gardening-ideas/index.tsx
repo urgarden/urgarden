@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { gardeningIdeas } from "@/lib/config";
 export default function GardeningIdeasScreen() {
   const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
   const [selectedImage, setSelectedImage] = useState<string | null>(null); // State to store the selected image
+  const scrollRefs = useRef<any[]>([]); // Array of refs for each horizontal ScrollView
 
   const openModal = (image: string) => {
     setSelectedImage(image);
@@ -25,14 +26,48 @@ export default function GardeningIdeasScreen() {
     setModalVisible(false);
   };
 
+  useEffect(() => {
+    // Auto-scroll logic for each ScrollView
+    scrollRefs.current.forEach((scrollRef, index) => {
+      if (!scrollRef) return;
+
+      let scrollPosition = 0;
+      const interval = setInterval(() => {
+        scrollRef.scrollTo({
+          x: scrollPosition,
+          animated: true,
+        });
+        scrollPosition += 150; // Adjust scroll step (matches image width)
+        if (scrollPosition >= scrollRef.contentSize?.width) {
+          scrollPosition = 0; // Reset to the beginning
+        }
+      }, 3000); // Adjust interval time (3 seconds)
+
+      // Store the interval for cleanup
+      scrollRefs.current[index].interval = interval;
+    });
+
+    return () => {
+      // Clear all intervals on unmount
+      scrollRefs.current.forEach((scrollRef) => {
+        if (scrollRef?.interval) clearInterval(scrollRef.interval);
+      });
+    };
+  }, []);
+
   return (
     <View style={styles.container}>
       <ScrollView>
-        {gardeningIdeas.ideas.map((idea) => (
+        {gardeningIdeas.ideas.map((idea, ideaIndex) => (
           <View key={idea.id} style={styles.card}>
             <Text style={styles.cardTitle}>{idea.title}</Text>
             <Text style={styles.cardDescription}>{idea.description}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <ScrollView
+              horizontal
+              centerContent={true}
+              showsHorizontalScrollIndicator={false}
+              ref={(ref) => (scrollRefs.current[ideaIndex] = ref)} // Assign ref for each ScrollView
+            >
               {idea.images.map((image, index) => (
                 <TouchableOpacity key={index} onPress={() => openModal(image)}>
                   <Image
