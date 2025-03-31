@@ -69,7 +69,9 @@ export default function HomeScreen() {
         <ImagePreviewer imageUrls={trendingVeggieImages} />
 
         {/* List of All Vegetables */}
-        <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
+        </View>
 
         <FlatList
           style={{ width: "100%" }}
@@ -112,6 +114,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  titleContainer: {
+    width: "120%",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 2,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    zIndex: 1,
   },
   title: {
     fontSize: 28,
