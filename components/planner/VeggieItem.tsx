@@ -142,11 +142,11 @@ const styles = StyleSheet.create({
   veggieItem: {
     flexDirection: "column",
     alignItems: "center",
-    padding: 10,
-    marginTop: 20,
+    padding: 16,
+    marginTop: 4,
     margin: 5,
     borderRadius: 8,
-    minWidth: "45%",
+    minWidth: "48%",
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: {
@@ -155,8 +155,9 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 2,
   },
+
   veggieImage: {
     width: 80,
     height: 80,

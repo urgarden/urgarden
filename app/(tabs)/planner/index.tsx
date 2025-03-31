@@ -166,7 +166,9 @@ export default function PlannerScreen() {
       <View
         style={{ flex: 14, paddingHorizontal: 16, backgroundColor: "#f0f0f0" }}
       >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, gap: 20 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, gap: 20, paddingTop: 10 }}
+        >
           <FlatList
             data={veggies}
             keyExtractor={(item) => item.id.toString()}
