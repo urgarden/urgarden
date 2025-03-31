@@ -74,7 +74,7 @@ export default function HomeScreen() {
         </View>
 
         <FlatList
-          style={{ width: "100%" }}
+          style={{ width: "100%", paddingTop: 20 }}
           data={recommendedVeggies}
           keyExtractor={(item) => (item.id ?? "").toString()}
           renderItem={({ item }) => (
