@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "expo-router";
-
 import {
   StyleSheet,
   FlatList,
@@ -14,7 +13,7 @@ import {
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { getAllByUserId, deletePlant } from "@/lib/api/garden"; // Import delete and cancel APIs
+import { getAllByUserId, deletePlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
 import { GetAllByUserIdResult, PlantType } from "@/lib/definitions";
 
@@ -62,22 +61,6 @@ export default function MyGardenScreen() {
     await fetchPlants();
   };
 
-  if (!userId) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>
-          Please login to start planting and managing your garden.
-        </Text>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => router.push("/login")} // Redirect to login page
-        >
-          <Text style={styles.loginButtonText}>Go to Login</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   const handleDelete = async () => {
     if (!selectedPlant || !userId) return;
     try {
@@ -98,6 +81,22 @@ export default function MyGardenScreen() {
       setModalVisible(false);
     }
   };
+
+  if (!userId) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>
+          Please login to start planting and managing your garden.
+        </Text>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push("/login")} // Redirect to login page
+        >
+          <Text style={styles.loginButtonText}>Go to Login</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   if (loading && !refreshing) {
     return (
@@ -122,32 +121,37 @@ export default function MyGardenScreen() {
         data={plants}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            {item.veggie?.image && (
-              <Image
-                source={{ uri: item.veggie.image }}
-                style={styles.cardImage}
-              />
-            )}
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>
-                {item.veggie?.name || "Unknown Veggie"}
-              </Text>
-              <Text style={styles.cardDescription}>
-                {item.veggie?.description || "No description available."}
-              </Text>
-              <Text style={styles.cardStatus}>Status: {item.status}</Text>
+          <TouchableOpacity
+            onPress={() => router.push(`/my-garden/details/${item.id}` as any)} // Navigate to the details screen
+          >
+            <View style={styles.card}>
+              {item.veggie?.image && (
+                <Image
+                  source={{ uri: item.veggie.image }}
+                  style={styles.cardImage}
+                />
+              )}
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>
+                  {item.veggie?.name || "Unknown Veggie"}
+                </Text>
+                <Text style={styles.cardDescription}>
+                  {item.veggie?.description || "No description available."}
+                </Text>
+                <Text style={styles.cardStatus}>Status: {item.status}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.kebabMenu}
+                onPress={(e) => {
+                  e.stopPropagation(); // Prevent triggering navigation
+                  setSelectedPlant(item);
+                  setModalVisible(true);
+                }}
+              >
+                <Text style={styles.kebabMenuText}>⋮</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.kebabMenu}
-              onPress={() => {
-                setSelectedPlant(item);
-                setModalVisible(true);
-              }}
-            >
-              <Text style={styles.kebabMenuText}>⋮</Text>
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         )}
         contentContainerStyle={styles.listContent}
         refreshing={refreshing}

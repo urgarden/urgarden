@@ -7,6 +7,7 @@ const MyGardenLayout = () => {
         name="index"
         options={{ title: "My Garden", headerShown: false }}
       />
+      <Stack.Screen name="details/[id]" options={{ title: "Details" }} />
     </Stack>
   );
 };

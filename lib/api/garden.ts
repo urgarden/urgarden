@@ -173,3 +173,44 @@ export async function getAllByUserId(userId: string) {
     };
   }
 }
+
+// Fetch a specific plant by ID and include related veggie data
+export const getPlanById = async (id: number) => {
+  try {
+    // Fetch the plant data by ID
+    const { data: plantData, error: plantError } = await supabase
+      .from("garden")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (plantError) {
+      throw new Error(plantError.message);
+    }
+
+    // Fetch the related veggie data using the veggie_id from the plant data
+    const { data: veggieData, error: veggieError } = await supabase
+      .from("veggies")
+      .select("*")
+      .eq("id", plantData.veggie_id)
+      .single();
+
+    if (veggieError) {
+      console.error(
+        `Error fetching veggie data for veggie_id ${plantData.veggie_id}:`,
+        veggieError.message
+      );
+    }
+
+    // Combine the plant data and veggie data into one object
+    const combinedData = {
+      ...plantData,
+      veggie: veggieData || null, // Attach the veggie data or null if not found
+    };
+
+    return { success: true, data: combinedData };
+  } catch (error: any) {
+    console.error("Error fetching plant by ID:", error.message);
+    return { success: false, message: error.message };
+  }
+};
