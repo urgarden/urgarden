@@ -29,6 +29,8 @@ export default function PlannerScreen() {
   const [currentPage, setCurrentPage] = useState<number>(1); // Current page
   const [totalPages, setTotalPages] = useState<number>(1); // Total pages
   const [limit] = useState<number>(10); // Items per page
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const { userDetails } = useUserStore();
 
@@ -42,15 +44,19 @@ export default function PlannerScreen() {
         searchQuery, // Pass the search query
         selectedType?.value // Pass the selected type
       );
+      setLoading(false);
 
       if (result.success) {
         setVeggies(result.data ?? []);
         setTotalPages(result.totalPages ?? 1); // Update total pages with fallback
       } else {
+        console.error("Failed to fetch veggies:", result.message);
       }
     } catch (err: any) {
       console.error("Error fetching veggies:", err.message);
     } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -107,88 +113,94 @@ export default function PlannerScreen() {
         message: "Error deleting vegetable.",
         type: "danger",
       });
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      setRefreshing(true); // Set the refreshing state to true
+      setCurrentPage(1); // Reset to the first page
+      await fetchVeggies(1); // Fetch the veggies for the first page
+    } catch (error) {
+      console.error("Error refreshing veggies:", error);
     } finally {
+      setRefreshing(false); // Set the refreshing state to false
     }
   };
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">Planner</ThemedText>
-
-      {/* Sorting Buttons */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.buttonContainer}
-      >
-        <TouchableOpacity
-          style={[
-            styles.button,
-            selectedType === null && styles.selectedButton,
-          ]}
-          onPress={() => handleTypePress(null)}
-        >
-          <Text style={styles.buttonText}>All</Text>
-        </TouchableOpacity>
-        {categories.map((type) => (
-          <TouchableOpacity
-            key={type.id}
-            style={[
-              styles.button,
-              selectedType?.value === type.value && styles.selectedButton,
-            ]}
-            onPress={() => handleTypePress(type)}
-          >
-            <Text style={styles.buttonText}>{type.title}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      {/* Search Input */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search..."
-        value={searchQuery}
-        onChangeText={(text) => {
-          setSearchQuery(text);
-          setCurrentPage(1);
-        }}
-      />
-
-      {/* Add Vegetable Button */}
-      {isAdmin && (
-        <View style={styles.addButtonContainer}>
-          <Button title="Add Vegetable" onPress={handleAddVeggiePress} />
-        </View>
-      )}
-
-      {/* List of Vegetables */}
-      <View
-        style={{ flex: 14, paddingHorizontal: 16, backgroundColor: "#f0f0f0" }}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, gap: 20, paddingTop: 10 }}
-        >
-          <FlatList
-            data={veggies}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <VeggieItem
-                item={item}
-                isAdmin={isAdmin}
-                onPress={() => handleVeggiePress(item)}
-                onEdit={() => handleEditVeggiePress(item)}
-                onDelete={() => handleDeleteVeggie(item.id)}
-              />
-            )}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            scrollEnabled={false}
-            contentContainerStyle={{ paddingBottom: 20 }}
+      <FlatList
+        data={veggies}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <VeggieItem
+            item={item}
+            isAdmin={isAdmin}
+            onPress={() => handleVeggiePress(item)}
+            onEdit={() => handleEditVeggiePress(item)}
+            onDelete={() => handleDeleteVeggie(item.id)}
           />
+        )}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        refreshing={refreshing} // Use the refreshing state
+        onRefresh={handleRefresh} // Trigger handleRefresh on pull-to-refresh
+        contentContainerStyle={{ paddingBottom: 20 }}
+        ListHeaderComponent={
+          <>
+            <ThemedText type="title">Planner</ThemedText>
 
-          {/* Pagination Component */}
-          {veggies.length > 0 && (
+            {/* Sorting Buttons */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={styles.buttonContainer}
+            >
+              <TouchableOpacity
+                style={[
+                  styles.button,
+                  selectedType === null && styles.selectedButton,
+                ]}
+                onPress={() => handleTypePress(null)}
+              >
+                <Text style={styles.buttonText}>All</Text>
+              </TouchableOpacity>
+              {categories.map((type) => (
+                <TouchableOpacity
+                  key={type.id}
+                  style={[
+                    styles.button,
+                    selectedType?.value === type.value && styles.selectedButton,
+                  ]}
+                  onPress={() => handleTypePress(type)}
+                >
+                  <Text style={styles.buttonText}>{type.title}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Search Input */}
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search..."
+              value={searchQuery}
+              onChangeText={(text) => {
+                setSearchQuery(text);
+                setCurrentPage(1);
+              }}
+            />
+
+            {/* Add Vegetable Button */}
+            {isAdmin && (
+              <View style={styles.addButtonContainer}>
+                <Button title="Add Vegetable" onPress={handleAddVeggiePress} />
+              </View>
+            )}
+          </>
+        }
+        ListFooterComponent={
+          veggies.length > 0 ? (
             <View style={styles.paginationContainer}>
               <Pagination
                 currentPage={currentPage}
@@ -196,9 +208,9 @@ export default function PlannerScreen() {
                 onPageChange={(page) => setCurrentPage(page)}
               />
             </View>
-          )}
-        </ScrollView>
-      </View>
+          ) : null
+        }
+      />
     </ThemedView>
   );
 }
@@ -207,18 +219,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
-    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+    backgroundColor: "#f5f5f5",
   },
-
   paginationContainer: {
     alignItems: "center",
   },
-
   buttonContainer: {
     flexDirection: "row",
-    marginBottom: 16,
-    height: "auto",
-    marginHorizontal: 16,
+    height: 100,
   },
   button: {
     paddingVertical: 10,
@@ -242,7 +251,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: -40,
     paddingHorizontal: 10,
-    marginHorizontal: 16,
+    marginHorizontal: 4,
     marginBottom: 16,
   },
   addButtonContainer: {
@@ -251,10 +260,5 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
-  },
-  errorText: {
-    color: "red",
-    textAlign: "center",
-    marginTop: 20,
   },
 });
