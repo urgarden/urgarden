@@ -46,7 +46,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="my-garden/index"
+        name="my-garden"
         options={{
           title: "My Garden",
           tabBarIcon: ({ color }) => (
@@ -55,7 +55,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="plant-care/index"
+        name="plant-care"
         options={{
           title: "Plant Care",
           tabBarIcon: ({ color }) => (
