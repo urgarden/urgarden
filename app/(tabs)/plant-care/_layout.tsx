@@ -7,8 +7,8 @@ const PlantCareLayout = () => {
         name="index"
         options={{ title: "Plant Care", headerShown: false }}
       />
-      <Stack.Screen name="organic" options={{ title: "Organic" }} />
-      <Stack.Screen name="ideas" options={{ title: "Gardening Ideas" }} />
+      <Stack.Screen name="organic/index" options={{ title: "Organic" }} />
+      {/* <Stack.Screen name="ideas/index" options={{ title: "Gardening Ideas" }} /> */}
     </Stack>
   );
 };

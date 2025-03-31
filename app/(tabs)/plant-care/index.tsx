@@ -9,17 +9,17 @@ export default function PlantCareScreen() {
       <ThemedText type="title">Plant Care</ThemedText>
 
       {/* Navigate to Organic Plant Care */}
-      <Link href="../organic" asChild>
+      <Link href="/plant-care/organic" asChild>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Organic</Text>
         </TouchableOpacity>
       </Link>
       {/* Navigate to Gardening Ideas */}
-      <Link href="./gardening-ideas" asChild>
+      {/* <Link href="/plant-care/" asChild>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>Gardening Ideas</Text>
         </TouchableOpacity>
-      </Link>
+      </Link> */}
     </ThemedView>
   );
 }
