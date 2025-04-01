@@ -130,6 +130,58 @@ export default function PlannerScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <View style={styles.headerContainer}>
+        {/* Sorting Buttons */}
+        <ThemedText style={{ paddingTop: 50 }} type="title">
+          Planner
+        </ThemedText>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.buttonContainer}
+        >
+          <TouchableOpacity
+            style={[
+              styles.button,
+              selectedType === null && styles.selectedButton,
+            ]}
+            onPress={() => handleTypePress(null)}
+          >
+            <Text style={styles.buttonText}>All</Text>
+          </TouchableOpacity>
+          {categories.map((type) => (
+            <TouchableOpacity
+              key={type.id}
+              style={[
+                styles.button,
+                selectedType?.value === type.value && styles.selectedButton,
+              ]}
+              onPress={() => handleTypePress(type)}
+            >
+              <Text style={styles.buttonText}>{type.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Search Input */}
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          value={searchQuery}
+          onChangeText={(text) => {
+            setSearchQuery(text);
+            setCurrentPage(1);
+          }}
+        />
+
+        {/* Add Vegetable Button */}
+        {isAdmin && (
+          <View style={styles.addButtonContainer}>
+            <Button title="Add Vegetable" onPress={handleAddVeggiePress} />
+          </View>
+        )}
+      </View>
+
       <FlatList
         data={veggies}
         keyExtractor={(item) => item.id.toString()}
@@ -146,59 +198,10 @@ export default function PlannerScreen() {
         columnWrapperStyle={styles.columnWrapper}
         refreshing={refreshing} // Use the refreshing state
         onRefresh={handleRefresh} // Trigger handleRefresh on pull-to-refresh
-        contentContainerStyle={{ paddingBottom: 20 }}
-        ListHeaderComponent={
-          <>
-            <ThemedText type="title">Planner</ThemedText>
-
-            {/* Sorting Buttons */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.buttonContainer}
-            >
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  selectedType === null && styles.selectedButton,
-                ]}
-                onPress={() => handleTypePress(null)}
-              >
-                <Text style={styles.buttonText}>All</Text>
-              </TouchableOpacity>
-              {categories.map((type) => (
-                <TouchableOpacity
-                  key={type.id}
-                  style={[
-                    styles.button,
-                    selectedType?.value === type.value && styles.selectedButton,
-                  ]}
-                  onPress={() => handleTypePress(type)}
-                >
-                  <Text style={styles.buttonText}>{type.title}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-
-            {/* Search Input */}
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search..."
-              value={searchQuery}
-              onChangeText={(text) => {
-                setSearchQuery(text);
-                setCurrentPage(1);
-              }}
-            />
-
-            {/* Add Vegetable Button */}
-            {isAdmin && (
-              <View style={styles.addButtonContainer}>
-                <Button title="Add Vegetable" onPress={handleAddVeggiePress} />
-              </View>
-            )}
-          </>
-        }
+        contentContainerStyle={{
+          paddingBottom: 20,
+          paddingHorizontal: 16,
+        }}
         ListFooterComponent={
           veggies.length > 0 ? (
             <View style={styles.paginationContainer}>
@@ -218,9 +221,28 @@ export default function PlannerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
-    paddingHorizontal: 16,
     backgroundColor: "#f5f5f5",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+  },
+  headerContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    width: "100%",
+    zIndex: 1,
+    paddingHorizontal: 16,
+    shadowColor: "#000",
+    borderBottomEndRadius: 10,
+    borderBottomStartRadius: 10,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   paginationContainer: {
     alignItems: "center",
@@ -247,6 +269,7 @@ const styles = StyleSheet.create({
   searchInput: {
     height: 40,
     borderColor: "#ccc",
+    width: "100%",
     borderWidth: 1,
     borderRadius: 8,
     marginTop: -40,
@@ -257,6 +280,7 @@ const styles = StyleSheet.create({
   addButtonContainer: {
     marginHorizontal: 16,
     marginBottom: 16,
+    width: "100%",
   },
   columnWrapper: {
     justifyContent: "space-between",
