@@ -43,11 +43,11 @@ export const createVeggie = async (veggie: VeggieType) => {
     const updatedStages = await Promise.all(
       veggie.stages.map(async (stage, index) => {
         if (stage.imageUrl) {
-          const stageFileName = `veggie-stage-${index + 1}-${Date.now()}.jpg`;
+          const stageFileName = `stage-${index + 1}-${Date.now()}.jpg`;
           const stageImageUrl = await uploadImageToStorage(
             stage.imageUrl,
             stageFileName,
-            "veggie-images"
+            "veggie-images/stages"
           );
           return { ...stage, imageUrl: stageImageUrl };
         }
@@ -225,20 +225,6 @@ export const updateVeggie = async (
     return { success: false, message: error.message };
   }
 };
-// Delete a vegetable by ID
-export const deleteVeggie = async (id: string) => {
-  try {
-    const { error } = await supabase.from("veggies").delete().eq("id", id);
-
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    return { success: true, message: "Vegetable deleted successfully!" };
-  } catch (error: any) {
-    return { success: false, message: error.message };
-  }
-};
 
 // Fetch recommended vegetables with related veggie data
 export const getRecommendedVeggies = async () => {
@@ -290,7 +276,7 @@ export const saveGrowingRequirements = async (
       growingRequirements.map(async (condition, index) => {
         if (condition.image && !condition.image.startsWith("http")) {
           // Generate a unique file name for the image
-          const fileName = `growing-condition-${veggieId}-${
+          const fileName = `growing-requirement-${veggieId}-${
             index + 1
           }-${Date.now()}.jpg`;
 
@@ -324,5 +310,91 @@ export const saveGrowingRequirements = async (
   } catch (err: any) {
     console.error("Error saving growing requirements:", err.message);
     return { success: false, message: err.message };
+  }
+};
+
+// Delete a vegetable by ID and delete its associated images
+export const deleteVeggie = async (id: string) => {
+  try {
+    // Fetch the veggie to get its image, stages, and growing requirements
+    const { data: veggie, error: fetchError } = await supabase
+      .from("veggies")
+      .select("image, stages, growing_requirement")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) {
+      throw new Error(fetchError.message);
+    }
+
+    if (!veggie) {
+      throw new Error("Veggie not found.");
+    }
+
+    // Base URL to remove from the image paths
+    const baseUrl =
+      "https://ymwtljnsuraanqirfbxj.supabase.co/storage/v1/object/public/veggie-images/";
+
+    // Helper function to delete images from the storage bucket
+    const deleteImages = async (bucket: string, paths: string[]) => {
+      if (paths.length === 0) return;
+
+      const { data: deleteResponse, error } = await supabase.storage
+        .from(bucket)
+        .remove(paths);
+
+      if (error) {
+        console.error(`Error deleting images from ${bucket}:`, error.message);
+      } else {
+      }
+    };
+
+    // Collect all image paths to delete
+    const mainImagePath = veggie.image
+      ? veggie.image.replace(baseUrl, "")
+      : null;
+
+    const stageImagePaths = veggie.stages
+      ? veggie.stages
+          .filter((stage: any) => stage.imageUrl)
+          .map((stage: any) => stage.imageUrl.replace(baseUrl, ""))
+      : [];
+
+    const growingRequirementImagePaths = veggie.growing_requirement
+      ? veggie.growing_requirement
+          .filter((requirement: any) => requirement.image)
+          .map((requirement: any) => requirement.image.replace(baseUrl, ""))
+      : [];
+
+    // Delete images from the storage bucket
+    if (mainImagePath) {
+      await deleteImages("veggie-images", [mainImagePath]);
+    }
+
+    if (stageImagePaths.length > 0) {
+      await deleteImages("veggie-images", stageImagePaths);
+    }
+
+    if (growingRequirementImagePaths.length > 0) {
+      await deleteImages("veggie-images", growingRequirementImagePaths);
+    }
+
+    // Delete the veggie record from the database
+    const { error: deleteVeggieError } = await supabase
+      .from("veggies")
+      .delete()
+      .eq("id", id);
+
+    if (deleteVeggieError) {
+      throw new Error(deleteVeggieError.message);
+    }
+
+    return {
+      success: true,
+      message: "Vegetable and associated images deleted successfully!",
+    };
+  } catch (error: any) {
+    console.error("Error deleting veggie:", error.message);
+    return { success: false, message: error.message };
   }
 };

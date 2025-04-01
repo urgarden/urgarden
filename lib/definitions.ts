@@ -20,6 +20,12 @@ export type Stage = {
   stageEndDays: number;
 };
 
+export type GrowingCondition = {
+  title: string;
+  description: string;
+  image: string;
+};
+
 export type VeggieType = {
   id?: number;
   name: string;
@@ -30,6 +36,7 @@ export type VeggieType = {
   created_at?: string;
   updated_at?: string;
   veggies?: string[];
+  growing_requirement?: GrowingCondition[];
 };
 
 export type CategoryType = {
@@ -56,10 +63,4 @@ export type GetAllByUserIdResult = {
   success: boolean;
   data?: PlantType[];
   message?: string;
-};
-
-export type GrowingCondition = {
-  title: string;
-  description: string;
-  image: string;
 };
