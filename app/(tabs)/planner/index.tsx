@@ -238,11 +238,11 @@ const styles = StyleSheet.create({
     borderBottomStartRadius: 10,
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
   },
   paginationContainer: {
     alignItems: "center",
@@ -255,12 +255,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
-    backgroundColor: "#ccc",
+    backgroundColor: "#4CAF50",
     marginHorizontal: 5,
     alignSelf: "flex-start",
   },
   selectedButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "green",
   },
   buttonText: {
     color: "#fff",

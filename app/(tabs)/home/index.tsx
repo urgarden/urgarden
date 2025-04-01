@@ -131,9 +131,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   titleContainer: {
-    width: "120%",
+    width: "110%",
     alignItems: "center",
     justifyContent: "center",
+    borderBottomEndRadius: 10,
+    borderBottomStartRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -141,9 +143,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 2,
+    elevation: 3,
     backgroundColor: "#fff",
-    borderRadius: 8,
     zIndex: 1,
   },
   title: {
