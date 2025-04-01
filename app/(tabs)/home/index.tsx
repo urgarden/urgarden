@@ -95,7 +95,7 @@ export default function HomeScreen() {
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 40 }}
           ListEmptyComponent={
             loading ? (
               <View style={styles.loadingContainer}>
