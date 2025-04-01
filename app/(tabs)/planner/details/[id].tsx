@@ -11,6 +11,7 @@ import {
   Alert,
 } from "react-native";
 import { getVeggieById } from "@/lib/api/veggie";
+import { saveGrowingRequirements } from "@/lib/api/veggie";
 import { GrowingCondition, VeggieType } from "@/lib/definitions";
 import { addPlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
@@ -86,10 +87,37 @@ export default function VeggieDetails() {
     }
   };
 
-  const handleFormSubmit = (formData: GrowingCondition[]) => {
-    console.log("Form Data:", formData);
-    Alert.alert("Success", "Plant details submitted successfully!");
-    setIsModalVisible(false); // Close the modal after submission
+  const handleFormSubmit = async (formData: GrowingCondition[]) => {
+    try {
+      if (!id) {
+        Alert.alert("Error", "Veggie ID is missing. Please try again.");
+        return;
+      }
+
+      // Call the API to save growing requirements
+      const result = await saveGrowingRequirements(id as string, formData);
+
+      if (result.success) {
+        Alert.alert("Success", "Growing requirements saved successfully!");
+        setVeggie((prevVeggie) => {
+          if (!prevVeggie) return null; // Ensure prevVeggie is not null
+          return {
+            ...prevVeggie,
+            growing_requirement: formData, // Update the local state with the new data
+          };
+        });
+      } else {
+        Alert.alert(
+          "Error",
+          result.message || "Failed to save growing requirements."
+        );
+      }
+    } catch (err) {
+      console.error("Error saving growing requirements:", err);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    } finally {
+      setIsModalVisible(false); // Close the modal after submission
+    }
   };
 
   return (
