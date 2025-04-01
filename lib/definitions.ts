@@ -57,3 +57,9 @@ export type GetAllByUserIdResult = {
   data?: PlantType[];
   message?: string;
 };
+
+export type GrowingCondition = {
+  title: string;
+  description: string;
+  image: string;
+};
