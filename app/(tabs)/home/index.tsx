@@ -32,6 +32,7 @@ export default function HomeScreen() {
   const [recommendedVeggies, setRecommendedVeggies] = useState<
     RecommendedVeggie[]
   >([]);
+  const [loading, setLoading] = useState<boolean>(true); // Add loading state
 
   const handleVeggiePress = (veggie: RecommendedVeggie) => {
     router.push(`/home/details/${veggie.veggie_id}` as any);
@@ -42,6 +43,7 @@ export default function HomeScreen() {
   // Fetch recommended veggies on component mount
   useEffect(() => {
     const fetchVeggies = async () => {
+      setLoading(true); // Set loading to true before fetching data
       const result = await getRecommendedVeggies();
 
       if (result.success && result.data) {
@@ -56,6 +58,7 @@ export default function HomeScreen() {
       } else {
         console.error("Error fetching recommended veggies:", result.message);
       }
+      setLoading(false); // Set loading to false after fetching data
     };
 
     fetchVeggies();
@@ -93,6 +96,18 @@ export default function HomeScreen() {
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={{ paddingBottom: 20 }}
+          ListEmptyComponent={
+            loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#4CAF50" />
+                <Text style={styles.loadingText}>Loading...</Text>
+              </View>
+            ) : (
+              <Text style={styles.loadingText}>
+                No recommended vegetables found.
+              </Text>
+            )
+          }
         />
       </View>
     </View>
@@ -166,6 +181,16 @@ const styles = StyleSheet.create({
   },
   veggieText: {
     fontSize: 18,
+    color: "#333",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
     color: "#333",
   },
 });
