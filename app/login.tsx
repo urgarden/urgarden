@@ -3,7 +3,6 @@ import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/lib/navigationTypes";
 import { Link, useNavigation } from "expo-router";
-import Icon from "react-native-vector-icons/FontAwesome";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
@@ -33,13 +32,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
         });
       } else {
         const user = result.user; // Get the user object from the login result
-        const role = user?.role === "admin" ? "admin" : ""; // Determine the role
+        const role = user?.role === "admin" ? "admin" : "customer"; // Determine the role
 
-        // Save user details in Zustand store
+        // Save user details in Zustand store with role set to "customer"
         useUserStore.getState().setUserDetails({
           id: user?.id ?? "",
           email: user?.email ?? "",
-          role,
+          role: role,
         });
 
         showMessage({
@@ -47,7 +46,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
           description: "You have successfully logged in!",
           type: "success",
         });
-        console.log("Login successful");
         nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen
       }
     } catch (error) {
@@ -58,16 +56,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       });
     }
   };
+
   const handleGuestLogin = () => {
+    // Clear user details and set role to "guest"
+    useUserStore.getState().clearUserDetails();
+    useUserStore.getState().setUserDetails({
+      id: "",
+      email: "",
+      role: "guest",
+    });
+
     nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
   };
 
   const buttons = [
-    {
-      style: styles.backButton,
-      onPress: () => nav.goBack(),
-      icon: <Icon name="arrow-left" size={20} color="#4CAF50" />,
-    },
     {
       style: styles.guestButton,
       onPress: handleGuestLogin,
@@ -84,7 +86,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
             style={button.style}
             onPress={button.onPress}
           >
-            {button.icon || button.text}
+            {button.text}
           </TouchableOpacity>
         ))}
       </View>
@@ -109,13 +111,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
         <ThemedText type="errorMessage">{errorMessage}</ThemedText>
       )}
       <ProceedButton title="Login" onPress={handleLogin} />
-      <TouchableOpacity
-        style={styles.forgotPasswordButton}
-        // Uncomment and implement navigation to forgot-password screen if needed
-        // onPress={() => nav.navigate("forgot-password")}
-      >
-        <ThemedText type="link">Forgot Password?</ThemedText>
-      </TouchableOpacity>
+
+      <Link href="/forgot-password" asChild>
+        <TouchableOpacity style={styles.forgotPasswordButton}>
+          <ThemedText type="linkB">Forgot Password?</ThemedText>
+        </TouchableOpacity>
+      </Link>
       <View style={styles.signupContainer}>
         <ThemedText style={styles.signupText}>
           Need to create an account?

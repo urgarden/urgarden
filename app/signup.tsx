@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import { useNavigation } from "expo-router";
+import { useNavigation } from "expo-router"; // Import useRouter
 import { validateSignupFormData } from "@/utils/validation";
 import { signupFormFields } from "@/utils/formFields";
 import InputField from "@/components/InputField";
@@ -39,8 +39,6 @@ const SignupPage = () => {
 
     // Call the Supabase signup function
     const result = await signup(formData);
-
-    console.log(result);
 
     if (result.error) {
       // Show error message if signup fails

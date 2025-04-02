@@ -8,9 +8,12 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { getVeggieById } from "@/lib/api/veggie";
 import { VeggieType } from "@/lib/definitions";
+import { addPlant } from "@/lib/api/garden";
+import { useUserStore } from "@/lib/stores/userStore";
 
 export default function VeggieDetails() {
   const router = useRouter();
@@ -18,6 +21,8 @@ export default function VeggieDetails() {
   const [veggie, setVeggie] = useState<VeggieType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const userId = useUserStore((state) => state.userDetails?.id);
 
   useEffect(() => {
     const fetchVeggieDetails = async () => {
@@ -58,8 +63,22 @@ export default function VeggieDetails() {
     return <Text style={styles.errorText}>Veggie not found.</Text>;
   }
 
-  const handlePlantPress = () => {
-    console.log("Plant button pressed for:", veggie.name);
+  const handlePlantPress = async () => {
+    try {
+      if (!userId) {
+        Alert.alert("Error", "User ID is missing. Please log in again.");
+        return;
+      }
+      const result = await addPlant(userId, veggie.id?.toString() || ""); // Call the plantVeggie API
+      if (result && result.success) {
+        Alert.alert("Success", "Veggie planted successfully!");
+      } else {
+        Alert.alert("Error", result.message || "Failed to plant veggie.");
+      }
+    } catch (err: any) {
+      console.error("Error planting veggie:", err.message);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    }
   };
 
   return (
@@ -114,7 +133,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: "#fff",
-    paddingBottom: 500,
+    paddingBottom: 300,
   },
   image: {
     width: "100%",

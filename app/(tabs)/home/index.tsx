@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { getRecommendedVeggies } from "@/lib/api/veggie"; // Import the API function
 import { vegiImage } from "@/lib/config";
+import { StatusBar } from "expo-status-bar";
 
 // Define the type for recommended veggies
 type RecommendedVeggie = {
@@ -31,6 +32,7 @@ export default function HomeScreen() {
   const [recommendedVeggies, setRecommendedVeggies] = useState<
     RecommendedVeggie[]
   >([]);
+  const [loading, setLoading] = useState<boolean>(true); // Add loading state
 
   const handleVeggiePress = (veggie: RecommendedVeggie) => {
     router.push(`/home/details/${veggie.veggie_id}` as any);
@@ -41,6 +43,7 @@ export default function HomeScreen() {
   // Fetch recommended veggies on component mount
   useEffect(() => {
     const fetchVeggies = async () => {
+      setLoading(true); // Set loading to true before fetching data
       const result = await getRecommendedVeggies();
 
       if (result.success && result.data) {
@@ -55,6 +58,7 @@ export default function HomeScreen() {
       } else {
         console.error("Error fetching recommended veggies:", result.message);
       }
+      setLoading(false); // Set loading to false after fetching data
     };
 
     fetchVeggies();
@@ -62,15 +66,18 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" backgroundColor="#fff" />
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
         <ImagePreviewer imageUrls={trendingVeggieImages} />
 
         {/* List of All Vegetables */}
-        <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
+        </View>
 
         <FlatList
-          style={{ width: "100%" }}
+          style={{ width: "100%", paddingTop: 10 }}
           data={recommendedVeggies}
           keyExtractor={(item) => (item.id ?? "").toString()}
           renderItem={({ item }) => (
@@ -88,7 +95,19 @@ export default function HomeScreen() {
           )}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          ListEmptyComponent={
+            loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#4CAF50" />
+                <Text style={styles.loadingText}>Loading...</Text>
+              </View>
+            ) : (
+              <Text style={styles.loadingText}>
+                No recommended vegetables found.
+              </Text>
+            )
+          }
         />
       </View>
     </View>
@@ -110,6 +129,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  titleContainer: {
+    width: "110%",
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomEndRadius: 10,
+    borderBottomStartRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
+    backgroundColor: "#fff",
+    zIndex: 1,
   },
   title: {
     fontSize: 28,
@@ -146,6 +182,16 @@ const styles = StyleSheet.create({
   },
   veggieText: {
     fontSize: 18,
+    color: "#333",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
     color: "#333",
   },
 });

@@ -1,10 +1,12 @@
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Link } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 export default function LandingPage() {
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" backgroundColor="#fff" />
       <Text style={styles.title}>
         Urgarden: A Mobile-based Planner for Vegetables Urban Gardening
       </Text>

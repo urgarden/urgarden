@@ -107,7 +107,7 @@ export const login = async (
       user: {
         id: user.id,
         email: user.email || "",
-        role, // Include the role in the response
+        role,
       },
     };
   } catch (error: any) {
@@ -122,5 +122,31 @@ export const logoutUser = async (): Promise<void> => {
     }
   } catch (error) {
     throw new Error("Failed to log out user");
+  }
+};
+export const forgotPassword = async (
+  email: string
+): Promise<{ success: boolean; message: string }> => {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "exp://192.168.1.53:8081/reset-password", // Use your app's deep link
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return {
+      success: true,
+      message:
+        "Password reset email sent successfully. Please check your inbox.",
+    };
+  } catch (error: any) {
+    console.error("Error in forgotPassword:", error.message);
+    return {
+      success: false,
+      message:
+        error.message || "An unexpected error occurred. Please try again.",
+    };
   }
 };

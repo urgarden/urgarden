@@ -13,10 +13,10 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import VeggieItem from "@/components/planner/VeggieItem";
-import Pagination from "@/components/Pagination"; // Import the Pagination component
+import Pagination from "@/components/Pagination";
 import { useRouter } from "expo-router";
 import { categories } from "@/lib/config";
-import { getAllVeggies } from "@/lib/api/veggie"; // Import the API function
+import { getAllVeggies } from "@/lib/api/veggie";
 import { useUserStore } from "@/lib/stores/userStore";
 import { deleteVeggie } from "@/lib/api/veggie";
 import { showMessage } from "react-native-flash-message";
@@ -29,6 +29,8 @@ export default function PlannerScreen() {
   const [currentPage, setCurrentPage] = useState<number>(1); // Current page
   const [totalPages, setTotalPages] = useState<number>(1); // Total pages
   const [limit] = useState<number>(10); // Items per page
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
   const { userDetails } = useUserStore();
 
@@ -42,15 +44,19 @@ export default function PlannerScreen() {
         searchQuery, // Pass the search query
         selectedType?.value // Pass the selected type
       );
+      setLoading(false);
 
       if (result.success) {
         setVeggies(result.data ?? []);
         setTotalPages(result.totalPages ?? 1); // Update total pages with fallback
       } else {
+        console.error("Failed to fetch veggies:", result.message);
       }
     } catch (err: any) {
       console.error("Error fetching veggies:", err.message);
     } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -107,86 +113,97 @@ export default function PlannerScreen() {
         message: "Error deleting vegetable.",
         type: "danger",
       });
+    }
+  };
+
+  const handleRefresh = async () => {
+    try {
+      setRefreshing(true); // Set the refreshing state to true
+      setCurrentPage(1); // Reset to the first page
+      await fetchVeggies(1); // Fetch the veggies for the first page
+    } catch (error) {
+      console.error("Error refreshing veggies:", error);
     } finally {
+      setRefreshing(false); // Set the refreshing state to false
     }
   };
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title">PLANNER</ThemedText>
-
-      {/* Sorting Buttons */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.buttonContainer}
-      >
-        <TouchableOpacity
-          style={[
-            styles.button,
-            selectedType === null && styles.selectedButton,
-          ]}
-          onPress={() => handleTypePress(null)}
+      <View style={styles.headerContainer}>
+        {/* Sorting Buttons */}
+        <ThemedText style={{ paddingTop: 50 }} type="title">
+          Planner
+        </ThemedText>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.buttonContainer}
         >
-          <Text style={styles.buttonText}>All</Text>
-        </TouchableOpacity>
-        {categories.map((type) => (
           <TouchableOpacity
-            key={type.id}
             style={[
               styles.button,
-              selectedType?.value === type.value && styles.selectedButton,
+              selectedType === null && styles.selectedButton,
             ]}
-            onPress={() => handleTypePress(type)}
+            onPress={() => handleTypePress(null)}
           >
-            <Text style={styles.buttonText}>{type.title}</Text>
+            <Text style={styles.buttonText}>All</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+          {categories.map((type) => (
+            <TouchableOpacity
+              key={type.id}
+              style={[
+                styles.button,
+                selectedType?.value === type.value && styles.selectedButton,
+              ]}
+              onPress={() => handleTypePress(type)}
+            >
+              <Text style={styles.buttonText}>{type.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-      {/* Search Input */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search..."
-        value={searchQuery}
-        onChangeText={(text) => {
-          setSearchQuery(text);
-          setCurrentPage(1);
-        }}
-      />
+        {/* Search Input */}
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search..."
+          value={searchQuery}
+          onChangeText={(text) => {
+            setSearchQuery(text);
+            setCurrentPage(1);
+          }}
+        />
 
-      {/* Add Vegetable Button */}
-      {isAdmin && (
-        <View style={styles.addButtonContainer}>
-          <Button title="Add Vegetable" onPress={handleAddVeggiePress} />
-        </View>
-      )}
+        {/* Add Vegetable Button */}
+        {isAdmin && (
+          <View style={styles.addButtonContainer}>
+            <Button title="Add Vegetable" onPress={handleAddVeggiePress} />
+          </View>
+        )}
+      </View>
 
-      {/* List of Vegetables */}
-      <View
-        style={{ flex: 14, paddingHorizontal: 16, backgroundColor: "#f0f0f0" }}
-      >
-        <ScrollView contentContainerStyle={{ flexGrow: 1, gap: 20 }}>
-          <FlatList
-            data={veggies}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <VeggieItem
-                item={item}
-                isAdmin={isAdmin}
-                onPress={() => handleVeggiePress(item)}
-                onEdit={() => handleEditVeggiePress(item)}
-                onDelete={() => handleDeleteVeggie(item.id)}
-              />
-            )}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            scrollEnabled={false}
-            contentContainerStyle={{ paddingBottom: 20 }}
+      <FlatList
+        data={veggies}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <VeggieItem
+            item={item}
+            isAdmin={isAdmin}
+            onPress={() => handleVeggiePress(item)}
+            onEdit={() => handleEditVeggiePress(item)}
+            onDelete={() => handleDeleteVeggie(item.id)}
           />
-
-          {/* Pagination Component */}
-          {veggies.length > 0 && (
+        )}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
+        refreshing={refreshing} // Use the refreshing state
+        onRefresh={handleRefresh} // Trigger handleRefresh on pull-to-refresh
+        contentContainerStyle={{
+          paddingBottom: 20,
+          paddingHorizontal: 16,
+        }}
+        ListFooterComponent={
+          veggies.length > 0 ? (
             <View style={styles.paginationContainer}>
               <Pagination
                 currentPage={currentPage}
@@ -194,9 +211,9 @@ export default function PlannerScreen() {
                 onPageChange={(page) => setCurrentPage(page)}
               />
             </View>
-          )}
-        </ScrollView>
-      </View>
+          ) : null
+        }
+      />
     </ThemedView>
   );
 }
@@ -204,29 +221,46 @@ export default function PlannerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    backgroundColor: "#f5f5f5",
+    flexDirection: "column",
+    justifyContent: "flex-start",
   },
-
+  headerContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    width: "100%",
+    zIndex: 1,
+    paddingHorizontal: 16,
+    shadowColor: "#000",
+    borderBottomEndRadius: 10,
+    borderBottomStartRadius: 10,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
   paginationContainer: {
     alignItems: "center",
   },
-
   buttonContainer: {
     flexDirection: "row",
-    marginBottom: 16,
-    height: "auto",
-    marginHorizontal: 16,
+    height: 100,
   },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
-    backgroundColor: "#ccc",
+    backgroundColor: "#4CAF50",
     marginHorizontal: 5,
     alignSelf: "flex-start",
   },
   selectedButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "green",
   },
   buttonText: {
     color: "#fff",
@@ -235,23 +269,20 @@ const styles = StyleSheet.create({
   searchInput: {
     height: 40,
     borderColor: "#ccc",
+    width: "100%",
     borderWidth: 1,
     borderRadius: 8,
     marginTop: -40,
     paddingHorizontal: 10,
-    marginHorizontal: 16,
+    marginHorizontal: 4,
     marginBottom: 16,
   },
   addButtonContainer: {
     marginHorizontal: 16,
     marginBottom: 16,
+    width: "100%",
   },
   columnWrapper: {
     justifyContent: "space-between",
-  },
-  errorText: {
-    color: "red",
-    textAlign: "center",
-    marginTop: 20,
   },
 });
