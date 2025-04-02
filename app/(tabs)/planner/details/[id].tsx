@@ -16,6 +16,8 @@ import { GrowingCondition, VeggieType } from "@/lib/definitions";
 import { addPlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
 import PlantForm from "@/components/planner/GrowingFormModal";
+import GrowingRequirementDetails from "@/components/planner/GrowingDetails";
+import GrowthStages from "@/components/planner/GrowthStage";
 
 export default function VeggieDetails() {
   const router = useRouter();
@@ -121,61 +123,47 @@ export default function VeggieDetails() {
   };
 
   return (
-    <>
-      <ScrollView
-        style={{ flex: 1 }} // Ensure ScrollView takes full height
-        contentContainerStyle={{
-          ...styles.container,
-          flexGrow: 1, // Ensure content grows and scrolls properly
-        }}
-      >
-        {veggie.image && (
-          <Image source={{ uri: veggie.image }} style={styles.image} />
-        )}
-        <Text style={styles.title}>{veggie.name}</Text>
-        <Text style={styles.type}>Type: {veggie.type}</Text>
-        <Text style={styles.description}>{veggie.description}</Text>
+    <ScrollView
+      style={{ flex: 1 }} // Ensure ScrollView takes full height
+      contentContainerStyle={{
+        ...styles.container,
+        flexGrow: 1, // Ensure content grows and scrolls properly
+      }}
+    >
+      {veggie.image && (
+        <Image source={{ uri: veggie.image }} style={styles.image} />
+      )}
+      <Text style={styles.title}>{veggie.name}</Text>
+      <Text style={styles.type}>Type: {veggie.type}</Text>
+      <Text style={styles.description}>{veggie.description}</Text>
 
-        {/* Display Stages */}
-        <Text style={styles.sectionTitle}>Growth Stages</Text>
-        {veggie.stages
-          .sort((a, b) => a.stageNumber - b.stageNumber) // Sort stages by stageNumber
-          .map((stage) => (
-            <View key={stage.stageNumber} style={styles.stageContainer}>
-              {stage.imageUrl && (
-                <Image
-                  source={{ uri: stage.imageUrl }}
-                  style={styles.stageImage}
-                />
-              )}
-              <View style={styles.stageDetails}>
-                <Text style={styles.stageTitle}>
-                  Stage {stage.stageNumber}: {stage.title}
-                </Text>
-                <Text style={styles.stageDescription}>{stage.description}</Text>
-                <Text style={styles.stageEndDays}>
-                  {stage.stageEndDays}{" "}
-                  {+stage.stageEndDays === 1 ? "day" : "days"}
-                </Text>
-              </View>
-            </View>
-          ))}
+      {/* Growth Stages */}
+      <GrowthStages
+        stages={(veggie.stages || []).map((stage) => ({
+          ...stage,
+          imageUrl: stage.imageUrl ?? undefined, // Convert null to undefined
+        }))}
+      />
 
-        {/* Plant Button */}
-        <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
-          <Text style={styles.plantButtonText}>Plant</Text>
+      {/* Growing Requirements */}
+      <GrowingRequirementDetails
+        growingRequirements={veggie.growing_requirement || []}
+      />
+
+      {/* Plant Button */}
+      <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
+        <Text style={styles.plantButtonText}>Plant</Text>
+      </TouchableOpacity>
+
+      {/* Redirect to Growing Form Button (Visible only for Admins) */}
+      {isAdmin && (
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text style={styles.adminButtonText}>Add Growing Requirement</Text>
         </TouchableOpacity>
-
-        {/* Redirect to Growing Form Button (Visible only for Admins) */}
-        {isAdmin && (
-          <TouchableOpacity
-            style={styles.adminButton}
-            onPress={() => setIsModalVisible(true)}
-          >
-            <Text style={styles.adminButtonText}>Add Growing Requirement</Text>
-          </TouchableOpacity>
-        )}
-      </ScrollView>
+      )}
 
       {/* PlantForm Modal */}
       <PlantForm
@@ -183,7 +171,7 @@ export default function VeggieDetails() {
         onClose={() => setIsModalVisible(false)} // Close the modal
         onSubmit={handleFormSubmit} // Handle form submission
       />
-    </>
+    </ScrollView>
   );
 }
 
@@ -191,11 +179,10 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: "#fff",
-    paddingBottom: 300,
   },
   image: {
     width: "100%",
-    height: "30%",
+    height: 250,
     objectFit: "contain",
     borderRadius: 8,
     marginBottom: 16,
@@ -290,8 +277,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
-    marginTop: 16,
-    marginBottom: 32,
   },
   adminButtonText: {
     color: "#fff",
