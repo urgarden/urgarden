@@ -58,16 +58,16 @@ const GrowingRequirementDetails: React.FC<GrowingRequirementDetailsProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 16,
+    backgroundColor: "#fff",
   },
   sectionTitle: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 24,
     color: "#333",
-    textAlign: "center",
+    textAlign: "left",
     borderTopColor: "#ddd",
-    paddingTop: 16,
-    borderTopWidth: 1,
+    paddingTop: 24,
   },
   card: {
     width: screenWidth - 32,
