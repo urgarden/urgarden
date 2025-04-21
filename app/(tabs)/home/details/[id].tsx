@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: "30%",
-    objectFit: "contain",
+    height: 300,
+    objectFit: "fill",
     borderRadius: 8,
     marginBottom: 16,
   },
@@ -192,10 +192,10 @@ const styles = StyleSheet.create({
   },
   stageImage: {
     width: "30%",
-    height: "auto",
+    height: 100,
     borderRadius: 8,
     marginBottom: 8,
-    objectFit: "cover",
+    objectFit: "fill",
   },
   stageTitle: {
     fontSize: 20,
