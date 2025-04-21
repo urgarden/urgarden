@@ -26,9 +26,13 @@
               "pathPrefix": "/reset-password"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
-      ]
+      ],
+      "package": "com.urgarden.urgarden"
     },
     "web": {
       "bundler": "metro",
@@ -49,6 +53,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5575a784-58ba-4b2f-86b7-8735902816ad"
+      }
     }
   }
 }
