@@ -18,7 +18,7 @@ Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
   }),
 });
 
@@ -46,8 +46,9 @@ export default function PlantDetailsScreen() {
   }, [id]);
 
   const scheduleNotification = async (stage: Stage, stageStartDate: Date) => {
-    const triggerDate = new Date(stageStartDate.getTime());
-    triggerDate.setSeconds(triggerDate.getSeconds()); // For testing, set to 5 seconds from now
+    // const triggerDate = new Date(stageStartDate.getTime());
+    const triggerDate = new Date();
+    triggerDate.setSeconds(triggerDate.getSeconds() + 5); // For testing, set to 5 seconds from now
 
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -55,7 +56,7 @@ export default function PlantDetailsScreen() {
         body: `The next stage "${stage.title}" has started!`,
         data: { stage },
       },
-      trigger:{ type: 'date', timestamp: triggerDate }, // Schedule the notification
+      trigger: { type: 'date', timestamp: triggerDate }, // Schedule the notification
     });
   };
 
