@@ -60,13 +60,15 @@ export default function PlantDetailsScreen() {
     }
 
     // Calculate the end date for the current stage
-    const stageEndDate = new Date(stageStartDate.getTime() + +stage.stageEndDays * 24 * 60 * 60 * 1000); // Add days in milliseconds
-
+    const stageEndDate = new Date(stageStartDate.getTime() + stage.stageEndDays * 24 * 60 * 60 * 1000); // Add days in milliseconds
 
     // Determine the stage status
     let stageStatus = "Upcoming";
+    let timeLeft = null; // Time left for the current stage
     if (currentDate >= stageStartDate && currentDate <= stageEndDate) {
       stageStatus = "Current Stage";
+      const timeDifference = stageEndDate.getTime() - currentDate.getTime(); // Difference in milliseconds
+      timeLeft = Math.ceil(timeDifference / (24 * 60 * 60 * 1000)); // Convert to days
     } else if (currentDate > stageEndDate) {
       stageStatus = "Completed";
     }
@@ -86,21 +88,30 @@ export default function PlantDetailsScreen() {
           <Image source={{ uri: stage.imageUrl }} style={styles.stageImage} />
         ) : null}
         <View style={styles.stageContent}>
-          <Text style={styles.stageTitle}>{index+1 + ". "  + stage.title}</Text>
+          <Text style={styles.stageTitle}>{index + 1 + ". " + stage.title}</Text>
           <Text style={styles.stageDescription}>{stage.description}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-          <Text
-            style={[
-              styles.stageStatus,
-              isCurrentStage && styles.currentStageStatus, // Highlight status text
-            ]}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            {stageStatus}
-          </Text>
-          <Text>{stage.stageEndDays} days</Text>
-            </View>
-
-         
+            <Text
+              style={[
+                styles.stageStatus,
+                isCurrentStage && styles.currentStageStatus, // Highlight status text
+              ]}
+            >
+              {stageStatus}
+            </Text>
+            <Text>{stage.stageEndDays} days</Text>
+          </View>
+          {isCurrentStage && timeLeft !== null && (
+            <Text style={styles.timeLeft}>
+              {timeLeft} day{timeLeft > 1 ? "s" : ""} left
+            </Text>
+          )}
         </View>
       </View>
     );
@@ -246,5 +257,12 @@ const styles = StyleSheet.create({
   },
   currentStageStatus: {
     color: "#FF5722", 
+  },
+  timeLeft: {
+    fontSize: 14,
+    color: "#FF5722", 
+    marginTop: 4,
+    fontStyle: "italic",
+    alignSelf: "flex-end",
   },
 });
