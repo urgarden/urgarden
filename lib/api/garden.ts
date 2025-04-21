@@ -214,3 +214,31 @@ export const getPlanById = async (id: number) => {
     return { success: false, message: error.message };
   }
 };
+
+export async function updateGardenStatusById(id: number, status: PlantStatus) {
+  try {
+    // Update the status column for the garden entry with the specified ID
+    const { error } = await supabase
+      .from("garden")
+      .update({ status }) // Update the status column
+      .eq("id", id);
+
+    if (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Garden status updated successfully.",
+    };
+  } catch (err: any) {
+    console.error("Error updating garden status:", err);
+    return {
+      success: false,
+      message: err.message || "An unexpected error occurred.",
+    };
+  }
+}

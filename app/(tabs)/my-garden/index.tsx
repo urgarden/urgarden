@@ -15,7 +15,20 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAllByUserId, deletePlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
-import { GetAllByUserIdResult, PlantType } from "@/lib/definitions";
+import { GetAllByUserIdResult, PlantType, PlantStatus } from "@/lib/definitions";
+
+const getStatusColor = (status: PlantStatus): string => {
+  switch (status) {
+    case "ongoing":
+      return "#4CAF50"; // Green for ongoing
+    case "done":
+      return "#2196F3"; // Blue for done
+    case "canceled":
+      return "#F44336"; // Red for canceled
+    default:
+      return "#888"; // Default gray for unknown status
+  }
+};
 
 export default function MyGardenScreen() {
   const [plants, setPlants] = useState<PlantType[]>([]);
@@ -138,7 +151,14 @@ export default function MyGardenScreen() {
                 <Text style={styles.cardDescription}>
                   {item.veggie?.description || "No description available."}
                 </Text>
-                <Text style={styles.cardStatus}>Status: {item.status}</Text>
+                <Text
+                  style={[
+                    styles.cardStatus,
+                    { color: getStatusColor(item.status) }, // Apply color coding
+                  ]}
+                >
+                  Status: {item.status}
+                </Text>
               </View>
               <TouchableOpacity
                 style={styles.kebabMenu}
@@ -249,7 +269,7 @@ const styles = StyleSheet.create({
   },
   cardStatus: {
     fontSize: 14,
-    color: "#888",
+    color: "#4CAF50",
   },
   kebabMenu: {
     position: "absolute",

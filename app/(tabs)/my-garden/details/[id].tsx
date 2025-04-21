@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { getPlanById } from "@/lib/api/garden"; // API to fetch plant details
+import { getPlanById, updateGardenStatusById } from "@/lib/api/garden"; // Import the update API
 import { Stage, PlantType } from "@/lib/definitions";
 
 export default function PlantDetailsScreen() {
@@ -22,8 +22,8 @@ export default function PlantDetailsScreen() {
         const result = await getPlanById(Number(id)); // Fetch plant details by ID
         if (result.success) {
           setPlant(result.data); // Set the fetched plant data
+          checkLastStageCompletion(result.data); // Check if the last stage is completed
         }
-
       } catch (err) {
         console.error("Error fetching plant details:", (err as Error).message);
       } finally {
@@ -33,6 +33,39 @@ export default function PlantDetailsScreen() {
 
     fetchPlantDetails();
   }, [id]);
+
+  const checkLastStageCompletion = async (plantData: PlantType) => {
+    const createdAt = new Date(plantData.created_at); // Parse the creation date
+    const currentDate = new Date(); // Get the current date
+    const stages = plantData.veggie.stages;
+
+    // Calculate the start and end dates for the last stage
+    let stageStartDate = new Date(createdAt);
+    for (let i = 0; i < stages.length - 1; i++) {
+      stageStartDate = new Date(
+        stageStartDate.getTime() + stages[i].stageEndDays * 24 * 60 * 60 * 1000
+      );
+    }
+    const lastStage = stages[stages.length - 1];
+    const lastStageEndDate = new Date(
+      stageStartDate.getTime() + lastStage.stageEndDays * 24 * 60 * 60 * 1000
+    );
+
+    // Check if the last stage is completed
+    if (currentDate > lastStageEndDate && plantData.status !== "done") {
+      try {
+        const updateResult = await updateGardenStatusById(plantData.id, "done");
+        if (updateResult.success) {
+          console.log("Garden status updated to 'done'.");
+          setPlant({ ...plantData, status: "done" }); // Update the local state
+        } else {
+          console.error("Failed to update garden status:", updateResult.message);
+        }
+      } catch (err) {
+        console.error("Error updating garden status:", (err as Error).message);
+      }
+    }
+  };
 
   if (loading) {
     return (
