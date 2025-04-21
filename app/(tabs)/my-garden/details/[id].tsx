@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { getPlanById } from "@/lib/api/garden"; // API to fetch plant details
-import { Stage } from "@/lib/definitions";
+import { Stage, PlantType } from "@/lib/definitions";
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
-  const [plant, setPlant] = useState<any>(null); // State to store plant details
+  const [plant, setPlant] = useState<PlantType>(); // State to store plant details
   const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   useEffect(() => {
@@ -23,6 +23,7 @@ export default function PlantDetailsScreen() {
         if (result.success) {
           setPlant(result.data); // Set the fetched plant data
         }
+
       } catch (err) {
         console.error("Error fetching plant details:", (err as Error).message);
       } finally {
@@ -47,23 +48,59 @@ export default function PlantDetailsScreen() {
     );
   }
 
-  const renderStageIndicator = (stage: any, index: number) => {
-    const isCurrentStage = plant.status === "ongoing" && index === 0;
-    const isCompletedStage = index < 1;
+  const renderStageIndicator = (stage: Stage, index: number) => {
+    const createdAt = new Date(plant.created_at); // Parse the ISO 8601 timestamp into a Date object
+    const currentDate = new Date(); // Get the current date
+
+    // Calculate the start date for the current stage
+    let stageStartDate = new Date(createdAt); // Start with the creation date
+    for (let i = 0; i < index; i++) {
+      const previousStageDays = plant.veggie.stages[i].stageEndDays; // Get the days of the previous stage
+      stageStartDate = new Date(stageStartDate.getTime() + previousStageDays * 24 * 60 * 60 * 1000); // Add days in milliseconds
+    }
+
+    // Calculate the end date for the current stage
+    const stageEndDate = new Date(stageStartDate.getTime() + +stage.stageEndDays * 24 * 60 * 60 * 1000); // Add days in milliseconds
+
+
+    // Determine the stage status
+    let stageStatus = "Upcoming";
+    if (currentDate >= stageStartDate && currentDate <= stageEndDate) {
+      stageStatus = "Current Stage";
+    } else if (currentDate > stageEndDate) {
+      stageStatus = "Completed";
+    }
+
+    // Highlight the "Current Stage" visually
+    const isCurrentStage = stageStatus === "Current Stage";
 
     return (
-      <View key={stage.stageNumber} style={styles.stageCard}>
-        <Image source={{ uri: stage.imageUrl }} style={styles.stageImage} />
+      <View
+        key={stage.stageNumber}
+        style={[
+          styles.stageCard,
+          isCurrentStage && styles.currentStageCard, // Apply highlight style if current stage
+        ]}
+      >
+        {stage.imageUrl ? (
+          <Image source={{ uri: stage.imageUrl }} style={styles.stageImage} />
+        ) : null}
         <View style={styles.stageContent}>
-          <Text style={styles.stageTitle}>{stage.title}</Text>
+          <Text style={styles.stageTitle}>{index+1 + ". "  + stage.title}</Text>
           <Text style={styles.stageDescription}>{stage.description}</Text>
-          <Text style={styles.stageStatus}>
-            {isCurrentStage
-              ? "Current Stage"
-              : isCompletedStage
-              ? "Completed"
-              : "Upcoming"}
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <Text
+            style={[
+              styles.stageStatus,
+              isCurrentStage && styles.currentStageStatus, // Highlight status text
+            ]}
+          >
+            {stageStatus}
           </Text>
+          <Text>{stage.stageEndDays} days</Text>
+            </View>
+
+         
         </View>
       </View>
     );
@@ -178,6 +215,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
+  currentStageCard: {
+    borderWidth: 2,
+    borderColor: "#4CAF50", 
+  },
   stageImage: {
     width: 80,
     height: 80,
@@ -202,5 +243,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#4CAF50",
+  },
+  currentStageStatus: {
+    color: "#FF5722", 
   },
 });
