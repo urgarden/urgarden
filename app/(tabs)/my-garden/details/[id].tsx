@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import * as Notifications from "expo-notifications";
 import {
   View,
   Text,
@@ -11,6 +12,15 @@ import { useLocalSearchParams } from "expo-router";
 import { getPlanById, updateGardenStatusById } from "@/lib/api/garden"; // Import the update API
 import { Stage, PlantType } from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
+
+// Configure notification behavior
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
@@ -35,35 +45,64 @@ export default function PlantDetailsScreen() {
     fetchPlantDetails();
   }, [id]);
 
+  const scheduleNotification = async (stage: Stage, stageStartDate: Date) => {
+    const triggerDate = new Date(stageStartDate.getTime());
+    triggerDate.setSeconds(triggerDate.getSeconds()); // For testing, set to 5 seconds from now
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Stage Reminder",
+        body: `The next stage "${stage.title}" has started!`,
+        data: { stage },
+      },
+      trigger:{ type: 'date', timestamp: triggerDate }, // Schedule the notification
+    });
+  };
+
   const checkLastStageCompletion = async (plantData: PlantType) => {
     const createdAt = new Date(plantData.created_at); // Parse the creation date
     const currentDate = new Date(); // Get the current date
     const stages = plantData.veggie.stages;
 
-    // Calculate the start and end dates for the last stage
     let stageStartDate = new Date(createdAt);
-    for (let i = 0; i < stages.length - 1; i++) {
-      stageStartDate = new Date(
+    for (let i = 0; i < stages.length; i++) {
+      const stageEndDate = new Date(
         stageStartDate.getTime() + stages[i].stageEndDays * 24 * 60 * 60 * 1000
       );
-    }
-    const lastStage = stages[stages.length - 1];
-    const lastStageEndDate = new Date(
-      stageStartDate.getTime() + lastStage.stageEndDays * 24 * 60 * 60 * 1000
-    );
 
-    // Check if the last stage is completed
-    if (currentDate > lastStageEndDate && plantData.status !== "done") {
-      try {
-        const updateResult = await updateGardenStatusById(plantData.id, "done");
-        if (updateResult.success) {
-          setPlant({ ...plantData, status: "done" }); // Update the local state
-        } else {
-          console.error("Failed to update garden status:", updateResult.message);
+      if (currentDate > stageEndDate && i === stages.length - 1) {
+        // If the last stage is completed, update the status to "done"
+        if (plantData.status !== "done") {
+          try {
+            const updateResult = await updateGardenStatusById(
+              plantData.id,
+              "done"
+            );
+            if (updateResult.success) {
+              setPlant({ ...plantData, status: "done" }); // Update the local state
+            } else {
+              console.error(
+                "Failed to update garden status:",
+                updateResult.message
+              );
+            }
+          } catch (err) {
+            console.error(
+              "Error updating garden status:",
+              (err as Error).message
+            );
+          }
         }
-      } catch (err) {
-        console.error("Error updating garden status:", (err as Error).message);
+      } else if (currentDate <= stageEndDate) {
+        // Schedule a notification for the next stage
+        if (i + 1 < stages.length) {
+          const nextStageStartDate = new Date(stageEndDate.getTime());
+          scheduleNotification(stages[i + 1], nextStageStartDate);
+        }
+        break;
       }
+
+      stageStartDate = stageEndDate; // Move to the next stage
     }
   };
 
@@ -101,7 +140,13 @@ export default function PlantDetailsScreen() {
     if (currentDate >= stageStartDate && currentDate <= stageEndDate) {
       stageStatus = "Current Stage";
       const timeDifference = stageEndDate.getTime() - currentDate.getTime(); // Difference in milliseconds
-      timeLeft = Math.ceil(timeDifference / (24 * 60 * 60 * 1000)); // Convert to days
+
+      // Convert time difference to days, hours, and minutes
+      const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+      const hours = Math.floor((timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+      const minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
+
+      timeLeft = { days, hours, minutes };
     } else if (currentDate > stageEndDate) {
       stageStatus = "Completed";
     }
@@ -142,7 +187,10 @@ export default function PlantDetailsScreen() {
           </View>
           {isCurrentStage && timeLeft !== null && (
             <Text style={styles.timeLeft}>
-              {timeLeft} day{timeLeft > 1 ? "s" : ""} left
+              {timeLeft.days > 0 && `${timeLeft.days} day${timeLeft.days > 1 ? "s" : ""} `}
+              {timeLeft.hours > 0 && `${timeLeft.hours} hour${timeLeft.hours > 1 ? "s" : ""} `}
+              {timeLeft.minutes > 0 && `${timeLeft.minutes} minute${timeLeft.minutes > 1 ? "s " : " "}`} 
+              left
             </Text>
           )}
         </View>
