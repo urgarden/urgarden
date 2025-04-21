@@ -16,19 +16,8 @@ import { ThemedView } from "@/components/ThemedView";
 import { getAllByUserId, deletePlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
 import { GetAllByUserIdResult, PlantType, PlantStatus } from "@/lib/definitions";
+import { getStatusColor } from "@/utils/getStatusColor";
 
-const getStatusColor = (status: PlantStatus): string => {
-  switch (status) {
-    case "ongoing":
-      return "#4CAF50"; // Green for ongoing
-    case "done":
-      return "#2196F3"; // Blue for done
-    case "canceled":
-      return "#F44336"; // Red for canceled
-    default:
-      return "#888"; // Default gray for unknown status
-  }
-};
 
 export default function MyGardenScreen() {
   const [plants, setPlants] = useState<PlantType[]>([]);
@@ -154,7 +143,7 @@ export default function MyGardenScreen() {
                 <Text
                   style={[
                     styles.cardStatus,
-                    { color: getStatusColor(item.status) }, // Apply color coding
+                    { color: getStatusColor(item.status) }, 
                   ]}
                 >
                   Status: {item.status}

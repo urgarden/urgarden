@@ -10,6 +10,7 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { getPlanById, updateGardenStatusById } from "@/lib/api/garden"; // Import the update API
 import { Stage, PlantType } from "@/lib/definitions";
+import { getStatusColor } from "@/utils/getStatusColor";
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
@@ -56,7 +57,6 @@ export default function PlantDetailsScreen() {
       try {
         const updateResult = await updateGardenStatusById(plantData.id, "done");
         if (updateResult.success) {
-          console.log("Garden status updated to 'done'.");
           setPlant({ ...plantData, status: "done" }); // Update the local state
         } else {
           console.error("Failed to update garden status:", updateResult.message);
@@ -169,7 +169,9 @@ export default function PlantDetailsScreen() {
       </Text>
 
       {/* Display the plant status */}
-      <Text style={styles.status}>Status: {plant.status}</Text>
+      <Text  style={[ styles.status,
+                          { color: getStatusColor(plant.status) }, 
+                        ]}>Status: {plant.status}</Text>
 
       {/* Display additional plant details */}
       <Text style={styles.details}>
@@ -230,6 +232,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#888",
     marginBottom: 16,
+    fontWeight: "bold",
   },
   details: {
     fontSize: 14,
