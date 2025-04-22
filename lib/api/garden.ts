@@ -12,6 +12,7 @@ export async function addPlant(userId: string, veggieId: string) {
       .select("*")
       .eq("user_id", userId)
       .eq("veggie_id", veggieId)
+      .eq("status", "ongoing") 
       .single();
 
     if (checkError && checkError.code !== "PGRST116") {
