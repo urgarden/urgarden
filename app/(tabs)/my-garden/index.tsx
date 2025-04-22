@@ -268,7 +268,10 @@ const styles = StyleSheet.create({
   kebabMenuText: {
     fontSize: 24,
     color: "#888",
-    paddingLeft: 8,
+    padding: 8,
+    paddingHorizontal: 14,
+    marginTop:-20,
+    marginRight:-10,
   },
   modalContainer: {
     flex: 1,
