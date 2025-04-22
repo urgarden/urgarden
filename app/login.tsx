@@ -10,11 +10,9 @@ import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
 import { useUserStore } from "@/lib/stores/userStore";
 
-type LoginPageProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "login">;
-};
 
-const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
+
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -23,7 +21,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      const result = await login(email, password); // Call Supabase login function
+      const result = await login(email, password); 
       if (result.error) {
         showMessage({
           message: "Login Failed",
@@ -31,8 +29,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
           type: "danger",
         });
       } else {
-        const user = result.user; // Get the user object from the login result
-        const role = user?.role === "admin" ? "admin" : "customer"; // Determine the role
+        const user = result.user; 
+        const role = user?.role === "admin" ? "admin" : "customer"; 
 
         // Save user details in Zustand store with role set to "customer"
         useUserStore.getState().setUserDetails({

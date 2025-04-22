@@ -1,9 +1,11 @@
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router";
 
 export default function LandingPage() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <StatusBar style="dark" backgroundColor="#fff" />
@@ -11,11 +13,12 @@ export default function LandingPage() {
         Urgarden: A Mobile-based Planner for Vegetables Urban Gardening
       </Text>
       <View style={styles.buttonContainer}>
-        <Link href="/login" asChild>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="arrow-right" size={20} color="#fff" />
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("/login")} // Use router.push here
+        >
+          <Icon name="arrow-right" size={20} color="#fff" />
+        </TouchableOpacity>
       </View>
     </View>
   );
