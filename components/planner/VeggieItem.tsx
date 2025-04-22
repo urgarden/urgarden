@@ -173,7 +173,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     textOverflow: "ellipsis",
     maxWidth: 80,
-    marginBottom: 10,
   },
   skeletonImage: {
     width: "85%",

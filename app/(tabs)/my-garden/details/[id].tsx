@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 8,
     marginBottom: 16,
-    objectFit: "contain",
+    objectFit: "cover",
   },
   title: {
     fontSize: 24,
