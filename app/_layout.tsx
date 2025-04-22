@@ -28,27 +28,33 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  // Handle splash screen hiding
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
 
+  // Register background task
   useEffect(() => {
-    registerBackgroundTask(); // Call the function here
+    const initializeBackgroundTask = async () => {
+      await registerBackgroundTask();
+    };
+    initializeBackgroundTask();
   }, []);
 
+  // Request notification permissions
+  useEffect(() => {
+    const initializePermissions = async () => {
+      await requestNotificationPermissions();
+    };
+    initializePermissions();
+  }, []);
+
+  // Ensure fonts are loaded before rendering
   if (!loaded) {
     return null; // Show nothing until fonts are loaded
   }
-
-  useEffect(() => {
-    const requestPermissions = async () => {
-      await requestNotificationPermissions();
-    };
-
-    requestPermissions();
-  }, []);
 
   return (
     <ThemeProvider value={DefaultTheme}>

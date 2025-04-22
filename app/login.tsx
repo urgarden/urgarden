@@ -8,27 +8,26 @@ import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
 import { useUserStore } from "@/lib/stores/userStore";
 
-
-
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const router = useRouter();
 
-
   const handleLogin = async () => {
     try {
-      const result = await login(email, password); 
+      const result = await login(email, password);
       if (result.error) {
         showMessage({
           message: "Login Failed",
           description: result.message,
           type: "danger",
+          position: "bottom",
+          floating: true,
         });
       } else {
-        const user = result.user; 
-        const role = user?.role === "admin" ? "admin" : "customer"; 
+        const user = result.user;
+        const role = user?.role === "admin" ? "admin" : "customer";
 
         // Save user details in Zustand store with role set to "customer"
         useUserStore.getState().setUserDetails({
@@ -41,14 +40,18 @@ const LoginPage: React.FC = () => {
           message: "Login Successful",
           description: "You have successfully logged in!",
           type: "success",
+          position: "top",
+          floating: true,
         });
-        router.push("/(tabs)/home"); 
+        router.push("/(tabs)/home");
       }
     } catch (error) {
       showMessage({
         message: "Login Failed",
         description: "An error occurred during login. Please try again.",
         type: "danger",
+        position: "bottom",
+        floating: true,
       });
     }
   };
@@ -62,7 +65,7 @@ const LoginPage: React.FC = () => {
       role: "guest",
     });
 
-    router.push("/(tabs)/home"); 
+    router.push("/(tabs)/home");
   };
 
   const buttons = [
@@ -141,7 +144,6 @@ const styles = StyleSheet.create({
     top: -100,
     alignItems: "flex-start",
     width: "100%",
-
   },
   backButton: {
     paddingVertical: 12,
