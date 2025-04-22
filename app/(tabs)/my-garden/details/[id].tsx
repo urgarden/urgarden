@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as Notifications from "expo-notifications";
 import {
   View,
   Text,
@@ -12,15 +11,6 @@ import { useLocalSearchParams } from "expo-router";
 import { getPlanById, updateGardenStatusById } from "@/lib/api/garden"; // Import the update API
 import { Stage, PlantType } from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
-
-// Configure notification behavior
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
@@ -44,21 +34,6 @@ export default function PlantDetailsScreen() {
 
     fetchPlantDetails();
   }, [id]);
-
-  const scheduleNotification = async (stage: Stage, stageStartDate: Date) => {
-    // const triggerDate = new Date(stageStartDate.getTime());
-    const triggerDate = new Date();
-    triggerDate.setSeconds(triggerDate.getSeconds() + 5); // For testing, set to 5 seconds from now
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Stage Reminder",
-        body: `The next stage "${stage.title}" has started!`,
-        data: { stage },
-      },
-      trigger: { type: 'date', timestamp: triggerDate }, // Schedule the notification
-    });
-  };
 
   const checkLastStageCompletion = async (plantData: PlantType) => {
     const createdAt = new Date(plantData.created_at); // Parse the creation date
@@ -95,11 +70,6 @@ export default function PlantDetailsScreen() {
           }
         }
       } else if (currentDate <= stageEndDate) {
-        // Schedule a notification for the next stage
-        if (i + 1 < stages.length) {
-          const nextStageStartDate = new Date(stageEndDate.getTime());
-          scheduleNotification(stages[i + 1], nextStageStartDate);
-        }
         break;
       }
 
@@ -129,11 +99,15 @@ export default function PlantDetailsScreen() {
     let stageStartDate = new Date(createdAt); // Start with the creation date
     for (let i = 0; i < index; i++) {
       const previousStageDays = plant.veggie.stages[i].stageEndDays; // Get the days of the previous stage
-      stageStartDate = new Date(stageStartDate.getTime() + previousStageDays * 24 * 60 * 60 * 1000); // Add days in milliseconds
+      stageStartDate = new Date(
+        stageStartDate.getTime() + previousStageDays * 24 * 60 * 60 * 1000
+      ); // Add days in milliseconds
     }
 
     // Calculate the end date for the current stage
-    const stageEndDate = new Date(stageStartDate.getTime() + stage.stageEndDays * 24 * 60 * 60 * 1000); // Add days in milliseconds
+    const stageEndDate = new Date(
+      stageStartDate.getTime() + stage.stageEndDays * 24 * 60 * 60 * 1000
+    ); // Add days in milliseconds
 
     // Determine the stage status
     let stageStatus = "Upcoming";
@@ -144,8 +118,12 @@ export default function PlantDetailsScreen() {
 
       // Convert time difference to days, hours, and minutes
       const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
-      const hours = Math.floor((timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-      const minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
+      const hours = Math.floor(
+        (timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
+      );
+      const minutes = Math.floor(
+        (timeDifference % (60 * 60 * 1000)) / (60 * 1000)
+      );
 
       timeLeft = { days, hours, minutes };
     } else if (currentDate > stageEndDate) {
@@ -167,7 +145,9 @@ export default function PlantDetailsScreen() {
           <Image source={{ uri: stage.imageUrl }} style={styles.stageImage} />
         ) : null}
         <View style={styles.stageContent}>
-          <Text style={styles.stageTitle}>{index + 1 + ". " + stage.title}</Text>
+          <Text style={styles.stageTitle}>
+            {index + 1 + ". " + stage.title}
+          </Text>
           <Text style={styles.stageDescription}>{stage.description}</Text>
           <View
             style={{
@@ -188,9 +168,14 @@ export default function PlantDetailsScreen() {
           </View>
           {isCurrentStage && timeLeft !== null && (
             <Text style={styles.timeLeft}>
-              {timeLeft.days > 0 && `${timeLeft.days} day${timeLeft.days > 1 ? "s" : ""} `}
-              {timeLeft.hours > 0 && `${timeLeft.hours} hour${timeLeft.hours > 1 ? "s" : ""} `}
-              {timeLeft.minutes > 0 && `${timeLeft.minutes} minute${timeLeft.minutes > 1 ? "s " : " "}`} 
+              {timeLeft.days > 0 &&
+                `${timeLeft.days} day${timeLeft.days > 1 ? "s" : ""} `}
+              {timeLeft.hours > 0 &&
+                `${timeLeft.hours} hour${timeLeft.hours > 1 ? "s" : ""} `}
+              {timeLeft.minutes > 0 &&
+                `${timeLeft.minutes} minute${
+                  timeLeft.minutes > 1 ? "s " : " "
+                }`}
               left
             </Text>
           )}
@@ -218,9 +203,9 @@ export default function PlantDetailsScreen() {
       </Text>
 
       {/* Display the plant status */}
-      <Text  style={[ styles.status,
-                          { color: getStatusColor(plant.status) }, 
-                        ]}>Status: {plant.status}</Text>
+      <Text style={[styles.status, { color: getStatusColor(plant.status) }]}>
+        Status: {plant.status}
+      </Text>
 
       {/* Display additional plant details */}
       <Text style={styles.details}>
@@ -313,7 +298,7 @@ const styles = StyleSheet.create({
   },
   currentStageCard: {
     borderWidth: 2,
-    borderColor: "#4CAF50", 
+    borderColor: "#4CAF50",
   },
   stageImage: {
     width: 80,
@@ -341,11 +326,11 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
   },
   currentStageStatus: {
-    color: "#FF5722", 
+    color: "#FF5722",
   },
   timeLeft: {
     fontSize: 14,
-    color: "#FF5722", 
+    color: "#FF5722",
     marginTop: 4,
     fontStyle: "italic",
     alignSelf: "flex-end",

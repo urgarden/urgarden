@@ -15,7 +15,7 @@ export default function LandingPage() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push("/login")} // Use router.push here
+          onPress={() => router.push("/login")} 
         >
           <Icon name="arrow-right" size={20} color="#fff" />
         </TouchableOpacity>
