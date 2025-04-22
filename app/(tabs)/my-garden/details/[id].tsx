@@ -8,9 +8,11 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { getPlanById, updateGardenStatusById } from "@/lib/api/garden"; // Import the update API
+import { getPlanById} from "@/lib/api/garden"; // Import the update API
 import { Stage, PlantType } from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
+import { renderStageIndicator } from "@/components/my-garden/RenderStage";
+import { checkLastStageCompletion } from "@/utils/checkLastStageCompletion";
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
@@ -23,7 +25,7 @@ export default function PlantDetailsScreen() {
         const result = await getPlanById(Number(id)); // Fetch plant details by ID
         if (result.success) {
           setPlant(result.data); // Set the fetched plant data
-          checkLastStageCompletion(result.data); // Check if the last stage is completed
+          checkLastStageCompletion(result.data, setPlant); // Check if the last stage is completed
         }
       } catch (err) {
         console.error("Error fetching plant details:", (err as Error).message);
@@ -35,48 +37,7 @@ export default function PlantDetailsScreen() {
     fetchPlantDetails();
   }, [id]);
 
-  const checkLastStageCompletion = async (plantData: PlantType) => {
-    const createdAt = new Date(plantData.created_at); // Parse the creation date
-    const currentDate = new Date(); // Get the current date
-    const stages = plantData.veggie.stages;
-
-    let stageStartDate = new Date(createdAt);
-    for (let i = 0; i < stages.length; i++) {
-      const stageEndDate = new Date(
-        stageStartDate.getTime() + stages[i].stageEndDays * 24 * 60 * 60 * 1000
-      );
-
-      if (currentDate > stageEndDate && i === stages.length - 1) {
-        // If the last stage is completed, update the status to "done"
-        if (plantData.status !== "done") {
-          try {
-            const updateResult = await updateGardenStatusById(
-              plantData.id,
-              "done"
-            );
-            if (updateResult.success) {
-              setPlant({ ...plantData, status: "done" }); // Update the local state
-            } else {
-              console.error(
-                "Failed to update garden status:",
-                updateResult.message
-              );
-            }
-          } catch (err) {
-            console.error(
-              "Error updating garden status:",
-              (err as Error).message
-            );
-          }
-        }
-      } else if (currentDate <= stageEndDate) {
-        break;
-      }
-
-      stageStartDate = stageEndDate; // Move to the next stage
-    }
-  };
-
+  
   if (loading) {
     return (
       <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
@@ -91,99 +52,7 @@ export default function PlantDetailsScreen() {
     );
   }
 
-  const renderStageIndicator = (stage: Stage, index: number) => {
-    const createdAt = new Date(plant.created_at); // Parse the ISO 8601 timestamp into a Date object
-    const currentDate = new Date(); // Get the current date
-
-    // Calculate the start date for the current stage
-    let stageStartDate = new Date(createdAt); // Start with the creation date
-    for (let i = 0; i < index; i++) {
-      const previousStageDays = plant.veggie.stages[i].stageEndDays; // Get the days of the previous stage
-      stageStartDate = new Date(
-        stageStartDate.getTime() + previousStageDays * 24 * 60 * 60 * 1000
-      ); // Add days in milliseconds
-    }
-
-    // Calculate the end date for the current stage
-    const stageEndDate = new Date(
-      stageStartDate.getTime() + stage.stageEndDays * 24 * 60 * 60 * 1000
-    ); // Add days in milliseconds
-
-    // Determine the stage status
-    let stageStatus = "Upcoming";
-    let timeLeft = null; // Time left for the current stage
-    if (currentDate >= stageStartDate && currentDate <= stageEndDate) {
-      stageStatus = "Current Stage";
-      const timeDifference = stageEndDate.getTime() - currentDate.getTime(); // Difference in milliseconds
-
-      // Convert time difference to days, hours, and minutes
-      const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
-      const hours = Math.floor(
-        (timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
-      );
-      const minutes = Math.floor(
-        (timeDifference % (60 * 60 * 1000)) / (60 * 1000)
-      );
-
-      timeLeft = { days, hours, minutes };
-    } else if (currentDate > stageEndDate) {
-      stageStatus = "Completed";
-    }
-
-    // Highlight the "Current Stage" visually
-    const isCurrentStage = stageStatus === "Current Stage";
-
-    return (
-      <View
-        key={stage.stageNumber}
-        style={[
-          styles.stageCard,
-          isCurrentStage && styles.currentStageCard, // Apply highlight style if current stage
-        ]}
-      >
-        {stage.imageUrl ? (
-          <Image source={{ uri: stage.imageUrl }} style={styles.stageImage} />
-        ) : null}
-        <View style={styles.stageContent}>
-          <Text style={styles.stageTitle}>
-            {index + 1 + ". " + stage.title}
-          </Text>
-          <Text style={styles.stageDescription}>{stage.description}</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <Text
-              style={[
-                styles.stageStatus,
-                isCurrentStage && styles.currentStageStatus, // Highlight status text
-              ]}
-            >
-              {stageStatus}
-            </Text>
-            <Text>{stage.stageEndDays} days</Text>
-          </View>
-          {isCurrentStage && timeLeft !== null && (
-            <Text style={styles.timeLeft}>
-              {timeLeft.days > 0 &&
-                `${timeLeft.days} day${timeLeft.days > 1 ? "s" : ""} `}
-              {timeLeft.hours > 0 &&
-                `${timeLeft.hours} hour${timeLeft.hours > 1 ? "s" : ""} `}
-              {timeLeft.minutes > 0 &&
-                `${timeLeft.minutes} minute${
-                  timeLeft.minutes > 1 ? "s " : " "
-                }`}
-              left
-            </Text>
-          )}
-        </View>
-      </View>
-    );
-  };
-
+  
   return (
     <ScrollView
       style={styles.container}
@@ -216,7 +85,7 @@ export default function PlantDetailsScreen() {
       {/* Display the stages */}
       <Text style={styles.sectionTitle}>Stages</Text>
       {plant.veggie?.stages?.map((stage: Stage, index: number) =>
-        renderStageIndicator(stage, index)
+        renderStageIndicator(plant,stage, index)
       )}
     </ScrollView>
   );
@@ -228,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scrollContent: {
-    padding: 16, // Add padding to the content inside the ScrollView
+    padding: 16, 
   },
   loader: {
     flex: 1,
