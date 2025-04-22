@@ -137,12 +137,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   topButtonsContainer: {
-    position: "absolute",
-    top: 40,
-    left: 20,
-    right: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    position: "sticky",
+    top: -100,
+    alignItems: "flex-start",
+    width: "100%",
+
   },
   backButton: {
     paddingVertical: 12,

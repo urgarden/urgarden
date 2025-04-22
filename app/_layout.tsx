@@ -39,7 +39,7 @@ export default function RootLayout() {
           name="reset-password"
           options={{ headerTitle: "Reset Password" }}
         />
-        <Stack.Screen name="signup" options={{ headerShown: false }} />
+        <Stack.Screen name="signup" options={{headerBackTitle:""}} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>

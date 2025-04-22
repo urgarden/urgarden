@@ -60,9 +60,7 @@ const SignupPage = () => {
 
   return (
     <View style={styles.container}>
-      <BackButton />
-
-      <ThemedText type="title">URGARDEN SIGNUP</ThemedText>
+      <ThemedText type="title">URGARDEN</ThemedText>
       {signupFormFields.map((field) => (
         <View key={field.name} style={styles.formGroup}>
           <InputField
