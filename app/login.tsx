@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/lib/navigationTypes";
-import { Link, useNavigation } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
@@ -16,8 +14,8 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const router = useRouter();
 
-  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogin = async () => {
     try {
@@ -44,7 +42,7 @@ const LoginPage: React.FC = () => {
           description: "You have successfully logged in!",
           type: "success",
         });
-        nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen
+        router.push("/(tabs)/home"); 
       }
     } catch (error) {
       showMessage({
@@ -64,7 +62,7 @@ const LoginPage: React.FC = () => {
       role: "guest",
     });
 
-    nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
+    router.push("/(tabs)/home"); 
   };
 
   const buttons = [
