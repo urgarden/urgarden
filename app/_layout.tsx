@@ -6,10 +6,21 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import FlashMessage from "react-native-flash-message";
+import * as Notifications from "expo-notifications";
+import { BACKGROUND_NOTIFICATION_TASK } from "@/task/notificationTask";
 import { requestNotificationPermissions } from "@/hooks/requestPermission";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const registerBackgroundTask = async () => {
+  try {
+    await Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+    console.log("Background notification task registered.");
+  } catch (error) {
+    console.error("Error registering background notification task:", error);
+  }
+};
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -22,12 +33,20 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    registerBackgroundTask(); // Call the function here
+  }, []);
+
   if (!loaded) {
     return null; // Show nothing until fonts are loaded
   }
 
   useEffect(() => {
-    requestNotificationPermissions();
+    const requestPermissions = async () => {
+      await requestNotificationPermissions();
+    };
+
+    requestPermissions();
   }, []);
 
   return (

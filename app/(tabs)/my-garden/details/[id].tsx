@@ -8,10 +8,10 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { getPlanById} from "@/lib/api/garden"; // Import the update API
+import { getPlanById } from "@/lib/api/garden"; // Import the update API
 import { Stage, PlantType } from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
-import { renderStageIndicator } from "@/components/my-garden/RenderStage";
+import { RenderStageIndicator } from "@/components/my-garden/RenderStage";
 import { checkLastStageCompletion } from "@/utils/checkLastStageCompletion";
 
 export default function PlantDetailsScreen() {
@@ -37,7 +37,6 @@ export default function PlantDetailsScreen() {
     fetchPlantDetails();
   }, [id]);
 
-  
   if (loading) {
     return (
       <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
@@ -52,7 +51,6 @@ export default function PlantDetailsScreen() {
     );
   }
 
-  
   return (
     <ScrollView
       style={styles.container}
@@ -84,9 +82,14 @@ export default function PlantDetailsScreen() {
 
       {/* Display the stages */}
       <Text style={styles.sectionTitle}>Stages</Text>
-      {plant.veggie?.stages?.map((stage: Stage, index: number) =>
-        renderStageIndicator(plant,stage, index)
-      )}
+      {plant.veggie?.stages?.map((stage: Stage, index: number) => (
+        <RenderStageIndicator
+          key={index}
+          plant={plant}
+          stage={stage}
+          index={index}
+        />
+      ))}
     </ScrollView>
   );
 }
@@ -97,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scrollContent: {
-    padding: 16, 
+    padding: 16,
   },
   loader: {
     flex: 1,

@@ -1,16 +1,12 @@
 import { useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import { PlantType, Stage } from "@/lib/definitions";
-import { BACKGROUND_NOTIFICATION_TASK } from "@/task/notificationTask";
 
 export const useStageNotifications = (plant: PlantType) => {
   useEffect(() => {
     if (plant) {
       handleStageNotifications(plant);
     }
-
-    // Register background task
-    Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
   }, [plant]);
 
   const handleStageNotifications = async (plantData: PlantType) => {
@@ -54,9 +50,6 @@ export const useStageNotifications = (plant: PlantType) => {
           seconds: (stageEndDate.getTime() - Date.now()) / 1000,
           repeats: false,
         },
-      });
-      
-      
-      
+      }); 
   };
 };
