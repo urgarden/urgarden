@@ -9,6 +9,7 @@ import FlashMessage from "react-native-flash-message";
 import * as Notifications from "expo-notifications";
 import { BACKGROUND_NOTIFICATION_TASK } from "@/task/notificationTask";
 import { requestNotificationPermissions } from "@/hooks/requestPermission";
+import "@/utils/handleNotification";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
