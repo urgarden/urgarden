@@ -6,6 +6,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import FlashMessage from "react-native-flash-message";
+import { requestNotificationPermissions } from "@/hooks/requestPermission";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,6 +26,10 @@ export default function RootLayout() {
     return null; // Show nothing until fonts are loaded
   }
 
+  useEffect(() => {
+    requestNotificationPermissions();
+  }, []);
+
   return (
     <ThemeProvider value={DefaultTheme}>
       <FlashMessage position="bottom" />
@@ -39,7 +44,7 @@ export default function RootLayout() {
           name="reset-password"
           options={{ headerTitle: "Reset Password" }}
         />
-        <Stack.Screen name="signup" options={{headerBackTitle:""}} />
+        <Stack.Screen name="signup" options={{ headerBackTitle: "" }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
