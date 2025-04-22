@@ -1,18 +1,25 @@
 import { PlantType, Stage } from "@/lib/definitions";
 import { View, Text, Image, StyleSheet } from "react-native";
+import { useStageNotifications } from "@/hooks/useStageNotification";
 
-export const renderStageIndicator = (
-  plant: PlantType,
-  stage: Stage,
-  index: number
-) => {
-  const createdAt = new Date(plant.created_at); // Parse the ISO 8601 timestamp into a Date object
-  const currentDate = new Date(); // Get the current date
+export const RenderStageIndicator = ({
+  plant,
+  stage,
+  index,
+}: {
+  plant: PlantType;
+  stage: Stage;
+  index: number;
+}) => {
+  useStageNotifications(plant);
+
+  const createdAt = new Date(plant.created_at);
+  const currentDate = new Date();
 
   // Calculate the start date for the current stage
-  let stageStartDate = new Date(createdAt); // Start with the creation date
+  let stageStartDate = new Date(createdAt);
   for (let i = 0; i < index; i++) {
-    const previousStageDays = plant.veggie.stages[i].stageEndDays; // Get the days of the previous stage
+    const previousStageDays = plant.veggie.stages[i].stageEndDays;
     stageStartDate = new Date(
       stageStartDate.getTime() + previousStageDays * 24 * 60 * 60 * 1000
     ); // Add days in milliseconds

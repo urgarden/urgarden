@@ -20,7 +20,6 @@ import GrowingRequirementDetails from "@/components/planner/GrowingDetails";
 import GrowthStages from "@/components/planner/GrowthStage";
 
 export default function VeggieDetails() {
-  const router = useRouter();
   const { id } = useLocalSearchParams();
   const [veggie, setVeggie] = useState<VeggieType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,7 +27,7 @@ export default function VeggieDetails() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // State to control modal visibility
 
   const { userDetails } = useUserStore();
-  const isAdmin = userDetails?.role === "admin"; // Check if the user is an admin
+  const isAdmin = userDetails?.role === "admin";
 
   const userId = useUserStore((state) => state.userDetails?.id);
 
