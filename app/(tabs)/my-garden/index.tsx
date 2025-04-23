@@ -15,9 +15,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAllByUserId, deletePlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
-import { GetAllByUserIdResult, PlantType, PlantStatus } from "@/lib/definitions";
+import {
+  GetAllByUserIdResult,
+  PlantType,
+  PlantStatus,
+} from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
-
 
 export default function MyGardenScreen() {
   const [plants, setPlants] = useState<PlantType[]>([]);
@@ -66,10 +69,7 @@ export default function MyGardenScreen() {
   const handleDelete = async () => {
     if (!selectedPlant || !userId) return;
     try {
-      const result = await deletePlant(
-        userId,
-        selectedPlant.veggie_id.toString()
-      );
+      const result = await deletePlant(userId, selectedPlant.id.toString());
       if (result.success) {
         Alert.alert("Success", "Plant deleted successfully!");
         fetchPlants();
@@ -143,7 +143,7 @@ export default function MyGardenScreen() {
                 <Text
                   style={[
                     styles.cardStatus,
-                    { color: getStatusColor(item.status) }, 
+                    { color: getStatusColor(item.status) },
                   ]}
                 >
                   Status: {item.status}
@@ -270,8 +270,8 @@ const styles = StyleSheet.create({
     color: "#888",
     padding: 8,
     paddingHorizontal: 14,
-    marginTop:-20,
-    marginRight:-10,
+    marginTop: -20,
+    marginRight: -10,
   },
   modalContainer: {
     flex: 1,

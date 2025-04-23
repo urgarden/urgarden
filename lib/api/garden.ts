@@ -60,13 +60,14 @@ export async function addPlant(userId: string, veggieId: string) {
 }
 
 // Function to delete a plant from the garden table
-export async function deletePlant(userId: string, veggieId: string) {
+export async function deletePlant(userId: string, id: string) {
   try {
     const { error } = await supabase
       .from("garden")
       .delete()
-      .eq("user_id", userId)
-      .eq("veggie_id", veggieId);
+      .eq("id", id)
+      .eq("user_id", userId);
+  
 
     if (error) {
       return {
