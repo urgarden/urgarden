@@ -1,7 +1,5 @@
-import React from "react";
 import { PlantType, Stage } from "@/lib/definitions";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { useStageNotifications } from "@/hooks/useStageNotification";
 
 export const RenderStageIndicator = ({
   plant,
@@ -12,9 +10,6 @@ export const RenderStageIndicator = ({
   stage: Stage;
   index: number;
 }) => {
-  // Use the custom hook for notifications
-  useStageNotifications(plant);
-
   const createdAt = new Date(plant.created_at); // Parse the ISO 8601 timestamp into a Date object
   const currentDate = new Date(); // Get the current date
 

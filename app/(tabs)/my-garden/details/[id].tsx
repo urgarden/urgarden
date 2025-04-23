@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { Stage, PlantType } from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { RenderStageIndicator } from "@/components/my-garden/RenderStage";
 import { checkLastStageCompletion } from "@/utils/checkLastStageCompletion";
+import { useStageNotifications } from "@/hooks/useStageNotification";
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
@@ -36,6 +37,9 @@ export default function PlantDetailsScreen() {
 
     fetchPlantDetails();
   }, [id]);
+
+  // Call useStageNotifications here
+  useStageNotifications(plant);
 
   if (loading) {
     return (

@@ -17,7 +17,6 @@ SplashScreen.preventAutoHideAsync();
 const registerBackgroundTask = async () => {
   try {
     await Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
-    console.log("Background notification task registered.");
   } catch (error) {
     console.error("Error registering background notification task:", error);
   }
