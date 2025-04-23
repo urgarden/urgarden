@@ -27,14 +27,11 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
       if (currentDate >= stageStartDate && currentDate <= stageEndDate) {
         const notificationKey = `${plantData.id}-${i}`; // Unique key for plant and stage
 
-     
         // Check if this notification has already been scheduled
         if (!scheduledNotificationsRef.current.has(notificationKey)) {
-      
-          await scheduleNotification(stages[i], stageEndDate, i, stages.length);
+          await scheduleNotification(stages[i], stageEndDate, i, stages.length, stages);
           scheduledNotificationsRef.current.add(notificationKey); // Mark as scheduled
         } else {
-      
         }
         break; // Stop the loop after scheduling one notification
       }
@@ -48,14 +45,17 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
     stage: Stage,
     stageEndDate: Date,
     index: number,
-    totalStages: number
+    totalStages: number,
+    stages: Stage[] // Pass the stages array to determine the next stage
   ) => {
+    const nextStageTitle = stages[index + 1]?.title || null; // Get the next stage title if it exists
+
     const notificationContent = {
       title: `Stage ${index + 1} Complete`,
-      body: `The "${stage.title}" stage has ended. ${
+      body: `The "${stage.title}" has ended. ${
         index === totalStages - 1
           ? "This is the final stage of your plant's growth."
-          : "The next stage is starting now!"
+          : `The "${nextStageTitle}", is starting now!`
       }`,
       data: {
         stageTitle: stage.title,
