@@ -190,9 +190,15 @@ const styles = StyleSheet.create({
   },
   kebabButton: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 4,
+    right: 4,
     padding: 5,
+    backgroundColor: "#fff",
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
   },
   kebabText: {
     fontSize: 20,
