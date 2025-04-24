@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { StyleSheet, View } from "react-native";
-import { useNavigation } from "expo-router"; // Import useRouter
+import { useRouter } from "expo-router";
 import { validateSignupFormData } from "@/utils/validation";
 import { signupFormFields } from "@/utils/formFields";
 import InputField from "@/components/InputField";
@@ -21,7 +21,7 @@ const SignupPage = () => {
     {}
   );
 
-  const nav = useNavigation();
+  const nav = useRouter();
 
   type FormField = "username" | "email" | "password" | "confirmPassword";
 
@@ -60,9 +60,7 @@ const SignupPage = () => {
 
   return (
     <View style={styles.container}>
-      <BackButton />
-
-      <ThemedText type="title">URGARDEN SIGNUP</ThemedText>
+      <ThemedText type="title">URGARDEN</ThemedText>
       {signupFormFields.map((field) => (
         <View key={field.name} style={styles.formGroup}>
           <InputField

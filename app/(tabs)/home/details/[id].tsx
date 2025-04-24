@@ -11,9 +11,13 @@ import {
   Alert,
 } from "react-native";
 import { getVeggieById } from "@/lib/api/veggie";
-import { VeggieType } from "@/lib/definitions";
+import { saveGrowingRequirements } from "@/lib/api/veggie";
+import { GrowingCondition, VeggieType } from "@/lib/definitions";
 import { addPlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
+import PlantForm from "@/components/planner/GrowingFormModal";
+import GrowingRequirementDetails from "@/components/planner/GrowingDetails";
+import GrowthStages from "@/components/planner/GrowthStage";
 
 export default function VeggieDetails() {
   const router = useRouter();
@@ -21,6 +25,10 @@ export default function VeggieDetails() {
   const [veggie, setVeggie] = useState<VeggieType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // State to control modal visibility
+
+  const { userDetails } = useUserStore();
+  const isAdmin = userDetails?.role === "admin"; // Check if the user is an admin
 
   const userId = useUserStore((state) => state.userDetails?.id);
 
@@ -81,6 +89,39 @@ export default function VeggieDetails() {
     }
   };
 
+  const handleFormSubmit = async (formData: GrowingCondition[]) => {
+    try {
+      if (!id) {
+        Alert.alert("Error", "Veggie ID is missing. Please try again.");
+        return;
+      }
+
+      // Call the API to save growing requirements
+      const result = await saveGrowingRequirements(id as string, formData);
+
+      if (result.success) {
+        Alert.alert("Success", "Growing requirements saved successfully!");
+        setVeggie((prevVeggie) => {
+          if (!prevVeggie) return null; // Ensure prevVeggie is not null
+          return {
+            ...prevVeggie,
+            growing_requirement: formData, // Update the local state with the new data
+          };
+        });
+      } else {
+        Alert.alert(
+          "Error",
+          result.message || "Failed to save growing requirements."
+        );
+      }
+    } catch (err) {
+      console.error("Error saving growing requirements:", err);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    } finally {
+      setIsModalVisible(false); // Close the modal after submission
+    }
+  };
+
   return (
     <ScrollView
       style={{ flex: 1 }} // Ensure ScrollView takes full height
@@ -96,35 +137,40 @@ export default function VeggieDetails() {
       <Text style={styles.type}>Type: {veggie.type}</Text>
       <Text style={styles.description}>{veggie.description}</Text>
 
-      {/* Display Stages */}
-      <Text style={styles.sectionTitle}>Growth Stages</Text>
-      {veggie.stages
-        .sort((a, b) => a.stageNumber - b.stageNumber) // Sort stages by stageNumber
-        .map((stage) => (
-          <View key={stage.stageNumber} style={styles.stageContainer}>
-            {stage.imageUrl && (
-              <Image
-                source={{ uri: stage.imageUrl }}
-                style={styles.stageImage}
-              />
-            )}
-            <View style={styles.stageDetails}>
-              <Text style={styles.stageTitle}>
-                Stage {stage.stageNumber}: {stage.title}
-              </Text>
-              <Text style={styles.stageDescription}>{stage.description}</Text>
-              <Text style={styles.stageEndDays}>
-                {stage.stageEndDays}{" "}
-                {+stage.stageEndDays === 1 ? "day" : "days"}
-              </Text>
-            </View>
-          </View>
-        ))}
+      {/* Growth Stages */}
+      <GrowthStages
+        stages={(veggie.stages || []).map((stage) => ({
+          ...stage,
+          imageUrl: stage.imageUrl ?? undefined, // Convert null to undefined
+        }))}
+      />
+
+      {/* Growing Requirements */}
+      <GrowingRequirementDetails
+        growingRequirements={veggie.growing_requirement || []}
+      />
 
       {/* Plant Button */}
       <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
         <Text style={styles.plantButtonText}>Plant</Text>
       </TouchableOpacity>
+
+      {/* Redirect to Growing Form Button (Visible only for Admins) */}
+      {isAdmin && (
+        <TouchableOpacity
+          style={styles.adminButton}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text style={styles.adminButtonText}>Add Growing Requirement</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* PlantForm Modal */}
+      <PlantForm
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)} // Close the modal
+        onSubmit={handleFormSubmit} // Handle form submission
+      />
     </ScrollView>
   );
 }
@@ -133,12 +179,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: "#fff",
-    paddingBottom: 300,
   },
   image: {
     width: "100%",
-    height: "30%",
-    objectFit: "contain",
+    height: 250,
+    objectFit: "cover",
     borderRadius: 8,
     marginBottom: 16,
   },
@@ -222,6 +267,18 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   plantButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  adminButton: {
+    backgroundColor: "#FF9800",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+  },
+  adminButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",

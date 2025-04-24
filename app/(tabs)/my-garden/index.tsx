@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "expo-router";
+import * as Notifications from "expo-notifications";
 import {
   StyleSheet,
   FlatList,
@@ -15,7 +16,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAllByUserId, deletePlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
-import { GetAllByUserIdResult, PlantType } from "@/lib/definitions";
+import {
+  GetAllByUserIdResult,
+  PlantType,
+  PlantStatus,
+} from "@/lib/definitions";
+import { getStatusColor } from "@/utils/getStatusColor";
 
 export default function MyGardenScreen() {
   const [plants, setPlants] = useState<PlantType[]>([]);
@@ -63,14 +69,22 @@ export default function MyGardenScreen() {
 
   const handleDelete = async () => {
     if (!selectedPlant || !userId) return;
+
     try {
-      const result = await deletePlant(
-        userId,
-        selectedPlant.veggie_id.toString()
-      );
+      // Clear notifications for the deleted plant
+      const stages = selectedPlant.veggie?.stages || [];
+      for (let i = 0; i < stages.length; i++) {
+        const notificationKey = `${selectedPlant.id}-${i}`;
+        try {
+          await Notifications.cancelScheduledNotificationAsync(notificationKey);
+        } catch (error) {}
+      }
+
+      // Delete the plant from the database
+      const result = await deletePlant(userId, selectedPlant.id.toString());
       if (result.success) {
         Alert.alert("Success", "Plant deleted successfully!");
-        fetchPlants();
+        fetchPlants(); // Refresh the plant list
       } else {
         Alert.alert("Error", result.message || "Failed to delete plant.");
       }
@@ -78,7 +92,7 @@ export default function MyGardenScreen() {
       console.error("Error deleting plant:", err.message);
       Alert.alert("Error", "An unexpected error occurred.");
     } finally {
-      setModalVisible(false);
+      setModalVisible(false); // Close the modal
     }
   };
 
@@ -138,7 +152,14 @@ export default function MyGardenScreen() {
                 <Text style={styles.cardDescription}>
                   {item.veggie?.description || "No description available."}
                 </Text>
-                <Text style={styles.cardStatus}>Status: {item.status}</Text>
+                <Text
+                  style={[
+                    styles.cardStatus,
+                    { color: getStatusColor(item.status) },
+                  ]}
+                >
+                  Status: {item.status}
+                </Text>
               </View>
               <TouchableOpacity
                 style={styles.kebabMenu}
@@ -249,7 +270,7 @@ const styles = StyleSheet.create({
   },
   cardStatus: {
     fontSize: 14,
-    color: "#888",
+    color: "#4CAF50",
   },
   kebabMenu: {
     position: "absolute",
@@ -259,6 +280,10 @@ const styles = StyleSheet.create({
   kebabMenuText: {
     fontSize: 24,
     color: "#888",
+    padding: 8,
+    paddingHorizontal: 14,
+    marginTop: -20,
+    marginRight: -10,
   },
   modalContainer: {
     flex: 1,

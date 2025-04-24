@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -8,20 +8,25 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { getPlanById } from "@/lib/api/garden"; // API to fetch plant details
-import { Stage } from "@/lib/definitions";
+import { getPlantById } from "@/lib/api/garden"; // Import the update API
+import { Stage, PlantType } from "@/lib/definitions";
+import { getStatusColor } from "@/utils/getStatusColor";
+import { RenderStageIndicator } from "@/components/my-garden/RenderStage";
+import { checkLastStageCompletion } from "@/utils/checkLastStageCompletion";
+import { useStageNotifications } from "@/hooks/useStageNotification";
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
-  const [plant, setPlant] = useState<any>(null); // State to store plant details
+  const [plant, setPlant] = useState<PlantType>(); // State to store plant details
   const [loading, setLoading] = useState<boolean>(true); // Loading state
 
   useEffect(() => {
     const fetchPlantDetails = async () => {
       try {
-        const result = await getPlanById(Number(id)); // Fetch plant details by ID
+        const result = await getPlantById(Number(id)); // Fetch plant details by ID
         if (result.success) {
           setPlant(result.data); // Set the fetched plant data
+          checkLastStageCompletion(result.data, setPlant); // Check if the last stage is completed
         }
       } catch (err) {
         console.error("Error fetching plant details:", (err as Error).message);
@@ -32,6 +37,9 @@ export default function PlantDetailsScreen() {
 
     fetchPlantDetails();
   }, [id]);
+
+  // Call useStageNotifications here
+  useStageNotifications(plant);
 
   if (loading) {
     return (
@@ -46,28 +54,6 @@ export default function PlantDetailsScreen() {
       </View>
     );
   }
-
-  const renderStageIndicator = (stage: any, index: number) => {
-    const isCurrentStage = plant.status === "ongoing" && index === 0;
-    const isCompletedStage = index < 1;
-
-    return (
-      <View key={stage.stageNumber} style={styles.stageCard}>
-        <Image source={{ uri: stage.imageUrl }} style={styles.stageImage} />
-        <View style={styles.stageContent}>
-          <Text style={styles.stageTitle}>{stage.title}</Text>
-          <Text style={styles.stageDescription}>{stage.description}</Text>
-          <Text style={styles.stageStatus}>
-            {isCurrentStage
-              ? "Current Stage"
-              : isCompletedStage
-              ? "Completed"
-              : "Upcoming"}
-          </Text>
-        </View>
-      </View>
-    );
-  };
 
   return (
     <ScrollView
@@ -88,7 +74,9 @@ export default function PlantDetailsScreen() {
       </Text>
 
       {/* Display the plant status */}
-      <Text style={styles.status}>Status: {plant.status}</Text>
+      <Text style={[styles.status, { color: getStatusColor(plant.status) }]}>
+        Status: {plant.status}
+      </Text>
 
       {/* Display additional plant details */}
       <Text style={styles.details}>
@@ -98,9 +86,14 @@ export default function PlantDetailsScreen() {
 
       {/* Display the stages */}
       <Text style={styles.sectionTitle}>Stages</Text>
-      {plant.veggie?.stages?.map((stage: Stage, index: number) =>
-        renderStageIndicator(stage, index)
-      )}
+      {plant.veggie?.stages?.map((stage: Stage, index: number) => (
+        <RenderStageIndicator
+          key={index}
+          plant={plant}
+          stage={stage}
+          index={index}
+        />
+      ))}
     </ScrollView>
   );
 }
@@ -111,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   scrollContent: {
-    padding: 16, // Add padding to the content inside the ScrollView
+    padding: 16,
   },
   loader: {
     flex: 1,
@@ -132,7 +125,7 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 8,
     marginBottom: 16,
-    objectFit: "contain",
+    objectFit: "cover",
   },
   title: {
     fontSize: 24,
@@ -149,6 +142,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#888",
     marginBottom: 16,
+    fontWeight: "bold",
   },
   details: {
     fontSize: 14,
@@ -178,6 +172,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
+  currentStageCard: {
+    borderWidth: 2,
+    borderColor: "#4CAF50",
+  },
   stageImage: {
     width: 80,
     height: 80,
@@ -202,5 +200,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#4CAF50",
+  },
+  currentStageStatus: {
+    color: "#FF5722",
+  },
+  timeLeft: {
+    fontSize: 14,
+    color: "#FF5722",
+    marginTop: 4,
+    fontStyle: "italic",
+    alignSelf: "flex-end",
   },
 });

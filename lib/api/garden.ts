@@ -12,6 +12,7 @@ export async function addPlant(userId: string, veggieId: string) {
       .select("*")
       .eq("user_id", userId)
       .eq("veggie_id", veggieId)
+      .eq("status", "ongoing") 
       .single();
 
     if (checkError && checkError.code !== "PGRST116") {
@@ -45,6 +46,7 @@ export async function addPlant(userId: string, veggieId: string) {
       };
     }
 
+
     return {
       success: true,
       data,
@@ -59,13 +61,14 @@ export async function addPlant(userId: string, veggieId: string) {
 }
 
 // Function to delete a plant from the garden table
-export async function deletePlant(userId: string, veggieId: string) {
+export async function deletePlant(userId: string, id: string) {
   try {
     const { error } = await supabase
       .from("garden")
       .delete()
-      .eq("user_id", userId)
-      .eq("veggie_id", veggieId);
+      .eq("id", id)
+      .eq("user_id", userId);
+  
 
     if (error) {
       return {
@@ -175,7 +178,7 @@ export async function getAllByUserId(userId: string) {
 }
 
 // Fetch a specific plant by ID and include related veggie data
-export const getPlanById = async (id: number) => {
+export const getPlantById = async (id: number) => {
   try {
     // Fetch the plant data by ID
     const { data: plantData, error: plantError } = await supabase
@@ -214,3 +217,72 @@ export const getPlanById = async (id: number) => {
     return { success: false, message: error.message };
   }
 };
+// Fetch a specific plant by ID and include related veggie data
+export const getPlantByVeggieId = async (id: number) => {
+
+  try {
+    // Fetch the plant data by ID
+    const { data: plantData, error: plantError } = await supabase
+      .from("garden")
+      .select("*")
+      .eq("veggie_id", id)
+      .single();
+
+    if (plantError) {
+      throw new Error(plantError.message);
+    }
+
+    // Fetch the related veggie data using the veggie_id from the plant data
+    const { data: veggieData, error: veggieError } = await supabase
+      .from("veggies")
+      .select("*")
+      .eq("id", plantData.veggie_id)
+      .single();
+
+    if (veggieError) {
+      console.error(
+        `Error fetching veggie data for veggie_id ${plantData.veggie_id}:`,
+        veggieError.message
+      );
+    }
+
+    // Combine the plant data and veggie data into one object
+    const combinedData = {
+      ...plantData,
+      veggie: veggieData || null, // Attach the veggie data or null if not found
+    };
+
+    return { success: true, data: combinedData };
+  } catch (error: any) {
+    console.error("Error fetching plant by ID:", error.message);
+    return { success: false, message: error.message };
+  }
+};
+
+export async function updateGardenStatusById(id: number, status: PlantStatus) {
+  try {
+    // Update the status column for the garden entry with the specified ID
+    const { error } = await supabase
+      .from("garden")
+      .update({ status }) // Update the status column
+      .eq("id", id);
+
+    if (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Garden status updated successfully.",
+    };
+  } catch (err: any) {
+    console.error("Error updating garden status:", err);
+    return {
+      success: false,
+      message: err.message || "An unexpected error occurred.",
+    };
+  }
+}

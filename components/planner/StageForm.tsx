@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { Stage } from "@/lib/definitions";
 
@@ -16,6 +17,7 @@ interface StageFormProps {
   onStageChange: (index: number, field: keyof Stage, value: string) => void;
   onImageChange: (index: number, uri: string) => void;
   pickImage: (setImageCallback: (uri: string) => void) => void;
+  onRemoveStage: (index: number) => void; // New prop to handle stage removal
 }
 
 const StageForm: React.FC<StageFormProps> = ({
@@ -25,30 +27,24 @@ const StageForm: React.FC<StageFormProps> = ({
   onStageChange,
   onImageChange,
   pickImage,
+  onRemoveStage,
 }) => {
   return (
     <View style={styles.stageContainer}>
-      <Text
-        style={{
-          ...styles.stageLabel,
-        }}
-      >
-        Stage {index + 1}
-      </Text>
-      <View
-        style={{
-          flex: 1,
-          flexDirection: "row",
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            width: "100%",
-            marginBottom: 8,
-            justifyContent: "space-between",
-          }}
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        {/* Add Remove Stage Button */}
+
+        <Text style={styles.stageLabel}>Stage {index + 1}</Text>
+        <TouchableOpacity
+          onPress={() => onRemoveStage(index)}
+          style={styles.removeButton}
         >
+          <Text style={styles.removeButtonText}>Remove</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <View style={{ flex: 1, width: "100%", marginBottom: 8 }}>
           <TextInput
             style={{ ...styles.input, width: "95%" }}
             value={stage.title}
@@ -81,6 +77,8 @@ const StageForm: React.FC<StageFormProps> = ({
 
       <TextInput
         style={styles.input}
+        multiline={true}
+        numberOfLines={4}
         value={stage.description}
         onChangeText={(value) => onStageChange(index, "description", value)}
         placeholder="Enter stage description"
@@ -104,6 +102,8 @@ const StageForm: React.FC<StageFormProps> = ({
   );
 };
 
+const screenWidth = Dimensions.get("window").width;
+
 const styles = StyleSheet.create({
   stageContainer: {
     marginBottom: 16,
@@ -120,12 +120,13 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   input: {
-    height: 40,
+    height: "auto",
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 16,
+    width: screenWidth - 64,
   },
   imagePicker: {
     backgroundColor: "gray",
@@ -146,6 +147,19 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginBottom: 8,
+  },
+  removeButton: {
+    backgroundColor: "red",
+    padding: 4,
+    paddingHorizontal: 8,
+    borderRadius: 100,
+    alignItems: "center",
+    height: 30,
+    width: "auto",
+  },
+  removeButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 

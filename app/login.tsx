@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/lib/navigationTypes";
-import { Link, useNavigation } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import ThemedText from "@/components/ThemedText";
 import InputField from "@/components/InputField";
 import ProceedButton from "@/components/buttons/ProceedButton";
@@ -10,29 +8,26 @@ import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
 import { useUserStore } from "@/lib/stores/userStore";
 
-type LoginPageProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, "login">;
-};
-
-const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
-
-  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      const result = await login(email, password); // Call Supabase login function
+      const result = await login(email, password);
       if (result.error) {
         showMessage({
           message: "Login Failed",
           description: result.message,
           type: "danger",
+          position: "bottom",
+          floating: true,
         });
       } else {
-        const user = result.user; // Get the user object from the login result
-        const role = user?.role === "admin" ? "admin" : "customer"; // Determine the role
+        const user = result.user;
+        const role = user?.role === "admin" ? "admin" : "customer";
 
         // Save user details in Zustand store with role set to "customer"
         useUserStore.getState().setUserDetails({
@@ -45,14 +40,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
           message: "Login Successful",
           description: "You have successfully logged in!",
           type: "success",
+          position: "top",
+          floating: true,
         });
-        nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen
+        router.push("/(tabs)/home");
       }
     } catch (error) {
       showMessage({
         message: "Login Failed",
         description: "An error occurred during login. Please try again.",
         type: "danger",
+        position: "bottom",
+        floating: true,
       });
     }
   };
@@ -66,7 +65,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ navigation }) => {
       role: "guest",
     });
 
-    nav.navigate("(tabs)", { screen: "Home" }); // Navigate to the home screen as a guest
+    router.push("/(tabs)/home");
   };
 
   const buttons = [
@@ -141,12 +140,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   topButtonsContainer: {
-    position: "absolute",
-    top: 40,
-    left: 20,
-    right: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    position: "sticky",
+    top: -100,
+    alignItems: "flex-start",
+    width: "100%",
   },
   backButton: {
     paddingVertical: 12,
