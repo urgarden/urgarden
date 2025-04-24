@@ -10,7 +10,5 @@ TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, async ({ data, error }) => 
     return;
   }
 
-  if (data) {
-    console.log("Received background notification:", data);
-  }
+
 });

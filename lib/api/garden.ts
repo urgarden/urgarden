@@ -46,7 +46,6 @@ export async function addPlant(userId: string, veggieId: string) {
       };
     }
 
-    console.log("Plant added successfully:", data);
 
     return {
       success: true,

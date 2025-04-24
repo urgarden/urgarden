@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "expo-router";
+import * as Notifications from "expo-notifications";
 import {
   StyleSheet,
   FlatList,
@@ -68,11 +69,22 @@ export default function MyGardenScreen() {
 
   const handleDelete = async () => {
     if (!selectedPlant || !userId) return;
+
     try {
+      // Clear notifications for the deleted plant
+      const stages = selectedPlant.veggie?.stages || [];
+      for (let i = 0; i < stages.length; i++) {
+        const notificationKey = `${selectedPlant.id}-${i}`;
+        try {
+          await Notifications.cancelScheduledNotificationAsync(notificationKey);
+        } catch (error) {}
+      }
+
+      // Delete the plant from the database
       const result = await deletePlant(userId, selectedPlant.id.toString());
       if (result.success) {
         Alert.alert("Success", "Plant deleted successfully!");
-        fetchPlants();
+        fetchPlants(); // Refresh the plant list
       } else {
         Alert.alert("Error", result.message || "Failed to delete plant.");
       }
@@ -80,7 +92,7 @@ export default function MyGardenScreen() {
       console.error("Error deleting plant:", err.message);
       Alert.alert("Error", "An unexpected error occurred.");
     } finally {
-      setModalVisible(false);
+      setModalVisible(false); // Close the modal
     }
   };
 

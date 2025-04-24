@@ -18,7 +18,6 @@ export const requestNotificationPermissions = async () => {
     }
 
     const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log("Expo Push Token:", token);
     return token;
   } else {
     console.warn("Must use physical device for Push Notifications");
