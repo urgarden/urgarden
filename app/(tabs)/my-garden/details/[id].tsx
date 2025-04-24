@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { getPlanById } from "@/lib/api/garden"; // Import the update API
+import { getPlantById } from "@/lib/api/garden"; // Import the update API
 import { Stage, PlantType } from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
 import { RenderStageIndicator } from "@/components/my-garden/RenderStage";
@@ -23,7 +23,7 @@ export default function PlantDetailsScreen() {
   useEffect(() => {
     const fetchPlantDetails = async () => {
       try {
-        const result = await getPlanById(Number(id)); // Fetch plant details by ID
+        const result = await getPlantById(Number(id)); // Fetch plant details by ID
         if (result.success) {
           setPlant(result.data); // Set the fetched plant data
           checkLastStageCompletion(result.data, setPlant); // Check if the last stage is completed

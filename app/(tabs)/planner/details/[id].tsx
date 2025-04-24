@@ -12,24 +12,31 @@ import {
 } from "react-native";
 import { getVeggieById } from "@/lib/api/veggie";
 import { saveGrowingRequirements } from "@/lib/api/veggie";
-import { GrowingCondition, VeggieType } from "@/lib/definitions";
-import { addPlant } from "@/lib/api/garden";
+import { GrowingCondition, VeggieType, PlantType } from "@/lib/definitions";
+import { addPlant, getPlantByVeggieId } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
 import PlantForm from "@/components/planner/GrowingFormModal";
 import GrowingRequirementDetails from "@/components/planner/GrowingDetails";
 import GrowthStages from "@/components/planner/GrowthStage";
+import { useStageNotifications } from "@/hooks/useStageNotification"; // Import the hook
 
 export default function VeggieDetails() {
   const { id } = useLocalSearchParams();
   const [veggie, setVeggie] = useState<VeggieType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false); // State to control modal visibility
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   const { userDetails } = useUserStore();
   const isAdmin = userDetails?.role === "admin";
 
   const userId = useUserStore((state) => state.userDetails?.id);
+
+  // State to hold the plant data for notifications
+  const [plant, setPlant] = useState<PlantType | undefined>();
+
+  // Use the useStageNotifications hook
+  useStageNotifications(plant);
 
   useEffect(() => {
     const fetchVeggieDetails = async () => {
@@ -56,29 +63,29 @@ export default function VeggieDetails() {
     }
   }, [id]);
 
-  if (loading) {
-    return (
-      <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
-    );
-  }
-
-  if (error) {
-    return <Text style={styles.errorText}>{error}</Text>;
-  }
-
-  if (!veggie) {
-    return <Text style={styles.errorText}>Veggie not found.</Text>;
-  }
-
   const handlePlantPress = async () => {
     try {
       if (!userId) {
         Alert.alert("Error", "User ID is missing. Please log in again.");
         return;
       }
-      const result = await addPlant(userId, veggie.id?.toString() || ""); // Call the plantVeggie API
+
+      // Call the addPlant API
+      if (!veggie) {
+        Alert.alert("Error", "Veggie details are missing. Please try again.");
+        return;
+      }
+      const result = await addPlant(userId, veggie.id?.toString() || "");
       if (result && result.success) {
         Alert.alert("Success", "Veggie planted successfully!");
+
+        // Fetch the plant data after planting
+        const fetchedPlant = await getPlantByVeggieId(Number(id)); // Assuming result.data contains the plant ID
+        if (fetchedPlant.success && fetchedPlant.data) {
+          setPlant(fetchedPlant.data); // Set the plant data for notifications
+        } else {
+          console.error("Failed to fetch plant data after planting.");
+        }
       } else {
         Alert.alert("Error", result.message || "Failed to plant veggie.");
       }
@@ -101,10 +108,10 @@ export default function VeggieDetails() {
       if (result.success) {
         Alert.alert("Success", "Growing requirements saved successfully!");
         setVeggie((prevVeggie) => {
-          if (!prevVeggie) return null; // Ensure prevVeggie is not null
+          if (!prevVeggie) return null;
           return {
             ...prevVeggie,
-            growing_requirement: formData, // Update the local state with the new data
+            growing_requirement: formData,
           };
         });
       } else {
@@ -117,16 +124,30 @@ export default function VeggieDetails() {
       console.error("Error saving growing requirements:", err);
       Alert.alert("Error", "An unexpected error occurred. Please try again.");
     } finally {
-      setIsModalVisible(false); // Close the modal after submission
+      setIsModalVisible(false);
     }
   };
 
+  if (loading) {
+    return (
+      <ActivityIndicator size="large" color="#4CAF50" style={styles.loader} />
+    );
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>;
+  }
+
+  if (!veggie) {
+    return <Text style={styles.errorText}>Veggie not found.</Text>;
+  }
+
   return (
     <ScrollView
-      style={{ flex: 1 }} // Ensure ScrollView takes full height
+      style={{ flex: 1 }}
       contentContainerStyle={{
         ...styles.container,
-        flexGrow: 1, // Ensure content grows and scrolls properly
+        flexGrow: 1,
       }}
     >
       {veggie.image && (
@@ -140,7 +161,7 @@ export default function VeggieDetails() {
       <GrowthStages
         stages={(veggie.stages || []).map((stage) => ({
           ...stage,
-          imageUrl: stage.imageUrl ?? undefined, // Convert null to undefined
+          imageUrl: stage.imageUrl ?? undefined,
         }))}
       />
 
@@ -167,8 +188,8 @@ export default function VeggieDetails() {
       {/* PlantForm Modal */}
       <PlantForm
         visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)} // Close the modal
-        onSubmit={handleFormSubmit} // Handle form submission
+        onClose={() => setIsModalVisible(false)}
+        onSubmit={handleFormSubmit}
       />
     </ScrollView>
   );

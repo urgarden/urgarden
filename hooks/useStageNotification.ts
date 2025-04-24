@@ -8,6 +8,7 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
 
   useEffect(() => {
     if (!plant) return; // Handle undefined plant
+    console.log(`useStageNotifications triggered for plant: ${plant.veggie.name}`);
     handleStageNotifications(plant);
   }, [plant]);
 
@@ -15,7 +16,12 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
     const createdAt = new Date(plantData.created_at);
     const stages = plantData.veggie.stages;
 
+    console.log(`Starting notification scheduling for plant: ${plantData.veggie.name}`);
+    console.log(`Plant created at: ${createdAt}`);
+    console.log(`Total stages: ${stages.length}`);
+
     // Clear old notifications for this plant
+    console.log(`Clearing old notifications for plant ID: ${plantData.id}`);
     await clearOldNotifications(plantData.id.toString(), stages.length);
 
     let stageStartDate = new Date(createdAt);
@@ -27,25 +33,35 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
 
       const notificationKey = `${plantData.id}-${i}`; // Unique key for plant and stage
 
+      console.log(`Checking stage ${i + 1}:`);
+      console.log(`Stage title: ${stages[i].title}`);
+      console.log(`Stage start date: ${stageStartDate}`);
+      console.log(`Stage end date: ${stageEndDate}`);
+      console.log(`Notification key: ${notificationKey}`);
+
       // Skip scheduling for completed stages
       if (new Date() > stageEndDate) {
-
+        console.log(`Skipping stage ${i + 1} as it is already completed.`);
         stageStartDate = stageEndDate; // Move to the next stage
         continue;
       }
 
       // Check if this notification has already been scheduled
       if (!scheduledNotificationsRef.current.has(notificationKey)) {
-   
+        console.log(`Scheduling notification for stage ${i + 1}: ${stages[i].title}`);
         await scheduleNotification(stages[i], stageEndDate, i, stages.length, stages, notificationKey);
         scheduledNotificationsRef.current.add(notificationKey); // Mark as scheduled
+        console.log(`Notification for stage ${i + 1} added successfully.`);
+      } else {
+        console.log(`Notification for stage ${i + 1} already scheduled. Skipping.`);
       }
 
       // Move to the next stage
       stageStartDate = stageEndDate;
     }
 
-
+    console.log("All notifications scheduled successfully.");
+    console.log("Scheduled notifications:", Array.from(scheduledNotificationsRef.current));
   };
 
   const clearOldNotifications = async (plantId: string, totalStages: number) => {
@@ -54,9 +70,9 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
       try {
         await Notifications.cancelScheduledNotificationAsync(notificationKey);
         scheduledNotificationsRef.current.delete(notificationKey); // Remove from the ref
-  
+        console.log(`Cleared notification for key: ${notificationKey}`);
       } catch (error) {
-     
+        console.log(`No existing notification to clear for key: ${notificationKey}`);
       }
     }
   };
@@ -89,8 +105,14 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
       1 // Ensure at least 1 second to avoid scheduling issues
     );
 
- 
-
+    console.log("Scheduling Notification:", {
+      content: notificationContent,
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: secondsUntilStageEnd,
+        repeats: false,
+      },
+    });
 
     await Notifications.scheduleNotificationAsync({
       identifier: notificationKey, // Use the notificationKey as the identifier
@@ -102,6 +124,6 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
       },
     });
 
- 
+    console.log(`Notification scheduled for stage "${stage.title}" at ${stageEndDate}`);
   };
 };
