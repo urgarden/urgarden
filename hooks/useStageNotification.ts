@@ -13,8 +13,10 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
 
   const handleStageNotifications = async (plantData: PlantType) => {
     const createdAt = new Date(plantData.created_at);
-    const currentDate = new Date();
     const stages = plantData.veggie.stages;
+
+    // Clear old notifications for this plant
+    await clearOldNotifications(plantData.id.toString(), stages.length);
 
     let stageStartDate = new Date(createdAt);
 
@@ -23,21 +25,39 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
         stageStartDate.getTime() + stages[i].stageEndDays * 24 * 60 * 60 * 1000
       );
 
-      // Check if the current date is within this stage
-      if (currentDate >= stageStartDate && currentDate <= stageEndDate) {
-        const notificationKey = `${plantData.id}-${i}`; // Unique key for plant and stage
+      const notificationKey = `${plantData.id}-${i}`; // Unique key for plant and stage
 
-        // Check if this notification has already been scheduled
-        if (!scheduledNotificationsRef.current.has(notificationKey)) {
-          await scheduleNotification(stages[i], stageEndDate, i, stages.length, stages);
-          scheduledNotificationsRef.current.add(notificationKey); // Mark as scheduled
-        } else {
-        }
-        break; // Stop the loop after scheduling one notification
+      // Skip scheduling for completed stages
+      if (new Date() > stageEndDate) {
+
+        stageStartDate = stageEndDate; // Move to the next stage
+        continue;
+      }
+
+      // Check if this notification has already been scheduled
+      if (!scheduledNotificationsRef.current.has(notificationKey)) {
+   
+        await scheduleNotification(stages[i], stageEndDate, i, stages.length, stages, notificationKey);
+        scheduledNotificationsRef.current.add(notificationKey); // Mark as scheduled
       }
 
       // Move to the next stage
       stageStartDate = stageEndDate;
+    }
+
+
+  };
+
+  const clearOldNotifications = async (plantId: string, totalStages: number) => {
+    for (let i = 0; i < totalStages; i++) {
+      const notificationKey = `${plantId}-${i}`;
+      try {
+        await Notifications.cancelScheduledNotificationAsync(notificationKey);
+        scheduledNotificationsRef.current.delete(notificationKey); // Remove from the ref
+  
+      } catch (error) {
+     
+      }
     }
   };
 
@@ -46,7 +66,8 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
     stageEndDate: Date,
     index: number,
     totalStages: number,
-    stages: Stage[] // Pass the stages array to determine the next stage
+    stages: Stage[],
+    notificationKey: string
   ) => {
     const nextStageTitle = stages[index + 1]?.title || null; // Get the next stage title if it exists
 
@@ -55,7 +76,7 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
       body: `The "${stage.title}" has ended. ${
         index === totalStages - 1
           ? "This is the final stage of your plant's growth."
-          : `The "${nextStageTitle}", is starting now!`
+          : `The next stage, "${nextStageTitle}", is starting now!`
       }`,
       data: {
         stageTitle: stage.title,
@@ -68,16 +89,11 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
       1 // Ensure at least 1 second to avoid scheduling issues
     );
 
-    console.log("Scheduling Notification:", {
-      content: notificationContent,
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: secondsUntilStageEnd,
-        repeats: false,
-      },
-    });
+ 
+
 
     await Notifications.scheduleNotificationAsync({
+      identifier: notificationKey, // Use the notificationKey as the identifier
       content: notificationContent,
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
@@ -86,8 +102,6 @@ export const useStageNotifications = (plant: PlantType | undefined) => {
       },
     });
 
-    console.log(
-      `Notification scheduled for stage "${stage.title}" at ${stageEndDate}`
-    );
+ 
   };
 };
