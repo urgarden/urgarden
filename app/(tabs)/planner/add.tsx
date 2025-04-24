@@ -74,6 +74,14 @@ const AddVeggie = () => {
     });
   };
 
+  const handleRemoveStage = (index: number) => {
+    const updatedStages = formData.stages.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      stages: updatedStages,
+    });
+  };
+
   const handleInputChange = (field: keyof VeggieType, value: string | null) => {
     setFormData({
       ...formData,
@@ -195,6 +203,7 @@ const AddVeggie = () => {
           onStageChange={handleStageChange}
           onImageChange={handleStageImageChange}
           pickImage={pickImage}
+          onRemoveStage={handleRemoveStage} // Pass the remove function
         />
       ))}
 
