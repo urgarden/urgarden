@@ -2,6 +2,12 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Prerequisite
+
+1. NodeJS - https://nodejs.org/dist/v22.15.0/node-v22.15.0-x64.msi
+2. vscode - https://code.visualstudio.com/Download#
+3. Git (optional) - https://git-scm.com/downloads/win
+
 ## Get started
 
 1. Install dependencies
