@@ -1,14 +1,18 @@
-import { useState} from "react";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { validateSignupFormData } from "@/utils/validation";
 import { signupFormFields } from "@/utils/formFields";
 import InputField from "@/components/InputField";
-import BackButton from "@/components/buttons/BackButton";
+
 import ThemedText from "@/components/ThemedText";
 import { signup } from "@/lib/api/auth";
 import ProceedButton from "@/components/buttons/ProceedButton";
 import { showMessage } from "react-native-flash-message";
+import { Image } from "expo-image";
+
+const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -60,6 +64,12 @@ const SignupPage = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        style={styles.backgroundImage}
+        source={require("@/assets/images/authBg.png")}
+        placeholder={{ blurhash }}
+        contentFit="cover"
+      />
       <ThemedText type="title">URGARDEN</ThemedText>
       {signupFormFields.map((field) => (
         <View key={field.name} style={styles.formGroup}>
@@ -94,10 +104,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
-    backgroundColor: "#f5f5f5",
   },
-
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+    zIndex: -1,
+  },
   formGroup: {
     width: "100%",
     alignItems: "center",
