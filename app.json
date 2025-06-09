@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Urgarden",
-    "slug": "Urgarden",
+    "slug": "urgarden",
     "version": "1.0.0",
     "orientation": "portrait",
     "platforms": ["android"],
