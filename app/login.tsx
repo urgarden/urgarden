@@ -7,6 +7,10 @@ import ProceedButton from "@/components/buttons/ProceedButton";
 import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
 import { useUserStore } from "@/lib/stores/userStore";
+import { Image } from "expo-image";
+
+const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -78,54 +82,62 @@ const LoginPage: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.topButtonsContainer}>
-        {buttons.map((button, index) => (
-          <TouchableOpacity
-            key={index}
-            style={button.style}
-            onPress={button.onPress}
-          >
-            {button.text}
-          </TouchableOpacity>
-        ))}
-      </View>
-      <ThemedText type="title">URGARDEN LOGIN</ThemedText>
-      <InputField
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
-        textContentType="username"
+      <Image
+        style={styles.backgroundImage}
+        source={require("@/assets/images/authBg.png")}
+        placeholder={{ blurhash }}
+        contentFit="cover"
       />
-      <InputField
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        textContentType="password"
-      />
-      {errorMessage && (
-        <ThemedText type="errorMessage">{errorMessage}</ThemedText>
-      )}
-      <ProceedButton title="Login" onPress={handleLogin} />
+      <View style={styles.content}>
+        <View style={styles.topButtonsContainer}>
+          {buttons.map((button, index) => (
+            <TouchableOpacity
+              key={index}
+              style={button.style}
+              onPress={button.onPress}
+            >
+              {button.text}
+            </TouchableOpacity>
+          ))}
+        </View>
+        <ThemedText type="title">URGARDEN LOGIN</ThemedText>
+        <InputField
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="email-address"
+          textContentType="username"
+        />
+        <InputField
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          textContentType="password"
+        />
+        {errorMessage && (
+          <ThemedText type="errorMessage">{errorMessage}</ThemedText>
+        )}
+        <ProceedButton title="Login" onPress={handleLogin} />
 
-      <Link href="/forgot-password" asChild>
-        <TouchableOpacity style={styles.forgotPasswordButton}>
-          <ThemedText type="linkB">Forgot Password?</ThemedText>
-        </TouchableOpacity>
-      </Link>
-      <View style={styles.signupContainer}>
-        <ThemedText style={styles.signupText}>
-          Need to create an account?
-        </ThemedText>
-
-        <Link href="/signup" asChild>
-          <TouchableOpacity style={styles.signupButton}>
-            <ThemedText type="linkB">Signup</ThemedText>
+        <Link href="/forgot-password" asChild>
+          <TouchableOpacity style={styles.forgotPasswordButton}>
+            <ThemedText type="linkB">Forgot Password?</ThemedText>
           </TouchableOpacity>
         </Link>
+        <View style={styles.signupContainer}>
+          <ThemedText style={styles.signupText}>
+            Need to create an account?
+          </ThemedText>
+
+          <Link href="/signup" asChild>
+            <TouchableOpacity style={styles.signupButton}>
+              <ThemedText type="linkB">Signup</ThemedText>
+            </TouchableOpacity>
+          </Link>
+        </View>
       </View>
     </View>
   );
@@ -136,8 +148,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
-    backgroundColor: "#f5f5f5",
+  },
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+    zIndex: -1,
+  },
+  content: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   topButtonsContainer: {
     position: "sticky",
@@ -145,20 +167,10 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     width: "100%",
   },
-  backButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-  },
   guestButton: {
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
   },
   forgotPasswordButton: {
     marginBottom: 20,

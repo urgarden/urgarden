@@ -2,22 +2,33 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
+import { Image } from "expo-image";
+const blurhash =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
 export default function LandingPage() {
   const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark" backgroundColor="#fff" />
-      <Text style={styles.title}>
-        Urgarden: A Mobile-based Planner for Vegetables Urban Gardening
-      </Text>
+      <Image
+        style={styles.backgroundImage}
+        source={require("@/assets/images/1.png")}
+        placeholder={{ blurhash }}
+        contentFit="cover"
+      />
+      <StatusBar style="light" backgroundColor="#fff" />
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => router.push("/login")}
         >
-          <Icon name="arrow-right" size={20} color="#fff" />
+          <Image
+            style={styles.arrow}
+            source={require("@/assets/images/arrow.png")}
+            contentFit="fill"
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -27,37 +38,34 @@ export default function LandingPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end", // Align content to the bottom
     alignItems: "center",
-    padding: 16,
-    backgroundColor: "#f5f5f5",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 40,
-    color: "#333",
+  backgroundImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+    zIndex: -1,
+  },
+  arrow: {
+    width: 100,
+    height: 80,
+    marginRight: 10,
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "center",
     width: "80%",
+    marginBottom: 100,
+    paddingVertical: 10,
+    borderRadius: 20,
   },
   button: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#4CAF50",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 100,
     marginHorizontal: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginLeft: 8,
   },
 });
