@@ -63,9 +63,11 @@ const StageForm: React.FC<StageFormProps> = ({
                 ? String(stage.stageEndDays)
                 : ""
             }
-            onChangeText={(value) =>
-              onStageChange(index, "stageEndDays", value)
-            }
+            onChangeText={(value) => {
+              // Only allow numbers
+              const numericValue = value.replace(/[^0-9]/g, "");
+              onStageChange(index, "stageEndDays", numericValue);
+            }}
             placeholder="Number of Days"
             keyboardType="numeric"
           />
