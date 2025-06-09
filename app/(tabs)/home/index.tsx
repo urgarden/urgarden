@@ -69,11 +69,16 @@ export default function HomeScreen() {
       <StatusBar style="dark" backgroundColor="#fff" />
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
+        <View style={styles.titleContainer}>
+          <Text style={styles.sectionTitle}>
+            Urgarden A Mobile Based Planner for Vegetables Urban Gardening
+          </Text>
+        </View>
         <ImagePreviewer imageUrls={trendingVeggieImages} />
 
         {/* List of All Vegetables */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.sectionTitle}>Recommended Vegetables</Text>
+        <View style={styles.recContainer}>
+          <Text style={styles.recTitle}>Recommended Vegetables</Text>
         </View>
 
         <FlatList
@@ -134,6 +139,24 @@ const styles = StyleSheet.create({
     width: "110%",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#fff",
+    zIndex: 1,
+  },
+
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+    marginTop: 40,
+    alignSelf: "center",
+    textAlign: "center",
+  },
+
+  recContainer: {
+    width: "110%",
+    alignItems: "center",
+    justifyContent: "center",
     borderBottomEndRadius: 10,
     borderBottomStartRadius: 10,
     shadowColor: "#000",
@@ -147,42 +170,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     zIndex: 1,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-    color: "#333",
-  },
-  searchInput: {
-    height: 40,
-    marginTop: 90,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    width: "80%",
-    marginBottom: 10,
-  },
-  sectionTitle: {
+
+  recTitle: {
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 20,
     color: "#333",
     marginTop: 20,
+    alignSelf: "center",
+    textAlign: "center",
   },
   columnWrapper: {
     justifyContent: "space-between",
-  },
-  veggieItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    width: "100%",
-  },
-  veggieText: {
-    fontSize: 18,
-    color: "#333",
   },
   loadingContainer: {
     flex: 1,
