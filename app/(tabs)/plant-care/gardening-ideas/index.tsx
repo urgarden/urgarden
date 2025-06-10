@@ -10,6 +10,7 @@ import {
   Pressable,
 } from "react-native";
 import { gardeningIdeas } from "@/lib/config";
+import Background from "@/components/Background";
 
 export default function GardeningIdeasScreen() {
   const [modalVisible, setModalVisible] = useState(false); // State to control modal visibility
@@ -56,68 +57,75 @@ export default function GardeningIdeasScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        {gardeningIdeas.ideas.map((idea, ideaIndex) => (
-          <View key={idea.id} style={styles.card}>
-            <Text style={styles.cardTitle}>{idea.title}</Text>
-            <Text style={styles.cardDescription}>{idea.description}</Text>
-            <ScrollView
-              horizontal
-              centerContent={true}
-              showsHorizontalScrollIndicator={false}
-              ref={(ref) => (scrollRefs.current[ideaIndex] = ref)} // Assign ref for each ScrollView
-            >
-              {idea.images.map((image, index) => (
-                <TouchableOpacity key={index} onPress={() => openModal(image)}>
-                  <Image
-                    source={image}
-                    style={styles.image}
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-        ))}
-      </ScrollView>
+    <Background>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+          {gardeningIdeas.ideas.map((idea, ideaIndex) => (
+            <View key={idea.id} style={styles.card}>
+              <Text style={styles.cardTitle}>{idea.title}</Text>
+              <Text style={styles.cardDescription}>{idea.description}</Text>
+              <ScrollView
+                horizontal
+                centerContent={true}
+                showsHorizontalScrollIndicator={false}
+                ref={(ref) => (scrollRefs.current[ideaIndex] = ref)} // Assign ref for each ScrollView
+              >
+                {idea.images.map((image, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => openModal(image)}
+                  >
+                    <Image
+                      source={image}
+                      style={styles.image}
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          ))}
+        </ScrollView>
 
-      {/* Full-Screen Modal */}
-      {selectedImage && (
-        <Modal
-          visible={modalVisible}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={closeModal}
-        >
-          <View style={styles.modalContainer}>
-            <Pressable style={styles.modalCloseButton} onPress={closeModal}>
-              <Text style={styles.modalCloseText}>✕</Text>
-            </Pressable>
-            {/* Full-Screen Image */}
-            <Image
-              source={selectedImage}
-              style={styles.fullScreenImage}
-              resizeMode="contain"
-            />
-          </View>
-        </Modal>
-      )}
-    </View>
+        {/* Full-Screen Modal */}
+        {selectedImage && (
+          <Modal
+            visible={modalVisible}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={closeModal}
+          >
+            <View style={styles.modalContainer}>
+              <Pressable style={styles.modalCloseButton} onPress={closeModal}>
+                <Text style={styles.modalCloseText}>✕</Text>
+              </Pressable>
+              {/* Full-Screen Image */}
+              <Image
+                source={selectedImage}
+                style={styles.fullScreenImage}
+                resizeMode="contain"
+              />
+            </View>
+          </Modal>
+        )}
+      </View>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 16,
+    // marginVertical: 20,
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0)",
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 16,
-    marginBottom: 12,
+    marginTop: 16,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,

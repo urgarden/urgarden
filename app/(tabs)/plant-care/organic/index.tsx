@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { compostMaterials, organicPlantCare } from "@/lib/config";
+import Background from "@/components/Background";
 
 export default function OrganicScreen() {
   const [expandedType, setExpandedType] = useState<string | null>(null); // State to track the expanded dropdown for compost materials
@@ -21,59 +22,61 @@ export default function OrganicScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ paddingBottom: 20 }}
-    >
-      {/* Organic Plant Care Methods */}
-      <Text style={styles.sectionTitle}>Plant Care Methods</Text>
-      {organicPlantCare.methods.map((method) => (
-        <View key={method.name} style={styles.card}>
-          <TouchableOpacity
-            onPress={() => toggleMethodDropdown(method.name)}
-            style={styles.dropdownHeader}
-          >
-            <Text style={styles.cardTitle}>{method.name}</Text>
-            <Text style={styles.dropdownIcon}>
-              {expandedMethod === method.name ? "▲" : "▼"}
-            </Text>
-          </TouchableOpacity>
-          {expandedMethod === method.name && (
-            <View style={styles.dropdownContent}>
-              <Text style={styles.cardSubtitle}>Preparation:</Text>
-              <Text style={styles.cardText}>{method.preparation}</Text>
-              <Text style={styles.cardSubtitle}>Usage:</Text>
-              <Text style={styles.cardText}>{method.usage}</Text>
-            </View>
-          )}
-        </View>
-      ))}
+    <Background>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        {/* Organic Plant Care Methods */}
+        <Text style={styles.sectionTitle}>Plant Care Methods</Text>
+        {organicPlantCare.methods.map((method) => (
+          <View key={method.name} style={styles.card}>
+            <TouchableOpacity
+              onPress={() => toggleMethodDropdown(method.name)}
+              style={styles.dropdownHeader}
+            >
+              <Text style={styles.cardTitle}>{method.name}</Text>
+              <Text style={styles.dropdownIcon}>
+                {expandedMethod === method.name ? "▲" : "▼"}
+              </Text>
+            </TouchableOpacity>
+            {expandedMethod === method.name && (
+              <View style={styles.dropdownContent}>
+                <Text style={styles.cardSubtitle}>Preparation:</Text>
+                <Text style={styles.cardText}>{method.preparation}</Text>
+                <Text style={styles.cardSubtitle}>Usage:</Text>
+                <Text style={styles.cardText}>{method.usage}</Text>
+              </View>
+            )}
+          </View>
+        ))}
 
-      {/* Compost Materials */}
-      <Text style={styles.sectionTitle}>Compost Materials</Text>
-      {compostMaterials.types.map((type) => (
-        <View key={type.type} style={styles.card}>
-          <TouchableOpacity
-            onPress={() => toggleDropdown(type.type)}
-            style={styles.dropdownHeader}
-          >
-            <Text style={styles.cardTitle}>{type.type}</Text>
-            <Text style={styles.dropdownIcon}>
-              {expandedType === type.type ? "▲" : "▼"}
-            </Text>
-          </TouchableOpacity>
-          {expandedType === type.type && (
-            <View style={styles.dropdownContent}>
-              {type.items.map((item) => (
-                <Text key={item} style={styles.cardText}>
-                  • {item}
-                </Text>
-              ))}
-            </View>
-          )}
-        </View>
-      ))}
-    </ScrollView>
+        {/* Compost Materials */}
+        <Text style={styles.sectionTitle}>Compost Materials</Text>
+        {compostMaterials.types.map((type) => (
+          <View key={type.type} style={styles.card}>
+            <TouchableOpacity
+              onPress={() => toggleDropdown(type.type)}
+              style={styles.dropdownHeader}
+            >
+              <Text style={styles.cardTitle}>{type.type}</Text>
+              <Text style={styles.dropdownIcon}>
+                {expandedType === type.type ? "▲" : "▼"}
+              </Text>
+            </TouchableOpacity>
+            {expandedType === type.type && (
+              <View style={styles.dropdownContent}>
+                {type.items.map((item) => (
+                  <Text key={item} style={styles.cardText}>
+                    • {item}
+                  </Text>
+                ))}
+              </View>
+            )}
+          </View>
+        ))}
+      </ScrollView>
+    </Background>
   );
 }
 
@@ -81,13 +84,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f5f5f5",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
+    backgroundColor: "rgba(255, 255, 255, 0)",
+    width: "100%",
   },
   sectionTitle: {
     fontSize: 20,
