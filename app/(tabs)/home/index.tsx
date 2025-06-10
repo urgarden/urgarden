@@ -67,7 +67,7 @@ export default function HomeScreen() {
 
   return (
     <Background>
-      <StatusBar style="dark" backgroundColor="#fff" />
+      <StatusBar style="dark" />
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
         <View style={styles.titleContainer}>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#333",
+    color: "#444",
     marginTop: 40,
     alignSelf: "center",
     textAlign: "center",
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderBottomEndRadius: 10,
     borderBottomStartRadius: 10,
-    shadowColor: "#000",
+    shadowColor: "#ccc",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#333",
+    color: "#555",
     marginTop: 20,
     alignSelf: "center",
     textAlign: "center",

@@ -16,12 +16,9 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAllByUserId, deletePlant } from "@/lib/api/garden";
 import { useUserStore } from "@/lib/stores/userStore";
-import {
-  GetAllByUserIdResult,
-  PlantType,
-  PlantStatus,
-} from "@/lib/definitions";
+import { GetAllByUserIdResult, PlantType } from "@/lib/definitions";
 import { getStatusColor } from "@/utils/getStatusColor";
+import Background from "@/components/Background";
 
 export default function MyGardenScreen() {
   const [plants, setPlants] = useState<PlantType[]>([]);
@@ -127,7 +124,7 @@ export default function MyGardenScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <Background>
       <ThemedText type="title" style={styles.title}>
         My Garden
       </ThemedText>
@@ -201,17 +198,11 @@ export default function MyGardenScreen() {
           </View>
         </View>
       </Modal>
-    </ThemedView>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
-    paddingTop: 50,
-  },
   title: {
     marginBottom: 16,
     textAlign: "center",
