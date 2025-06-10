@@ -125,84 +125,98 @@ export default function MyGardenScreen() {
 
   return (
     <Background>
-      <ThemedText type="title" style={styles.title}>
-        My Garden
-      </ThemedText>
-      <FlatList
-        data={plants}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => router.push(`/my-garden/details/${item.id}` as any)} // Navigate to the details screen
-          >
-            <View style={styles.card}>
-              {item.veggie?.image && (
-                <Image
-                  source={{ uri: item.veggie.image }}
-                  style={styles.cardImage}
-                />
-              )}
-              <View style={styles.cardContent}>
-                <Text style={styles.cardTitle}>
-                  {item.veggie?.name || "Unknown Veggie"}
-                </Text>
-                <Text style={styles.cardDescription}>
-                  {item.veggie?.description || "No description available."}
-                </Text>
-                <Text
-                  style={[
-                    styles.cardStatus,
-                    { color: getStatusColor(item.status) },
-                  ]}
+      <ThemedView style={styles.container}>
+        <ThemedText type="title" style={styles.title}>
+          My Garden
+        </ThemedText>
+        <FlatList
+          data={plants}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() =>
+                router.push(`/my-garden/details/${item.id}` as any)
+              } // Navigate to the details screen
+            >
+              <View style={styles.card}>
+                {item.veggie?.image && (
+                  <Image
+                    source={{ uri: item.veggie.image }}
+                    style={styles.cardImage}
+                  />
+                )}
+                <View style={styles.cardContent}>
+                  <Text style={styles.cardTitle}>
+                    {item.veggie?.name || "Unknown Veggie"}
+                  </Text>
+                  <Text style={styles.cardDescription}>
+                    {item.veggie?.description || "No description available."}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.cardStatus,
+                      { color: getStatusColor(item.status) },
+                    ]}
+                  >
+                    Status: {item.status}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.kebabMenu}
+                  onPress={(e) => {
+                    e.stopPropagation(); // Prevent triggering navigation
+                    setSelectedPlant(item);
+                    setModalVisible(true);
+                  }}
                 >
-                  Status: {item.status}
-                </Text>
+                  <Text style={styles.kebabMenuText}>⋮</Text>
+                </TouchableOpacity>
               </View>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={styles.listContent}
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
+
+        {/* Modal for Delete and Cancel */}
+        <Modal
+          visible={modalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Manage Plant</Text>
               <TouchableOpacity
-                style={styles.kebabMenu}
-                onPress={(e) => {
-                  e.stopPropagation(); // Prevent triggering navigation
-                  setSelectedPlant(item);
-                  setModalVisible(true);
-                }}
+                style={styles.modalButton}
+                onPress={handleDelete}
               >
-                <Text style={styles.kebabMenuText}>⋮</Text>
+                <Text style={styles.modalButtonText}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.modalCloseButton]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Close</Text>
               </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.listContent}
-        refreshing={refreshing}
-        onRefresh={handleRefresh}
-      />
-
-      {/* Modal for Delete and Cancel */}
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Manage Plant</Text>
-            <TouchableOpacity style={styles.modalButton} onPress={handleDelete}>
-              <Text style={styles.modalButtonText}>Delete</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.modalCloseButton]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>Close</Text>
-            </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </ThemedView>
     </Background>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    paddingTop: 50,
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+  },
   title: {
     marginBottom: 16,
     textAlign: "center",
@@ -232,11 +246,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 1,
+    shadowRadius: 1,
+    elevation: 1,
     position: "relative",
   },
   cardImage: {
