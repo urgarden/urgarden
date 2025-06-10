@@ -21,6 +21,7 @@ import { useUserStore } from "@/lib/stores/userStore";
 import { deleteVeggie } from "@/lib/api/veggie";
 import { showMessage } from "react-native-flash-message";
 import { CategoryType } from "@/lib/definitions";
+import Background from "@/components/Background";
 
 export default function PlannerScreen() {
   const [selectedType, setSelectedType] = useState<CategoryType | undefined>();
@@ -129,7 +130,7 @@ export default function PlannerScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <Background>
       <View style={styles.headerContainer}>
         {/* Sorting Buttons */}
         <ThemedText style={{ paddingTop: 50 }} type="title">
@@ -214,25 +215,19 @@ export default function PlannerScreen() {
           ) : null
         }
       />
-    </ThemedView>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-  },
   headerContainer: {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
     width: "100%",
     zIndex: 1,
     paddingHorizontal: 16,
+    backgroundColor: "#fff",
     shadowColor: "#000",
     borderBottomEndRadius: 10,
     borderBottomStartRadius: 10,
@@ -269,6 +264,7 @@ const styles = StyleSheet.create({
   searchInput: {
     height: 40,
     borderColor: "#ccc",
+
     width: "100%",
     borderWidth: 1,
     borderRadius: 8,

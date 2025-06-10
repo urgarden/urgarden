@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#fff",
     borderRadius: 8,
     marginHorizontal: 4,
   },
@@ -119,12 +119,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#2E7D32",
   },
   buttonText: {
-    color: "#fff",
+    color: "#030303",
     fontSize: 14,
     textAlign: "center",
   },
   activeButtonText: {
     fontWeight: "bold",
+    color: "#fff",
   },
   ellipsis: {
     fontSize: 16,
