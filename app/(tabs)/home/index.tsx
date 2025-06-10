@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { getRecommendedVeggies } from "@/lib/api/veggie"; // Import the API function
 import { vegiImage } from "@/lib/config";
 import { StatusBar } from "expo-status-bar";
+import Background from "@/components/Background";
 
 // Define the type for recommended veggies
 type RecommendedVeggie = {
@@ -65,7 +66,7 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <Background>
       <StatusBar style="dark" backgroundColor="#fff" />
       <View style={styles.contentContainer}>
         {/* Trending Vegetables Carousel */}
@@ -115,22 +116,15 @@ export default function HomeScreen() {
           }
         />
       </View>
-    </View>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
   contentContainer: {
     width: "100%",
     height: "100%",
     paddingHorizontal: 16,
-    backgroundColor: "#f5f5f5",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -139,7 +133,6 @@ const styles = StyleSheet.create({
     width: "110%",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
     zIndex: 1,
   },
 
@@ -151,6 +144,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     alignSelf: "center",
     textAlign: "center",
+    paddingHorizontal: 20,
   },
 
   recContainer: {

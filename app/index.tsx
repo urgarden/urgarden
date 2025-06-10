@@ -1,5 +1,4 @@
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
@@ -56,7 +55,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     width: "80%",
-    marginBottom: 100,
+    marginBottom: 75,
     paddingVertical: 10,
     borderRadius: 20,
   },

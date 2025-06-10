@@ -7,10 +7,7 @@ import ProceedButton from "@/components/buttons/ProceedButton";
 import { login } from "@/lib/api/auth";
 import { showMessage } from "react-native-flash-message";
 import { useUserStore } from "@/lib/stores/userStore";
-import { Image } from "expo-image";
-
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
+import Background from "@/components/Background";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -81,13 +78,7 @@ const LoginPage: React.FC = () => {
   ];
 
   return (
-    <View style={styles.container}>
-      <Image
-        style={styles.backgroundImage}
-        source={require("@/assets/images/authBg.png")}
-        placeholder={{ blurhash }}
-        contentFit="cover"
-      />
+    <Background>
       <View style={styles.content}>
         <View style={styles.topButtonsContainer}>
           {buttons.map((button, index) => (
@@ -139,22 +130,11 @@ const LoginPage: React.FC = () => {
           </Link>
         </View>
       </View>
-    </View>
+    </Background>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  backgroundImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-    zIndex: -1,
-  },
   content: {
     flex: 1,
     width: "100%",
