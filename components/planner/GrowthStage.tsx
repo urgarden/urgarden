@@ -49,6 +49,8 @@ const GrowthStages: React.FC<GrowthStagesProps> = ({ stages }) => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 16,
+    width: "100%",
+    gap: 16,
   },
   sectionTitle: {
     fontSize: 22,
@@ -62,9 +64,13 @@ const styles = StyleSheet.create({
   stageContainer: {
     flexDirection: "row",
     padding: 16,
-    borderColor: "#ddd",
-    borderTopWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
     backgroundColor: "#fff",
   },
   stageImage: {

@@ -14,6 +14,7 @@ import { getStatusColor } from "@/utils/getStatusColor";
 import { RenderStageIndicator } from "@/components/my-garden/RenderStage";
 import { checkLastStageCompletion } from "@/utils/checkLastStageCompletion";
 import { useStageNotifications } from "@/hooks/useStageNotification";
+import Background from "@/components/Background";
 
 export default function PlantDetailsScreen() {
   const { id } = useLocalSearchParams(); // Get the dynamic ID from the route
@@ -56,52 +57,61 @@ export default function PlantDetailsScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent}
-    >
-      {/* Display the veggie image */}
-      {plant.veggie?.image && (
-        <Image source={{ uri: plant.veggie.image }} style={styles.image} />
-      )}
+    <Background>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.loader}>
+          {/* Display the veggie image */}
+          {plant.veggie?.image && (
+            <Image source={{ uri: plant.veggie.image }} style={styles.image} />
+          )}
 
-      {/* Display the veggie name */}
-      <Text style={styles.title}>{plant.veggie?.name || "Unknown Veggie"}</Text>
+          {/* Display the veggie name */}
+          <Text style={styles.title}>
+            {plant.veggie?.name || "Unknown Veggie"}
+          </Text>
 
-      {/* Display the veggie description */}
-      <Text style={styles.description}>
-        {plant.veggie?.description || "No description available."}
-      </Text>
+          {/* Display the veggie description */}
+          <Text style={styles.description}>
+            {plant.veggie?.description || "No description available."}
+          </Text>
 
-      {/* Display the plant status */}
-      <Text style={[styles.status, { color: getStatusColor(plant.status) }]}>
-        Status: {plant.status}
-      </Text>
+          {/* Display the plant status */}
+          <Text
+            style={[styles.status, { color: getStatusColor(plant.status) }]}
+          >
+            Status: {plant.status}
+          </Text>
 
-      {/* Display additional plant details */}
-      <Text style={styles.details}>
-        <Text style={styles.detailsLabel}>Date Created:</Text>{" "}
-        {new Date(plant.created_at).toLocaleString()}
-      </Text>
+          {/* Display additional plant details */}
+          <Text style={styles.details}>
+            <Text style={styles.detailsLabel}>Date Created:</Text>{" "}
+            {new Date(plant.created_at).toDateString()}
+          </Text>
+        </View>
 
-      {/* Display the stages */}
-      <Text style={styles.sectionTitle}>Stages</Text>
-      {plant.veggie?.stages?.map((stage: Stage, index: number) => (
-        <RenderStageIndicator
-          key={index}
-          plant={plant}
-          stage={stage}
-          index={index}
-        />
-      ))}
-    </ScrollView>
+        {/* Display the stages */}
+        <Text style={styles.sectionTitle}>Stages</Text>
+        {plant.veggie?.stages?.map((stage: Stage, index: number) => (
+          <RenderStageIndicator
+            key={index}
+            plant={plant}
+            stage={stage}
+            index={index}
+          />
+        ))}
+      </ScrollView>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0)",
   },
   scrollContent: {
     padding: 16,
@@ -121,10 +131,10 @@ const styles = StyleSheet.create({
     color: "red",
   },
   image: {
-    width: "100%",
+    width: "120%",
     height: 250,
-    borderRadius: 8,
     marginBottom: 16,
+    marginTop: -16,
     objectFit: "cover",
   },
   title: {
@@ -158,6 +168,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 16,
     marginBottom: 8,
-    color: "#4CAF50",
   },
 });

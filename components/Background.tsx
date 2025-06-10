@@ -20,7 +20,7 @@ const Background: React.FC<Props> = ({
       source={imageSource}
       placeholder={{ blurhash }}
       contentFit="cover"
-      transition={100}
+      transition={1000}
     />
     <View style={styles.content}>{children}</View>
   </View>

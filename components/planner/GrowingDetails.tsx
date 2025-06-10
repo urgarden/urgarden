@@ -58,7 +58,7 @@ const GrowingRequirementDetails: React.FC<GrowingRequirementDetailsProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 16,
-    backgroundColor: "#fff",
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 22,

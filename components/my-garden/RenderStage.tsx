@@ -101,7 +101,7 @@ export const RenderStageIndicator = ({
 const styles = StyleSheet.create({
   stageCard: {
     flexDirection: "row",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
