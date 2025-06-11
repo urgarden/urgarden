@@ -18,6 +18,7 @@ import { useUserStore } from "@/lib/stores/userStore";
 import PlantForm from "@/components/planner/GrowingFormModal";
 import GrowingRequirementDetails from "@/components/planner/GrowingDetails";
 import GrowthStages from "@/components/planner/GrowthStage";
+import Background from "@/components/Background";
 
 export default function VeggieDetails() {
   const router = useRouter();
@@ -123,69 +124,73 @@ export default function VeggieDetails() {
   };
 
   return (
-    <ScrollView
-      style={{ flex: 1 }} // Ensure ScrollView takes full height
-      contentContainerStyle={{
-        ...styles.container,
-        flexGrow: 1, // Ensure content grows and scrolls properly
-      }}
-    >
-      {veggie.image && (
-        <Image source={{ uri: veggie.image }} style={styles.image} />
-      )}
-      <Text style={styles.title}>{veggie.name}</Text>
-      <Text style={styles.type}>Type: {veggie.type}</Text>
-      <Text style={styles.description}>{veggie.description}</Text>
+    <Background>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {veggie.image && (
+          <Image source={{ uri: veggie.image }} style={styles.image} />
+        )}
+        <Text style={styles.title}>{veggie.name}</Text>
+        <Text style={styles.type}>Type: {veggie.type}</Text>
+        <Text style={styles.description}>{veggie.description}</Text>
 
-      {/* Growth Stages */}
-      <GrowthStages
-        stages={(veggie.stages || []).map((stage) => ({
-          ...stage,
-          imageUrl: stage.imageUrl ?? undefined, // Convert null to undefined
-        }))}
-      />
+        {/* Growth Stages */}
+        <GrowthStages
+          stages={(veggie.stages || []).map((stage) => ({
+            ...stage,
+            imageUrl: stage.imageUrl ?? undefined, // Convert null to undefined
+          }))}
+        />
 
-      {/* Growing Requirements */}
-      <GrowingRequirementDetails
-        growingRequirements={veggie.growing_requirement || []}
-      />
+        {/* Growing Requirements */}
+        <GrowingRequirementDetails
+          growingRequirements={veggie.growing_requirement || []}
+        />
 
-      {/* Plant Button */}
-      <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
-        <Text style={styles.plantButtonText}>Plant</Text>
-      </TouchableOpacity>
-
-      {/* Redirect to Growing Form Button (Visible only for Admins) */}
-      {isAdmin && (
-        <TouchableOpacity
-          style={styles.adminButton}
-          onPress={() => setIsModalVisible(true)}
-        >
-          <Text style={styles.adminButtonText}>Add Growing Requirement</Text>
+        {/* Plant Button */}
+        <TouchableOpacity style={styles.plantButton} onPress={handlePlantPress}>
+          <Text style={styles.plantButtonText}>Plant</Text>
         </TouchableOpacity>
-      )}
 
-      {/* PlantForm Modal */}
-      <PlantForm
-        visible={isModalVisible}
-        onClose={() => setIsModalVisible(false)} // Close the modal
-        onSubmit={handleFormSubmit} // Handle form submission
-      />
-    </ScrollView>
+        {/* Redirect to Growing Form Button (Visible only for Admins) */}
+        {isAdmin && (
+          <TouchableOpacity
+            style={styles.adminButton}
+            onPress={() => setIsModalVisible(true)}
+          >
+            <Text style={styles.adminButtonText}>Add Growing Requirement</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* PlantForm Modal */}
+        <PlantForm
+          visible={isModalVisible}
+          onClose={() => setIsModalVisible(false)} // Close the modal
+          onSubmit={handleFormSubmit} // Handle form submission
+        />
+      </ScrollView>
+    </Background>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+  },
+  scrollContent: {
     padding: 16,
-    backgroundColor: "#fff",
+    alignItems: "center",
   },
   image: {
-    width: "100%",
+    width: "120%",
     height: 250,
-    objectFit: "cover",
-    borderRadius: 8,
     marginBottom: 16,
+    marginTop: -16,
+    objectFit: "cover",
   },
   title: {
     fontSize: 28,
