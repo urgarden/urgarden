@@ -56,7 +56,7 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
   };
 
   return (
-    <TouchableWithoutFeedback
+    <TouchableOpacity
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={onPress}
@@ -126,7 +126,7 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
           </>
         )}
       </Animated.View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({
@@ -136,15 +136,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 8,
     minWidth: "48%",
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
 
   veggieImage: {
