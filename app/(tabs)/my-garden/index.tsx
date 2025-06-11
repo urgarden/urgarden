@@ -95,17 +95,19 @@ export default function MyGardenScreen() {
 
   if (!userId) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>
-          Please login to start planting and managing your garden.
-        </Text>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => router.push("/login")} // Redirect to login page
-        >
-          <Text style={styles.loginButtonText}>Go to Login</Text>
-        </TouchableOpacity>
-      </View>
+      <Background>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>
+            Signup and login to start planting.
+          </Text>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => router.push("/login")} // Redirect to login page
+          >
+            <Text style={styles.loginButtonText}>Go to Login</Text>
+          </TouchableOpacity>
+        </View>
+      </Background>
     );
   }
 

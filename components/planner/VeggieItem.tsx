@@ -55,15 +55,6 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
     setMenuVisible(!menuVisible);
   };
 
-  if (loading) {
-    return (
-      <View style={styles.veggieItem}>
-        <View style={styles.veggieImage} />
-        <View style={[styles.veggieText, { width: "90%", height: "25%" }]} />
-      </View>
-    );
-  }
-
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}

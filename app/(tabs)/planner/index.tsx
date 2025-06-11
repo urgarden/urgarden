@@ -203,6 +203,16 @@ export default function PlannerScreen() {
           paddingBottom: 20,
           paddingHorizontal: 16,
         }}
+        ListEmptyComponent={
+          loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#4CAF50" />
+              <Text style={styles.loadingText}>Loading...</Text>
+            </View>
+          ) : (
+            <Text></Text>
+          )
+        }
         ListFooterComponent={
           veggies.length > 0 ? (
             <View style={styles.paginationContainer}>
@@ -280,5 +290,15 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: "space-between",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#333",
   },
 });

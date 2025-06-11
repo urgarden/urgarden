@@ -137,12 +137,20 @@ export default function VeggieDetails() {
         <Text style={styles.description}>{veggie.description}</Text>
 
         {/* Growth Stages */}
-        <GrowthStages
-          stages={(veggie.stages || []).map((stage) => ({
-            ...stage,
-            imageUrl: stage.imageUrl ?? undefined, // Convert null to undefined
-          }))}
-        />
+        {veggie.stages && veggie.stages.length > 0 ? (
+          <GrowthStages
+            stages={veggie.stages.map((stage) => ({
+              ...stage,
+              imageUrl: stage.imageUrl ?? undefined,
+            }))}
+          />
+        ) : (
+          <Text
+            style={{ color: "#888", marginBottom: 16, textAlign: "center" }}
+          >
+            No growth stages available.
+          </Text>
+        )}
 
         {/* Growing Requirements */}
         <GrowingRequirementDetails

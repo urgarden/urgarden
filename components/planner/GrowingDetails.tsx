@@ -107,7 +107,6 @@ const styles = StyleSheet.create({
     color: "#555",
   },
   noDataText: {
-    fontSize: 16,
     color: "#888",
     textAlign: "center",
     marginTop: 16,
