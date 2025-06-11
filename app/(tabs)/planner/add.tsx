@@ -40,7 +40,11 @@ const AddVeggie = () => {
   // Pre-fill the form if in "edit" mode
   useEffect(() => {
     if (mode === "edit" && veggie) {
-      setFormData(JSON.parse(veggie as string)); // Parse the veggie data passed as a string
+      const parsed = JSON.parse(veggie as string);
+      setFormData({
+        ...parsed,
+        stages: Array.isArray(parsed.stages) ? parsed.stages : [],
+      });
     }
   }, [mode, veggie]);
 
@@ -194,18 +198,19 @@ const AddVeggie = () => {
         pickImage={pickImage}
       />
 
-      {formData.stages.map((stage, index) => (
-        <StageForm
-          key={index}
-          stage={stage}
-          index={index}
-          errors={errors.stages}
-          onStageChange={handleStageChange}
-          onImageChange={handleStageImageChange}
-          pickImage={pickImage}
-          onRemoveStage={handleRemoveStage} // Pass the remove function
-        />
-      ))}
+      {Array.isArray(formData.stages) &&
+        formData.stages.map((stage, index) => (
+          <StageForm
+            key={index}
+            stage={stage}
+            index={index}
+            errors={errors.stages}
+            onStageChange={handleStageChange}
+            onImageChange={handleStageImageChange}
+            pickImage={pickImage}
+            onRemoveStage={handleRemoveStage}
+          />
+        ))}
 
       <View style={styles.buttonContainer}>
         <Button title="Add Stage" color="gray" onPress={handleAddStage} />
