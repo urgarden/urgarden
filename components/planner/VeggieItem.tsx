@@ -142,7 +142,8 @@ const styles = StyleSheet.create({
 
   veggieImage: {
     width: "100%",
-    height: 130,
+    minWidth: 150,
+    height: 150,
     borderRadius: 8,
     objectFit: "cover",
     backgroundColor: "#e0e0e0",
@@ -151,10 +152,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#333",
     textAlign: "center",
-    wordWrap: "break-word",
     overflow: "hidden",
     textOverflow: "ellipsis",
-    maxWidth: 80,
+    maxWidth: "100%",
     position: "absolute",
     bottom: 0,
     left: 0,
