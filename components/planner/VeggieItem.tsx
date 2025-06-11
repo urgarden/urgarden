@@ -58,8 +58,8 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
   if (loading) {
     return (
       <View style={styles.veggieItem}>
-        <View style={styles.skeletonImage} />
-        <View style={styles.skeletonText} />
+        <View style={styles.veggieImage} />
+        <View style={[styles.veggieText, { width: "90%", height: "25%" }]} />
       </View>
     );
   }
@@ -142,7 +142,6 @@ const styles = StyleSheet.create({
   veggieItem: {
     flexDirection: "column",
     alignItems: "center",
-    paddingVertical: 16,
     marginTop: 10,
     borderRadius: 8,
     minWidth: "48%",
@@ -158,10 +157,9 @@ const styles = StyleSheet.create({
   },
 
   veggieImage: {
-    width: "85%",
+    width: "100%",
     height: 130,
     borderRadius: 8,
-    marginBottom: 10,
     objectFit: "cover",
     backgroundColor: "#e0e0e0",
   },
@@ -173,6 +171,14 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     textOverflow: "ellipsis",
     maxWidth: 80,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    padding: 5,
+    borderTopRightRadius: 8,
+    borderBottomLeftRadius: 8,
+    fontWeight: "bold",
   },
   skeletonImage: {
     width: "85%",
@@ -180,13 +186,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
     backgroundColor: "#e0e0e0",
-  },
-  skeletonText: {
-    width: 60,
-    height: 20,
-    borderRadius: 4,
-    backgroundColor: "#e0e0e0",
-    marginTop: 10,
   },
   kebabButton: {
     position: "absolute",
