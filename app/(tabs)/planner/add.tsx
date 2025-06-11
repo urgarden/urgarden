@@ -14,6 +14,7 @@ import { VeggieType, Stage } from "@/lib/definitions";
 import { createVeggie, updateVeggie } from "@/lib/api/veggie";
 import VeggieForm from "@/components/planner/VeggieForm";
 import StageForm from "@/components/planner/StageForm";
+import { flattenErrors } from "@/lib/veggieValidation";
 
 const AddVeggie = () => {
   const router = useRouter();
@@ -143,10 +144,13 @@ const AddVeggie = () => {
     const { valid, newErrors } = validateVeggieForm(formData);
     if (!valid) {
       setErrors(newErrors);
-      showMessage({
-        message: "Please fix the errors in the form.",
-        type: "danger",
-      });
+      const errorMsg = flattenErrors(newErrors);
+      if (errorMsg && errorMsg.trim().length > 0) {
+        showMessage({
+          message: errorMsg,
+          type: "danger",
+        });
+      }
       return;
     }
 

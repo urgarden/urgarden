@@ -52,3 +52,28 @@ export const validateVeggieForm = (formData: VeggieType) => {
 
   return { valid, newErrors };
 };
+
+// Add this helper function
+export const flattenErrors = (errors: any): string => {
+  if (typeof errors === "string") return errors;
+  if (!errors) return "Please fix the errors in the form.";
+  let messages: string[] = [];
+  for (const key in errors) {
+    if (typeof errors[key] === "string") {
+      messages.push(errors[key]);
+    } else if (typeof errors[key] === "object") {
+      for (const subKey in errors[key]) {
+        if (typeof errors[key][subKey] === "string") {
+          messages.push(errors[key][subKey]);
+        } else if (typeof errors[key][subKey] === "object") {
+          for (const subSubKey in errors[key][subKey]) {
+            if (typeof errors[key][subSubKey] === "string") {
+              messages.push(errors[key][subSubKey]);
+            }
+          }
+        }
+      }
+    }
+  }
+  return messages.join("\n");
+};
