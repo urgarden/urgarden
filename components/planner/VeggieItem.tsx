@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 interface VeggieItemProps {
   item: {
@@ -29,6 +30,7 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
   isAdmin,
 }) => {
   const [loading, setLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false); // State for kebab menu visibility
   const scale = new Animated.Value(1);
 
@@ -63,22 +65,26 @@ const VeggieItem: React.FC<VeggieItemProps> = ({
     >
       <Animated.View style={[styles.veggieItem, { transform: [{ scale }] }]}>
         {/* Check if the image is a remote URL or a local file path */}
-        {item.image && typeof item.image === "string" ? (
+        {item.image && typeof item.image === "string" && !imageError ? (
           item.image.startsWith("http") || item.image.startsWith("https") ? (
             <Image
               source={{ uri: item.image }} // Remote image
               alt=""
               style={styles.veggieImage}
+              onError={() => setImageError(true)}
             />
           ) : (
             <Image
               source={{ uri: item.image }}
               alt=""
               style={styles.veggieImage}
+              onError={() => setImageError(true)}
             />
           )
         ) : (
-          <View style={styles.skeletonImage} />
+          <View style={styles.fallbackImageContainer}>
+            <MaterialIcons name="eco" size={80} color="#4CAF50" />
+          </View>
         )}
 
         <Text style={styles.veggieText}>{item.name}</Text>
@@ -164,12 +170,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 8,
     fontWeight: "bold",
   },
-  skeletonImage: {
-    width: "85%",
-    height: 130,
+  fallbackImageContainer: {
+    width: "100%",
+    minWidth: 150,
+    height: 150,
     borderRadius: 8,
-    marginBottom: 10,
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   kebabButton: {
     position: "absolute",

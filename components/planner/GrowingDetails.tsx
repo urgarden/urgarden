@@ -88,10 +88,10 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 300,
+    height: 150,
     borderRadius: 8,
     marginBottom: 16,
-    objectFit: "scale-down",
+    objectFit: "contain",
   },
   details: {
     flex: 1,

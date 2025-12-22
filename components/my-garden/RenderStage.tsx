@@ -100,6 +100,7 @@ export const RenderStageIndicator = ({
 
 const styles = StyleSheet.create({
   stageCard: {
+    position: "relative",
     flexDirection: "row",
     backgroundColor: "#fff",
     borderRadius: 8,
@@ -110,10 +111,14 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
+    opacity: 0.7,
+
   },
   currentStageCard: {
     borderWidth: 2,
+    backgroundColor: "#fff",
     borderColor: "#4CAF50",
+        opacity: 1,
   },
   stageImage: {
     width: 80,
@@ -123,6 +128,7 @@ const styles = StyleSheet.create({
   },
   stageContent: {
     flex: 1,
+  
   },
   stageTitle: {
     fontSize: 18,
@@ -139,6 +145,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     color: "#4CAF50",
+
   },
   currentStageStatus: {
     color: "#FF5722",
